@@ -70,7 +70,7 @@ if __name__ == "__main__":
     A = VGG19Model()
     A.prepare_data()
     A.prepare_model()
-    A.fit_data(32, epochs=2)
+    A.fit_data(desired_size=64, epochs=100)
     A.show_history()
 
     input_prediction = np.array([A.x_test[0]])
@@ -78,6 +78,8 @@ if __name__ == "__main__":
     
     print("Actual Value", np.argmax(A.y_test[0]))
     print("Output Raw:", output_prediction)
+
+    print(A.model.evaluate(A.x_test, A.y_test))
     
 
 

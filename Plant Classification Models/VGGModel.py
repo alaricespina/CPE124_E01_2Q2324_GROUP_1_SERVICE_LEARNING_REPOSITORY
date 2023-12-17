@@ -4,26 +4,17 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import warnings 
 warnings.filterwarnings("ignore")
 
-
-from keras.models import Sequential, load_model
 from keras.layers import Dense, Flatten, Conv2D, MaxPooling2D, Dropout
-import numpy as np 
+from keras.models import Sequential 
 
-from Utility import generate_mnist_dataset
 from BaseClassifier import BaseClassifier
-
+import numpy as np 
 
 class VGG19Model(BaseClassifier):
     def __init__(self, model_name = "VGG19MODEL"):
         super().__init__(model_name = model_name)
         self.checkpoint_path = "Training Checkpoints/" + self.model_name
 
-    def prepare_data(self):
-        # Assign Class Properties for Model Building
-        self.x_train, self.x_test, self.y_train, self.y_test = generate_mnist_dataset()        
-        self.image_size = (32, 32, 3)
-        self.num_unique_classes = len(self.y_train[0])
-    
     def prepare_model(self):
         dense_units = 64
         dense_activation = "relu"
@@ -63,24 +54,5 @@ class VGG19Model(BaseClassifier):
         ])
 
         self.model.compile(loss = "categorical_crossentropy", optimizer = "sgd", metrics = ["accuracy"])
-
-    
-
-if __name__ == "__main__":
-    A = VGG19Model()
-    A.prepare_data()
-    A.prepare_model()
-    A.fit_data(desired_size=64, epochs=100)
-    A.show_history()
-
-    input_prediction = np.array([A.x_test[0]])
-    raw_output, output_prediction = A.predict_given_data(input_prediction)
-    
-    print("Actual Value", np.argmax(A.y_test[0]))
-    print("Output Raw:", output_prediction)
-
-    print(A.model.evaluate(A.x_test, A.y_test))
-    
-
 
     

@@ -1,2 +1,2 @@
-model_checkpoint_path: "VGG19MODEL"
-all_model_checkpoint_paths: "VGG19MODEL"
+model_checkpoint_path: "SIMPLECNNMODEL"
+all_model_checkpoint_paths: "SIMPLECNNMODEL"

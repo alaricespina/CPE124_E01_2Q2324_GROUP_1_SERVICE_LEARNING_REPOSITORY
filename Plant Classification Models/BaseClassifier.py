@@ -1,5 +1,6 @@
 from keras.callbacks import ModelCheckpoint 
 from keras.models import load_model 
+from Utility import generate_mnist_dataset
 
 import matplotlib.pyplot as plt 
 import numpy as np 
@@ -75,3 +76,12 @@ class BaseClassifier():
         #print(res)
 
         return res, np.argmax(res, axis=1)
+    
+    def prepare_data(self):
+        # Assign Class Properties for Model Building
+        self.x_train, self.x_test, self.y_train, self.y_test = generate_mnist_dataset()        
+        self.image_size = (32, 32, 3)
+        self.num_unique_classes = len(self.y_train[0])
+
+    def eval(self):
+        return self.model.evaluate(self.x_test, self.y_test)

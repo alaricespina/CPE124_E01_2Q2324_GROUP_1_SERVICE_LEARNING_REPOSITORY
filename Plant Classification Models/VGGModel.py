@@ -8,12 +8,10 @@ from keras.layers import Dense, Flatten, Conv2D, MaxPooling2D, Dropout
 from keras.models import Sequential 
 
 from BaseClassifier import BaseClassifier
-import numpy as np 
 
 class VGG19Model(BaseClassifier):
     def __init__(self, model_name = "VGG19MODEL"):
         super().__init__(model_name = model_name)
-        self.checkpoint_path = "Training Checkpoints/" + self.model_name
 
     def prepare_model(self):
         dense_units = 64

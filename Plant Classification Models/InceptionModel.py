@@ -39,7 +39,7 @@ class InceptionV3Model(BaseClassifier):
 
         y4 = Conv2D(32, (1, 1), strides = (1, 1), padding="same", activation = "relu")(x)
 
-        res = concatenate([y1, y2, y3, y4], axis=3)
+        res = concatenate([y1, y2, y3, y4])
         return res  
 
     @classmethod
@@ -48,8 +48,22 @@ class InceptionV3Model(BaseClassifier):
 
     @classmethod 
     def inceptionB_block(x):
-        y1 = Conv
-        pass 
+        y1 = Conv2D(32, (1, 1), strides = (1, 1), padding="same", activation = "relu")(x)
+        y1 = Conv2D(32, (7, 1), strides = (1, 1), padding="same", activation = "relu")(y1)
+        y1 = Conv2D(32, (1, 7), strides = (1, 1), padding="same", activation = "relu")(y1)
+        y1 = Conv2D(32, (7, 1), strides = (1, 1), padding="same", activation = "relu")(y1)
+        y1 = Conv2D(32, (1, 7), strides = (1, 1), padding="same", activation = "relu")(y1)
+
+        y2 = Conv2D(32, (1, 1), strides = (1, 1), padding="same", activation = "relu")(x)
+        y2 = Conv2D(32, (1, 7), strides = (1, 1), padding="same", activation = "relu")(y2)
+        y2 = Conv2D(32, (7, 1), strides = (1, 1), padding="same", activation = "relu")(y2)
+
+        y3 = AveragePooling2D(pool_size = (3, 3))(x)
+
+        y4 = Conv2D(32, (1, 1), strides = (1, 1), padding="same", activation = "relu")(x)
+
+        res = concatenate([y1, y2, y3, y4])
+        return res 
 
     @classmethod 
     def auxilary_classifier_block(x):
@@ -61,6 +75,8 @@ class InceptionV3Model(BaseClassifier):
 
     @classmethod
     def inceptionC_block(x):
+        y1 = Conv2D(32, (1, 1), strides = (1, 1), padding="same", activation = "relu")(x)
+        y1 = Conv2D(32, (3, 3), strides = (1, 1), padding="same", activation = "relu")(x)
         pass
 
 

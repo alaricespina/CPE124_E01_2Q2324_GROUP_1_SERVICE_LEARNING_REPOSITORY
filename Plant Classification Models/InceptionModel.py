@@ -76,7 +76,10 @@ class InceptionV3Model(BaseClassifier):
     @classmethod
     def inceptionC_block(x):
         y1 = Conv2D(32, (1, 1), strides = (1, 1), padding="same", activation = "relu")(x)
-        y1 = Conv2D(32, (3, 3), strides = (1, 1), padding="same", activation = "relu")(x)
+        y1 = Conv2D(32, (3, 3), strides = (1, 1), padding="same", activation = "relu")(y1)
+        y1_1 = Conv2D(32, (1, 3), strides = (1, 1), padding="same", activation = "relu")(y1)
+        y1_2 = Conv2D(32, (1, 3), strides = (1, 1), padding="same", activation = "relu")(y1)
+
         pass
 
 

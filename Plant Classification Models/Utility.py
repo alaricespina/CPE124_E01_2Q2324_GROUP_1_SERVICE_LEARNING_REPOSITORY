@@ -26,13 +26,13 @@ def expand_single_dimension_images_array(input_array, bias_array = [1, 1, 1]):
     
     return np.array(res_array)
 
-def generate_mnist_dataset(show_dimensions = True):
+def generate_mnist_dataset(show_dimensions = True, image_size = (32, 32)):
     # MNIST from KERAS
     (x_train, y_train), (x_test, y_test) = load_data()
 
     # Resize to 32 x 32 (Uses OpenCV)
-    resized_x_train = resize_images_array(x_train, (32, 32))
-    resized_x_test = resize_images_array(x_test, (32, 32))
+    resized_x_train = resize_images_array(x_train, image_size)
+    resized_x_test = resize_images_array(x_test, image_size)
 
     # Single to Multiple - Expansion
     stacked_x_train = expand_single_dimension_images_array(resized_x_train)

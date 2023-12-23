@@ -2,6 +2,8 @@ import cv2
 import numpy as np 
 from keras.datasets.mnist import load_data
 from keras.utils import to_categorical
+from sklearn.datasets import load_digits
+from sklearn.model_selection import train_test_split
 
 # Resize Images, can accept list or np array with target size as ((Width, Height))
 def resize_images_array(input_array, target_size):
@@ -26,9 +28,20 @@ def expand_single_dimension_images_array(input_array, bias_array = [1, 1, 1]):
     
     return np.array(res_array)
 
-def generate_mnist_dataset(show_dimensions = True, image_size = (32, 32)):
+def generate_mnist_dataset(show_dimensions = True, image_size = (32, 32), mode = "tf"):
+
+    if mode != "tf" and mode != "scikit":
+        raise ValueError("Undefined MNIST Dataset Source")
+    
     # MNIST from KERAS
-    (x_train, y_train), (x_test, y_test) = load_data()
+    if mode == "tf":
+        (x_train, y_train), (x_test, y_test) = load_data()
+
+    if mode == "scikit":
+        raw_x, raw_y = load_digits(return_X_y=True)
+        x_train, x_test, y_train, y_test = train_test_split(raw_x, raw_y, test_size = 0.14)
+    
+        
 
     # Resize to 32 x 32 (Uses OpenCV)
     resized_x_train = resize_images_array(x_train, image_size)

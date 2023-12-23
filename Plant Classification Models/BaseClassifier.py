@@ -80,9 +80,9 @@ class BaseClassifier():
 
         return res, np.argmax(res, axis=-1)
     
-    def prepare_data(self, image_size = (32, 32)):
+    def prepare_data(self, image_size = (32, 32), dataset_mode = "tf"):
         # Assign Class Properties for Model Building
-        self.x_train, self.x_test, self.y_train, self.y_test = generate_mnist_dataset()        
+        self.x_train, self.x_test, self.y_train, self.y_test = generate_mnist_dataset(image_size = image_size, mode = dataset_mode)        
         self.image_size = (image_size[0], image_size[1], 3)
         self.num_unique_classes = len(self.y_train[0])
 

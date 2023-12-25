@@ -32,7 +32,7 @@ if __name__ == "__main__":
         print(model.model_name)
         model.prepare_data(image_size = (32, 32), dataset_mode="scikit")
         model.prepare_model()
-        model.fit_data(desired_size = 32, epochs = 5, ckpt_metric = "val_accuracy", ckpt_mode = "max")
+        model.fit_data(desired_size = 32, epochs = 10, ckpt_metric = "val_accuracy", ckpt_mode = "max")
         print("Done Training")
 
 

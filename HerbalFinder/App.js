@@ -24,6 +24,7 @@ export default function App() {
   return (
     <View style={styles.backgroundContainer}>
       <ImageBackground
+        // Should be relative path
         source={require('C:/Users/KHYLE MATTHEW/Documents/ReactNat/HerbalFinder/pics/PNGtree.png')} // Change Source if Needed
         style={styles.backgroundImage}
       >

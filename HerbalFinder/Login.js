@@ -8,18 +8,23 @@ import {
   Alert
 } from 'react-native';
 
+import { ngrok_link } from './Consts'
+
 const ShowAlertMessage = (title, message) => {
     Alert.alert(title, message, [
       {text: 'OK', onPress: () => console.log('OK Pressed')},
     ]);
   }
 
+
 const GetAccountAPI = async (username, password) => {
-  const response = await fetch('http://192.168.254.109:4000/login', {
+  console.log(ngrok_link.concat("/login"))
+  const response = await fetch(ngrok_link.concat("/login"), {
     method: 'POST',
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning' : true
     },
     body: JSON.stringify({
       'username': username,

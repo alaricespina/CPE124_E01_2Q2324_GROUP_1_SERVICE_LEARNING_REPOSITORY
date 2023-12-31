@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
+import { ngrok_link } from './Consts';
+
 const ShowAlertMessage = (title, message) => {
   Alert.alert(title, message, [
     {text: 'OK', onPress: () => console.log('OK Pressed')},
@@ -8,11 +10,12 @@ const ShowAlertMessage = (title, message) => {
 }
 
 const GetAccountAPI = async (username, email, password) => {
-  const response = await fetch('http://192.168.254.109:4000/signup', {
+  const response = await fetch(ngrok_link.concat('/signup'), {
     method: 'POST',
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning' : true
     },
     body: JSON.stringify({
       'username': username,

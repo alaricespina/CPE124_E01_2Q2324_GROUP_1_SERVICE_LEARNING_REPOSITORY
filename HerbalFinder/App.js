@@ -4,6 +4,8 @@ import { StyleSheet, View, Image, ImageBackground, Text, TouchableOpacity } from
 import Login from './Login'; // Login
 import SignUp from './SignUp'; // Sign Up
 
+
+
 export default function App() {
   // State to manage whether to show the login or sign-up screen
   const [showLogin, setShowLogin] = useState(false);
@@ -25,12 +27,12 @@ export default function App() {
     <View style={styles.backgroundContainer}>
       <ImageBackground
         // Should be relative path
-        source={require('C:/Users/KHYLE MATTHEW/Documents/ReactNat/HerbalFinder/pics/PNGtree.png')} // Change Source if Needed
+        source={require('./pics/PNGtree.png')} // Change Source if Needed
         style={styles.backgroundImage}
       >
         <View style={styles.container}>
           <Image
-            source={require('C:/Users/KHYLE MATTHEW/Documents/ReactNat/HerbalFinder/pics/HBLogo.png')} // Change Source if Needed
+            source={require('./pics/HBLogo.png')} // Change Source if Needed
             style={styles.logo}
           />
           {/* Show either the welcome screen, login screen, or sign-up screen based on the state */}

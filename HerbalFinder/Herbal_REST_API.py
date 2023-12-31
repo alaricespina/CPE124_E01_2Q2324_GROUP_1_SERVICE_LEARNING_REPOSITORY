@@ -26,7 +26,6 @@ def CheckAccount():
 
 #EDIT FOR SIGNUP
 @app.route('/signup', methods = ['POST'])
-
 def SignUpAccount():
     f = open(filename)
     db = json.load(f)
@@ -53,5 +52,11 @@ def SignUpAccount():
     print(jsonify(response))
     return jsonify(response)
 
+# Testing
+@app.route('/test', methods = ['GET'])
+def test_connection():
+    response = {"text" : "Hello World"}
+    return jsonify(response)
+
 if __name__ == '__main__':
-    app.run(host='192.168.254.109', port=4000)
+    app.run(host="0.0.0.0", port=4000)

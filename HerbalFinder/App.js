@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Image, ImageBackground, Text, TouchableOpacity } from 'react-native';
-import Login from './Login'; // Login
-import SignUp from './SignUp'; // Sign Up
+import Login from './page_designs/Login'; // Login
+import SignUp from './page_designs/SignUp'; // Sign Up
+import { NavigationContainer } from '@react-navigation/native';
 
 
 
@@ -24,38 +25,40 @@ export default function App() {
   };
 
   return (
-    <View style={styles.backgroundContainer}>
-      <ImageBackground
-        // Should be relative path
-        source={require('./pics/PNGtree.png')} // Change Source if Needed
-        style={styles.backgroundImage}
-      >
-        <View style={styles.container}>
-          <Image
-            source={require('./pics/HBLogo.png')} // Change Source if Needed
-            style={styles.logo}
-          />
-          {/* Show either the welcome screen, login screen, or sign-up screen based on the state */}
-          {showLogin ? (
-            <Login onToggleLogin={toggleLogin} />
-          ) : showSignUp ? (
-            <SignUp onToggleSignUp={toggleSignUp} />
-          ) : (
-            <>
-              <Text style={styles.welcomeText}>Welcome!</Text>
-              <StatusBar style="auto" />
-              {/* Buttons to toggle between the welcome screen, login screen, and sign-up screen */}
-              <TouchableOpacity style={styles.button} onPress={toggleLogin}>
-                <Text style={styles.buttonText}>Login</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={toggleSignUp}>
-                <Text style={styles.buttonText}>Sign Up</Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
-      </ImageBackground>
-    </View>
+    <NavigationContainer>
+      <View style={styles.backgroundContainer}>
+        <ImageBackground
+          // Should be relative path
+          source={require('./pics/PNGtree.png')} // Change Source if Needed
+          style={styles.backgroundImage}
+        >
+          <View style={styles.container}>
+            <Image
+              source={require('./pics/HBLogo.png')} // Change Source if Needed
+              style={styles.logo}
+            />
+            {/* Show either the welcome screen, login screen, or sign-up screen based on the state */}
+            {showLogin ? (
+              <Login onToggleLogin={toggleLogin} />
+            ) : showSignUp ? (
+              <SignUp onToggleSignUp={toggleSignUp} />
+            ) : (
+              <>
+                <Text style={styles.welcomeText}>Welcome!</Text>
+                <StatusBar style="auto" />
+                {/* Buttons to toggle between the welcome screen, login screen, and sign-up screen */}
+                <TouchableOpacity style={styles.button} onPress={toggleLogin}>
+                  <Text style={styles.buttonText}>Login</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={toggleSignUp}>
+                  <Text style={styles.buttonText}>Sign Up</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </ImageBackground>
+      </View>
+    </NavigationContainer>
   );
 }
 

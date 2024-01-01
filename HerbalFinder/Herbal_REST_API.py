@@ -3,10 +3,9 @@ from flask import Flask, request, json, jsonify
 app = Flask(__name__)
 
 #Filename of the JSON database
-filename = 'accounts.json'
+filename = 'data/accounts.json'
 
 @app.route('/login', methods = ['POST'])
-
 def CheckAccount():
     f = open(filename)
     db = json.load(f)

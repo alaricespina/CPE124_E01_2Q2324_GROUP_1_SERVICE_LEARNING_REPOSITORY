@@ -4,6 +4,7 @@ import {React, useState} from 'react';
 // import SignUp from './page_designs/SignUp'; // Sign Up
 import WelcomeScreen from './page_designs/Welcome'; //Welcome
 import LoginScreen from './page_designs/Login' //Login
+import SignUpScreen from './page_designs/SignUp';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StyleSheet, View, Image, ImageBackground, Text, TouchableOpacity, Button, Touchable, TextInput } from 'react-native';
@@ -23,8 +24,12 @@ const NavStack = createNativeStackNavigator();
 
 const App = () => {
   console.log("Compiled");
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   return (
+    
     <NavigationContainer>
       <NavStack.Navigator screenOptions={{headerShown: false}}>
         <NavStack.Screen
@@ -34,6 +39,10 @@ const App = () => {
         <NavStack.Screen 
         name = "LoginScreen"
         component = {LoginScreen} 
+        />
+        <NavStack.Screen 
+        name = "SignUpScreen"
+        component = {SignUpScreen} 
         />
         </NavStack.Navigator>
     </NavigationContainer>

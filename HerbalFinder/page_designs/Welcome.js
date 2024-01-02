@@ -17,7 +17,7 @@ const WelcomeScreen = ({navigation}) => {
             <TouchableOpacity onPress= {() => navigation.navigate('LoginScreen')} className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center">
                 <Text className="text-white text-base font-bold">Login</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress= {() => navigation.navigate('LoginScreen') }className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center">
+            <TouchableOpacity onPress= {() => navigation.navigate('SignUpScreen') }className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center">
                 <Text className="text-white text-base font-bold">Sign Up</Text>
             </TouchableOpacity>
             </View>

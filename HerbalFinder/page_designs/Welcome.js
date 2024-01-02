@@ -11,7 +11,7 @@ const WelcomeScreen = ({navigation}) => {
 
         <ImageBackground source= {require("../pics/PNGtree.png")} className="flex-1 object-cover">
 
-            <View className="bg-black flex-1 bg-transparent items-center justify-center">
+            <View className="flex-1 bg-transparent items-center justify-center">
             <Image source={require('../pics/HBLogo.png')} className="w-96 h-52 object-scale-down rounded-xl ml-5"></Image>
             <Text className="text-white text-2xl mb-6">Welcome!</Text>
             <TouchableOpacity onPress= {() => navigation.navigate('LoginScreen')} className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center">

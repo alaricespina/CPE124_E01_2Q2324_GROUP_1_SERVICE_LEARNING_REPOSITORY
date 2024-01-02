@@ -1,15 +1,13 @@
-import React from 'react';
+import {React, useState} from 'react';
 
 // import Login from './page_designs/Login'; // Login
 // import SignUp from './page_designs/SignUp'; // Sign Up
 import WelcomeScreen from './page_designs/Welcome'; //Welcome
-import LoginScreen from './page_designs/LoginTest' //Login
+import LoginScreen from './page_designs/Login' //Login
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StyleSheet, View, Image, ImageBackground, Text, TouchableOpacity, Button, Touchable } from 'react-native';
+import { StyleSheet, View, Image, ImageBackground, Text, TouchableOpacity, Button, Touchable, TextInput } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-
-
 
 const NavStack = createNativeStackNavigator();
 
@@ -27,7 +25,6 @@ const App = () => {
   console.log("Compiled");
 
   return (
-    
     <NavigationContainer>
       <NavStack.Navigator screenOptions={{headerShown: false}}>
         <NavStack.Screen

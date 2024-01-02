@@ -1,3 +1,6 @@
+import { ngrok_link } from '../Consts'
+import { Alert } from 'react-native';
+
 const ShowAlertMessage = (title, message) => {
     Alert.alert(title, message, [
       {text: 'OK', onPress: () => console.log('OK Pressed')},
@@ -40,8 +43,12 @@ const MatchHandler = (response) => {
 }
 
 const handleLogin = (username, password) => {
+  console.log("Username: " + username + "\nPassword: " + password)
+
     // // Login Authentication Logic Using Local JSON
   GetAccountAPI(username, password).then((response) => {
     MatchHandler(response['match']);
   });
 };
+
+export default handleLogin;

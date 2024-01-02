@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import HandleSignUp from '../page_logic/SignUp';
 
-import { ngrok_link } from '../Consts';
+
 
 
 
@@ -40,8 +42,8 @@ const SignUpScreen = ({ navigation }) => {
           onChangeText={(text) => setPassword(text)}
           />
 
-          <TouchableOpacity onPress= {() => {console.log("Username: " + username + "\nEmail: " + email +"\nPassword: " + password)}} className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center">
-            <Text className="text-white text-base font-bold">Login</Text>
+          <TouchableOpacity onPress= {() => HandleSignUp(username, email, password) } className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center">
+            <Text className="text-white text-base font-bold">Sign Up</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress= {() => navigation.navigate('WelcomeScreen') }className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center">
             <Text className="text-white text-base font-bold">Back to Welcome</Text>

@@ -37,6 +37,12 @@
             "id": "5",
             "password": "1234",
             "username": "HATDOG"
+        },
+        "6": {
+            "email": "B",
+            "id": "6",
+            "password": "C",
+            "username": "A"
         }
     }
 }

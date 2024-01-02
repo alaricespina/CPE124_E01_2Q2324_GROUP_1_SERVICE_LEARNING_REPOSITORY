@@ -9,9 +9,6 @@ import {
 } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
-
-
-
 import handleLogin from '../page_logic/Login';
 
 

@@ -7,7 +7,7 @@ import LoginScreen from './page_designs/Login' //Login
 import SignUpScreen from './page_designs/SignUp';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator} from '@react-navigation/native-stack';
-import { StyleSheet, View, Image, ImageBackground, Text, TouchableOpacity, Button, Touchable, TextInput } from 'react-native';
+import { StyleSheet, View, Image, ImageBackground, Text, TouchableOpacity, Button, Touchable, TextInput, Pressable } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { TransitionSpecs, CardStyleInterpolators } from '@react-navigation/stack';
 
@@ -26,26 +26,48 @@ const App = () => {
   console.log(Date() + " - Compiled");
 
   return (
-    <View className="flex-1 bg-zinc-900">
-      <NavigationContainer>
-        <NavStack.Navigator screenOptions={{headerShown: false}}>
-          <NavStack.Screen
-            name = "WelcomeScreen"
-            component = {WelcomeScreen}        
-          />
-          <NavStack.Screen 
-          name = "LoginScreen"
-          component = {LoginScreen} 
-          
-          />
-          <NavStack.Screen 
-          name = "SignUpScreen"
-          component = {SignUpScreen} 
-          
-          />
-          </NavStack.Navigator>
-      </NavigationContainer>
+    <View className="flex-1 bg-black">
+      <View className ="flex-1 flex-row bg-zinc-900 bottom-0 absolute w-full p-4 h-1/2">
+        <Pressable className="w-1/5 items-center">
+          <Text className="text-white text-[8px]">Speech</Text>
+        </Pressable>
+        <Pressable className="w-1/5 items-center">
+          <Text className="text-white text-[8px]">Search</Text>
+        </Pressable>
+        <Pressable className="w-1/5 items-center">
+          <Text className="text-white text-[8px]">Camera</Text>
+        </Pressable>
+        <Pressable className="w-1/5 items-center">
+          <Text className="text-white text-[8px]">Home</Text>
+        </Pressable>
+        <Pressable className="w-1/5 items-center">
+          <Text className="text-white text-[8px]">Settings</Text>
+        </Pressable>        
+
+      </View>
+      <StatusBar style="auto"/>
     </View>
+    
+    // <View className="flex-1 bg-zinc-900">
+    //   <NavigationContainer>
+    //     <NavStack.Navigator screenOptions={{headerShown: false}}>
+    //       <NavStack.Screen
+    //         name = "WelcomeScreen"
+    //         component = {WelcomeScreen}        
+    //       />
+    //       <NavStack.Screen 
+    //       name = "LoginScreen"
+    //       component = {LoginScreen} 
+          
+    //       />
+    //       <NavStack.Screen 
+    //       name = "SignUpScreen"
+    //       component = {SignUpScreen} 
+          
+    //       />
+    //       </NavStack.Navigator>
+    //   </NavigationContainer>
+    // </View>
   );
 };
 

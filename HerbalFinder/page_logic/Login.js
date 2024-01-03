@@ -25,7 +25,7 @@ const GetAccountAPI = async (username, password) => {
   });
   return await response.json();
 }
-const MatchHandler = (response) => {
+const MatchHandler = (response, navigation) => {
   if (response == undefined) {
     return
   }
@@ -34,6 +34,7 @@ const MatchHandler = (response) => {
     if (response == true) {
       console.log("Successfully Logged In"); //Insert App Main Function Prompt
       ShowAlertMessage('Login', 'Successfully Logged In!');
+      navigation.navigate("MainScreen")
     }
     else {
       console.log("Try Again"); //Insert Message in App to Try Again
@@ -42,12 +43,12 @@ const MatchHandler = (response) => {
   }
 }
 
-const handleLogin = (username, password) => {
+const handleLogin = (username, password, navigation) => {
   console.log("Username: " + username + "\nPassword: " + password)
 
     // // Login Authentication Logic Using Local JSON
   GetAccountAPI(username, password).then((response) => {
-    MatchHandler(response['match']);
+    MatchHandler(response['match'], navigation);
   });
 };
 

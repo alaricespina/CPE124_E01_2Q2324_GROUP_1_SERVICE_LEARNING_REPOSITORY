@@ -39,7 +39,7 @@ const LoginScreen = ({ navigation }) => {
           onChangeText={(text) => setPassword(text)}
           />
 
-          <TouchableOpacity onPress= {() => handleLogin(username, password)} className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center">
+          <TouchableOpacity onPress= {() => handleLogin(username, password, navigation)} className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center">
             <Text className="text-white text-base font-bold">Login</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress= {() => navigation.navigate('WelcomeScreen') }className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center">

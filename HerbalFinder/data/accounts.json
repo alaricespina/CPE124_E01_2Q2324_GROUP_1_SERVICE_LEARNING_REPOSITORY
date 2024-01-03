@@ -43,6 +43,12 @@
             "id": "6",
             "password": "C",
             "username": "A"
+        },
+        "7": {
+            "email": "remixdd@gmail.com",
+            "id": "7",
+            "password": "Xdd123",
+            "username": "Remilia"
         }
     }
 }

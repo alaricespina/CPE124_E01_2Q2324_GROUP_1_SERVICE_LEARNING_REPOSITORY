@@ -31,6 +31,24 @@
             "id": "4",
             "password": "cirno123",
             "username": "Cirno"
+        },
+        "5": {
+            "email": "alaric@gmail.com",
+            "id": "5",
+            "password": "1234",
+            "username": "HATDOG"
+        },
+        "6": {
+            "email": "B",
+            "id": "6",
+            "password": "C",
+            "username": "A"
+        },
+        "7": {
+            "email": "remixdd@gmail.com",
+            "id": "7",
+            "password": "Xdd123",
+            "username": "Remilia"
         }
     }
 }

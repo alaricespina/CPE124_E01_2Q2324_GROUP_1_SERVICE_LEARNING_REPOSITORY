@@ -123,13 +123,12 @@ const HomeScreen_Re = () => {
       <TouchableOpacity className="z-10 absolute w-48 h-48 bg-[#1E1D1D] left-1/2 -ml-24 -bottom-4 rounded-full">
         <View className="bg-transparent w-full items-center h-full mt-3">
           <MaterialCommunityIcons name="image" size={25} color="#FFF"/>
-        </View>
-        
+        </View>        
       </TouchableOpacity>
 
       <View className="z-30 absolute w-24 h-24 bg-[#090E05] left-1/2 bottom-8 -ml-12 rounded-full">
-
       </View>
+
       <TouchableOpacity className="z-40 absolute w-20 h-20 bg-emerald-400 left-1/2 bottom-10 -ml-10 rounded-full items-center justify-center">
         <MaterialCommunityIcons name="camera" size={25} color="#000"/>
       </TouchableOpacity>
@@ -153,34 +152,128 @@ const HomeScreen_Re = () => {
       </View>
       <StatusBar style='auto'/>
     </View>
-    
   )
 }
 
 const SearchScreen_Re = () => {
   return (
-    <View>
-      <View>
-        <TextInput>
+    <View className="bg-[#090E05] w-full h-full">
+      <View className="absolute w-80 h-12 top-12 left-1/2 -ml-40">   
+        <View className="absolute h-full items-center justify-center ml-2">
+          <MaterialCommunityIcons  name="magnify" size={30} color="#FFF"/>
+        </View>
+        <TextInput
+        placeholder='Search'
+        placeholderTextColor="white"
+        className = "absolute border-2 w-full h-full border-white rounded-lg pl-12 text-white"
+        />
+      </View>
+      
+      <View className="absolute w-80 h-20 left-1/2 -ml-40 top-32 flex-row">
+        <View className="h-full bg-[#2F2F2F] w-36 items-center justify-center rounded-lg">
+          <Text className="text-white">Sambong</Text>
+        </View>
+        <View className="h-full bg-[#2F2F2F] w-36 items-center justify-center rounded-lg ml-4">
+          <Text className="text-white">Oregano</Text>
+        </View>
+        <View className="h-full bg-[#2F2F2F] w-36 items-center justify-center rounded-lg ml-4">
+          <Text className="text-white">Ampalaya</Text>
+        </View>
+      </View>
 
-        </TextInput>
+      <View className="absolute w-80 h-44 left-1/2 -ml-40 top-60 flex-row">
+        <View className="h-full bg-[#2F2F2F] w-36 rounded-lg">
+          <View className="h-2/3 w-full bg-green-300 rounded-t-lg"></View>
+          <View className="h-1/3 w-full items-center justify-center">
+            <Text className="text-white">For Cough</Text>
+          </View>
+        </View>
+        <View className="h-full bg-[#2F2F2F] w-36 items-center justify-center rounded-lg ml-8">
+        <View className="h-2/3 w-full bg-green-500 rounded-t-lg"></View>
+          <View className="h-1/3 w-full items-center justify-center">
+            <Text className="text-white">For Colds</Text>
+          </View>
+        </View>
       </View>
-      <View>
-        <Text> List of recent inputs</Text>
+
+      <View className="absolute w-80 h-44 left-1/2 -ml-40 bottom-36 flex-row">
+      <View className="h-full bg-[#2F2F2F] w-36 rounded-lg">
+          <View className="h-2/3 w-full bg-green-700 rounded-t-lg"></View>
+          <View className="h-1/3 w-full items-center justify-center">
+            <Text className="text-white">For Allergies</Text>
+          </View>
+        </View>
+        <View className="h-full bg-[#2F2F2F] w-36 items-center justify-center rounded-lg ml-8">
+        <View className="h-2/3 w-full bg-green-900 rounded-t-lg"></View>
+          <View className="h-1/3 w-full items-center justify-center">
+            <Text className="text-white">For Asthma</Text>
+          </View>
+        </View>
       </View>
-      <View>
-        <Text> Gallery of different categories for each plant</Text>
+
+
+
+      <View className="z-30 absolute w-24 h-24 bg-[#090E05] left-1/2 bottom-8 -ml-12 rounded-full">
       </View>
+      
+      <TouchableOpacity className="z-40 absolute w-20 h-20 bg-emerald-400 left-1/2 bottom-10 -ml-10 rounded-full items-center justify-center">
+        <MaterialCommunityIcons name="image" size={25} color="#000"/>
+      </TouchableOpacity>
+
+      <View className="z-20 absolute bottom-0 left-0 right-0 bg-[#2F2F2F] w-full h-20 rounded-full flex-row">
+        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
+          <MaterialCommunityIcons name="home-variant" size={30} color="#FFF"/>
+        </TouchableOpacity>
+        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
+          <MaterialCommunityIcons name="magnify" size={30} color="#FFF"/>
+        </TouchableOpacity>
+        <View className="w-1/5 bg-transparent">
+
+        </View>
+        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
+          <MaterialCommunityIcons name="camera" size={30} color="#FFF"/>
+        </TouchableOpacity>
+        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
+          <MaterialIcons name="person" size={30} color="#FFF"/>
+        </TouchableOpacity>
+      </View>
+      <StatusBar style='auto'/>
     </View>
   )
 }
 
 const ScannerScreen_Re = () => {
   return (
-    <View>
-      <View>
-        <Text>Center Scanner</Text>
+    <View className="bg-[#090E05] w-full h-full">
+      <View className="flex-1 items-center justify-center">
+        <MaterialCommunityIcons name="line-scan" size={250} color="#FFF"/>
       </View>
+
+      <View className="z-30 absolute w-24 h-24 bg-[#090E05] left-1/2 bottom-8 -ml-12 rounded-full">
+      </View>
+      
+      <TouchableOpacity className="z-40 absolute w-20 h-20 bg-emerald-400 left-1/2 bottom-10 -ml-10 rounded-full items-center justify-center">
+        <MaterialCommunityIcons name="image" size={25} color="#000"/>
+      </TouchableOpacity>
+
+      <View className="z-20 absolute bottom-0 left-0 right-0 bg-[#2F2F2F] w-full h-20 rounded-full flex-row">
+        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
+          <MaterialCommunityIcons name="home-variant" size={30} color="#FFF"/>
+        </TouchableOpacity>
+        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
+          <MaterialCommunityIcons name="magnify" size={30} color="#FFF"/>
+        </TouchableOpacity>
+        <View className="w-1/5 bg-transparent">
+
+        </View>
+        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
+          <MaterialCommunityIcons name="camera" size={30} color="#FFF"/>
+        </TouchableOpacity>
+        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
+          <MaterialIcons name="person" size={30} color="#FFF"/>
+        </TouchableOpacity>
+      </View>
+      <StatusBar style='auto'/>
     </View>
   )
 }
@@ -245,7 +338,7 @@ const PostScanScreen_Re = () => {
 const App = () => {
   console.log(Date() + " - Compiled");
 
-  return HomeScreen_Re()
+  return ScannerScreen_Re()
 };
 
 export default App;

@@ -18,6 +18,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 
 
+
 const NavStack = createNativeStackNavigator();
 //const Tab = createBottomTabNavigator();
 
@@ -246,7 +247,8 @@ const ScannerScreen_Re = () => {
   return (
     <View className="bg-[#090E05] w-full h-full">
       <View className="flex-1 items-center justify-center">
-        <MaterialCommunityIcons name="line-scan" size={250} color="#FFF"/>
+        <Image source={require("./scan-line.png")}/>
+        <Text className="text-white">Hatdog</Text>
       </View>
 
       <View className="z-30 absolute w-24 h-24 bg-[#090E05] left-1/2 bottom-8 -ml-12 rounded-full">
@@ -338,7 +340,7 @@ const PostScanScreen_Re = () => {
 const App = () => {
   console.log(Date() + " - Compiled");
 
-  return ScannerScreen_Re()
+  return AccountScreen_Re()
 };
 
 export default App;

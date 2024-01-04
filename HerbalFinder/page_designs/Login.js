@@ -1,16 +1,8 @@
 import {React,  useState } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  ImageBackground,
-  Image
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
 import handleLogin from '../page_logic/Login';
-
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');

@@ -282,24 +282,86 @@ const ScannerScreen_Re = () => {
 
 const AccountScreen_Re = () => {
   return (
-    <View>
-      <View>
-        <Text> Big Ass Picture </Text>
+    <View className="w-full h-full bg-black">
+
+      <View className="h-1/2 bg-green-500 rounded-2xl">
+        <View className="items-center pt-14"> 
+          <View className="flex-row pb-3">
+            <MaterialIcons name="person" size={30} color="#FFF"/>
+            <Text className="text-white text-xl font-bold"> My Account </Text>
+          </View>
+          <View className="rounded-full bg-green-600 flex items-center justify-center">
+            <MaterialIcons name="person" size={180} color="#FFF"/>
+          </View>
+          <Text className="font-bold text-xl text-white">User Name</Text>
+          <Text className="font-bold text-xs text-white">juandelacruz@mymail.mapua.edu.ph</Text>
+        </View>
       </View>
-      <View>
-        <MaterialCommunityIcons name="person" color="#FFFFFF"/>
-        <Text> My Account </Text>
+
+      <View className="flex-row pt-8 justify-center">
+        <View className="pl-2 pr-2 place-content-center">
+          <TouchableOpacity className="items-center bg-[#2F2F2F80] px-4 py-4 rounded-2xl border-solid border-2 border-transparent">
+            <MaterialIcons name="settings" size={40} color="#FFF"/>
+            <Text className="pt-1 text-white text-xs">Settings</Text>
+          </TouchableOpacity>
+        </View>
+        <View className="pl-2 pr-2">
+          <TouchableOpacity className="items-center bg-[#2F2F2F80] px-4 py-4 rounded-2xl border-solid border-2 border-transparent">
+            <MaterialIcons name="person" size={40} color="#FFF"/>
+            <Text className="pt-1 text-white text-xs">Profile</Text>
+          </TouchableOpacity>
+        </View>
+        <View className="pl-2 pr-2">
+          <TouchableOpacity className="items-center bg-[#2F2F2F80] px-4 py-4 rounded-2xl border-solid border-2 border-transparent">
+            <MaterialIcons name="help" size={40} color="#FFF"/>
+            <Text className="pt-1 text-white text-xs">About Us</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View>
-        <Text>Big Ass Profile Picture</Text>
-        <Text>Username</Text>
-        <Text>email</Text>
+
+      <View className="items-center pt-4">
+        <View className="w-5/6 bg-[#2F2F2F80] rounded-2xl items-center">
+          <Text className="text-white text-lg font-medium">Your Favorite Plants</Text>
+          <View className="flex-row">
+            <View className="flex-column items-center pl-4 pr-4">
+              <TouchableOpacity className="w-12 h-12 bg-red-500 rounded-full"></TouchableOpacity>
+              <Text className="text-white text-xs italic">Hatdog</Text>
+            </View>
+            <View className="flex-column items-center pl-4 pr-4">
+              <TouchableOpacity className="w-12 h-12 bg-blue-500 rounded-full"></TouchableOpacity>
+              <Text className="text-white text-xs italic">Longganisa</Text>
+            </View>
+            <View className="flex-column items-center pl-4 pr-4">
+              <TouchableOpacity className="w-12 h-12 bg-green-500 rounded-full"></TouchableOpacity>
+              <Text className="text-white text-xs italic">Longgadog</Text>
+            </View>
+          </View>
+        </View>
       </View>
-      <View>
-        <Text>Picture of something I know that you dont know</Text>
-        <Text>Did you know?</Text>
-        <Text>No I dont know</Text>
+
+      <TouchableOpacity className="z-40 absolute w-20 h-20 bg-emerald-400 left-1/2 bottom-10 -ml-10 rounded-full items-center justify-center">
+        <MaterialCommunityIcons name="camera" size={25} color="#000"/>
+      </TouchableOpacity>
+
+      <View className="z-20 absolute bottom-0 left-0 right-0 bg-[#2F2F2F] w-full h-20 rounded-full flex-row">
+        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
+          <MaterialCommunityIcons name="home-variant" size={30} color="#FFF"/>
+        </TouchableOpacity>
+        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
+          <MaterialCommunityIcons name="magnify" size={30} color="#FFF"/>
+        </TouchableOpacity>
+        <View className="w-1/5 bg-transparent">
+
+        </View>
+        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
+          <MaterialCommunityIcons name="line-scan" size={30} color="#FFF"/>
+        </TouchableOpacity>
+        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
+          <MaterialIcons name="person" size={30} color="#FFF"/>
+        </TouchableOpacity>
       </View>
+      <StatusBar style='auto'/>
+
     </View>
   )
 }

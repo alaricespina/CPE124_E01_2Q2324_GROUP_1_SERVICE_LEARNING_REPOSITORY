@@ -1,7 +1,7 @@
 import {React, useState} from 'react';
 
-// import Login from './page_designs/Login'; // Login
-// import SignUp from './page_designs/SignUp'; // Sign Up
+//import Login from './page_designs/Login'; // Login
+//import SignUp from './page_designs/SignUp'; // Sign Up
 import WelcomeScreen from './page_designs/Welcome'; //Welcome
 import LoginScreen from './page_designs/Login' //Login
 import SignUpScreen from './page_designs/SignUp';

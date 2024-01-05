@@ -319,20 +319,22 @@ const AccountScreen_Re = () => {
         </View>
       </View>
 
-      <View className="items-center pt-4">
-        <View className="w-5/6 bg-[#2F2F2F80] rounded-2xl items-center">
-          <Text className="text-white text-lg font-medium">Your Favorite Plants</Text>
-          <View className="flex-row">
-            <View className="flex-column items-center pl-4 pr-4">
-              <TouchableOpacity className="w-12 h-12 bg-red-500 rounded-full"></TouchableOpacity>
+      <View className="w-full items-center h-20">
+        <View className="mt-4 w-5/6 bg-[#2F2F2F80] rounded-2xl items-center h-full">
+          <Text className="text-white text-lg font-medium h-1/3">Your Favorite Plants</Text>
+          <View className="flex-row w-full h-2/3">
+            <View className="items-center w-1/4 h-full">
+              <TouchableOpacity className="h-3/4 aspect-square bg-red-500 rounded-full"></TouchableOpacity>
               <Text className="text-white text-xs italic">Hatdog</Text>
             </View>
-            <View className="flex-column items-center pl-4 pr-4">
-              <TouchableOpacity className="w-12 h-12 bg-blue-500 rounded-full"></TouchableOpacity>
+            
+            <View className="items-center w-1/4 h-full">
+              <TouchableOpacity className="h-3/4 aspect-square bg-blue-500 rounded-full"></TouchableOpacity>
               <Text className="text-white text-xs italic">Longganisa</Text>
             </View>
-            <View className="flex-column items-center pl-4 pr-4">
-              <TouchableOpacity className="w-12 h-12 bg-green-500 rounded-full"></TouchableOpacity>
+            
+            <View className="items-center w-1/4 h-full">
+              <TouchableOpacity className="h-3/4 aspect-square bg-green-500 rounded-full"></TouchableOpacity>
               <Text className="text-white text-xs italic">Longgadog</Text>
             </View>
           </View>
@@ -402,7 +404,7 @@ const PostScanScreen_Re = () => {
 const App = () => {
   console.log(Date() + " - Compiled");
 
-  return AccountScreen_Re()
+  return SearchScreen_Re()
 };
 
 export default App;

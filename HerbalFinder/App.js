@@ -368,13 +368,16 @@ const AccountScreen_Re = () => {
 
 const AboutUs_Re = () => {
   return (
-    <View className="bg-[#090E05] w-full h-full">
-      <View className="flex-1 items-center justify-center">
-        {/* Inserted logo */}
-        <Image source={require('./pics/HBLogo.png')} style={{ width: 150, height: 120, marginBottom: 20 }} />
+    <ImageBackground
+      source={require('C:/Users/radon/Herbal/CPE124_E01_2Q2324_GROUP_1_SERVICE_LEARNING_REPOSITORY/HerbalFinder/pics/PNG_AboutUs.png')}
+      style={{ flex: 1, resizeMode: 'cover', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,1.00)' }}
+    >
+      <View className="items-center justify-center">
+        {/* Herbal Finder Logo */}
+        <Image source={require('./pics/HBLogo.png')} style={{ width: 150, height: 120, marginBottom: 20}} />
 
         <Text className="text-white text-3xl font-bold mb-6">About Us</Text>
-        <View className="w-4/5 bg-[#2F2F2F80] rounded-2xl p-8 mb-[20%]">
+        <View className="w-4/5 bg-[#2F2F2F90] rounded-2xl p-[10%] mb-[20%]">
           <Text className="text-white text-base mb-4">
             Welcome to our Herbal Finder App! We are here to provide valuable information
             and promote the use of herbal plants.
@@ -395,7 +398,7 @@ const AboutUs_Re = () => {
       >
         <Text className="text-white text-lg font-bold">Back to Home</Text>
       </TouchableOpacity>
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -438,7 +441,7 @@ const PostScanScreen_Re = () => {
 const App = () => {
   console.log(Date() + " - Compiled");
 
-  return AboutUs_Re()
+  return AccountScreen_Re()
 };
 
 export default App;

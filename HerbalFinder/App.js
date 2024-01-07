@@ -277,8 +277,9 @@ const ScannerScreen_Re = () => {
       </View>
       <StatusBar style='auto'/>
     </View>
-  )
-}
+  );
+};
+
 
 const AccountScreen_Re = () => {
   return (
@@ -320,8 +321,8 @@ const AccountScreen_Re = () => {
       </View>
 
       <View className="items-center pt-4">
-        <View className="w-5/6 bg-[#2F2F2F80] rounded-2xl items-center">
-          <Text className="text-white text-lg font-medium">Your Favorite Plants</Text>
+        <View className="h-2/5 w-4/5 bg-[#2F2F2F80] rounded-2xl items-center">
+          <Text className="text-white text-lg font-medium mt-[4%] mb-[5%]">Your Favorite Plants</Text>
           <View className="flex-row">
             <View className="flex-column items-center pl-4 pr-4">
               <TouchableOpacity className="w-12 h-12 bg-red-500 rounded-full"></TouchableOpacity>
@@ -363,8 +364,9 @@ const AccountScreen_Re = () => {
       <StatusBar style='auto'/>
 
     </View>
-  )
-}
+  );
+};
+
 
 const AboutUs_Re = () => {
   return (
@@ -396,12 +398,11 @@ const AboutUs_Re = () => {
       <TouchableOpacity
         className="z-40 absolute w-full h-16 bg-[#008000] bottom-0 items-center justify-center"
       >
-        <Text className="text-white text-lg font-bold">Back to Home</Text>
+        <Text className="text-black text-xl font-bold">Back to Home</Text>
       </TouchableOpacity>
     </ImageBackground>
   );
 };
-
 
 
 
@@ -441,7 +442,7 @@ const PostScanScreen_Re = () => {
 const App = () => {
   console.log(Date() + " - Compiled");
 
-  return AccountScreen_Re()
+  return AboutUs_Re()
 };
 
 export default App;

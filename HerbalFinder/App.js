@@ -377,6 +377,7 @@ const SettingScreen_Re = () => {
   const toggleEmailSwitch = () => emailIsEnabled(previousState => !previousState);
   const toggleReminderSwitch = () => reminderIsEnabled(previousState => !previousState);
   const toggleLocationSwitch = () => locationIsEnabled(previousState => !previousState);
+  
   return (
     <View className="w-full h-full bg-black">
       <View className="w-full h-1/4 bg-green-600">

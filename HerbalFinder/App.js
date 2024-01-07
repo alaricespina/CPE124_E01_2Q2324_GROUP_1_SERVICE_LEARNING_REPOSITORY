@@ -383,7 +383,7 @@ const SettingScreen_Re = () => {
       <View className="w-full h-1/4 bg-green-600">
         <Text className="mt-12 ml-3 text-white font-bold text-3xl">Settings</Text>
       </View>
-      <View className="w-full h-1/2 flex-column">
+      <View className="w-full h-1/2 flex-column mt-[2%]">
         <View className="w-full flex-row ml-[16%]">
           <MaterialCommunityIcons name="bell" size={35} color="#FFF"/>
           <View className="mr-5"></View>
@@ -396,7 +396,6 @@ const SettingScreen_Re = () => {
       ios_backgroundColor="#3e3e3e"
       onValueChange={toggleNotificationSwitch}
       value={isNotificationEnabled}/>
-          
         </View>
 
         <View className="my-1.5"></View>
@@ -447,9 +446,11 @@ const SettingScreen_Re = () => {
         value={isLocationEnabled}/>
         </View>
       </View>
+
       <TouchableOpacity className="w-[90%] ml-[5%] mr-[5%] py-2 rounded-lg bg-[#008000] mt-[20%] items-center justify-center">
         <Text className="text-black text-xl font-bold">Back to Home</Text>
       </TouchableOpacity>
+
     </View>
   )
 }

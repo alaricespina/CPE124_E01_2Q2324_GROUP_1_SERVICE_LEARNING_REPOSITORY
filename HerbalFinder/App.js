@@ -7,7 +7,7 @@ import LoginScreen from './page_designs/Login' //Login
 import SignUpScreen from './page_designs/SignUp';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator} from '@react-navigation/native-stack';
-import { StyleSheet, View, Image, ImageBackground, Text, TouchableOpacity, Button, Touchable, TextInput, Pressable } from 'react-native';
+import { Switch, StyleSheet, View, Image, ImageBackground, Text, TouchableOpacity, Button, Touchable, TextInput, Pressable } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 //import { TransitionSpecs, CardStyleInterpolators } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -326,14 +326,17 @@ const AccountScreen_Re = () => {
           <View className="flex-row">
             <View className="flex-column items-center pl-4 pr-4">
               <TouchableOpacity className="w-12 h-12 bg-red-500 rounded-full"></TouchableOpacity>
+      
               <Text className="text-white text-xs italic">Hatdog</Text>
             </View>
-            <View className="flex-column items-center pl-4 pr-4">
-              <TouchableOpacity className="w-12 h-12 bg-blue-500 rounded-full"></TouchableOpacity>
+            
+            <View className="items-center w-1/4 h-full">
+              <TouchableOpacity className="h-3/4 aspect-square bg-blue-500 rounded-full"></TouchableOpacity>
               <Text className="text-white text-xs italic">Longganisa</Text>
             </View>
-            <View className="flex-column items-center pl-4 pr-4">
-              <TouchableOpacity className="w-12 h-12 bg-green-500 rounded-full"></TouchableOpacity>
+            
+            <View className="items-center w-1/4 h-full">
+              <TouchableOpacity className="h-3/4 aspect-square bg-green-500 rounded-full"></TouchableOpacity>
               <Text className="text-white text-xs italic">Longgadog</Text>
             </View>
           </View>
@@ -406,6 +409,93 @@ const AboutUs_Re = () => {
 
 
 
+const SettingScreen_Re = () => {
+  const [isNotificationEnabled, notificationIsEnabled] = useState(false);
+  const [isEmailEnabled, emailIsEnabled] = useState(false);
+  const [isReminderEnabled, reminderIsEnabled] = useState(false);
+  const [isLocationEnabled, locationIsEnabled] = useState(false);
+  const toggleNotificationSwitch = () => notificationIsEnabled(previousState => !previousState);
+  const toggleEmailSwitch = () => emailIsEnabled(previousState => !previousState);
+  const toggleReminderSwitch = () => reminderIsEnabled(previousState => !previousState);
+  const toggleLocationSwitch = () => locationIsEnabled(previousState => !previousState);
+  
+  return (
+    <View className="w-full h-full bg-black">
+      <View className="w-full h-1/4 bg-green-600">
+        <Text className="mt-12 ml-3 text-white font-bold text-3xl">Settings</Text>
+      </View>
+      <View className="w-full h-1/2 flex-column mt-[2%]">
+        <View className="w-full flex-row ml-[16%]">
+          <MaterialCommunityIcons name="bell" size={35} color="#FFF"/>
+          <View className="mr-5"></View>
+          <View className="flex-column w-[40%]">
+            <Text className="text-lg font-bold text-white">Notification</Text>
+            <Text className="text-xs text-white font-light">Caption...</Text>
+          </View>
+        <Switch trackColor={{false: '#767577', true: '#0ae0a0'}}
+      thumbColor={isNotificationEnabled ? '#008000' : '#f4f3f4'}
+      ios_backgroundColor="#3e3e3e"
+      onValueChange={toggleNotificationSwitch}
+      value={isNotificationEnabled}/>
+        </View>
+
+        <View className="my-1.5"></View>
+
+        <View className="w-full flex-row ml-[16%]">
+          <MaterialCommunityIcons name="email" size={35} color="#FFF"/>
+          <View className="mr-5"></View>
+          <View className="flex-column w-[40%]">
+            <Text className="text-lg font-bold text-white">Email Updates</Text>
+            <Text className="text-xs text-white font-light">Caption...</Text>
+          </View>
+          <Switch trackColor={{false: '#767577', true: '#0ae0a0'}}
+        thumbColor={isEmailEnabled ? '#008000' : '#f4f3f4'}
+        ios_backgroundColor="#3e3e3e"
+        onValueChange={toggleEmailSwitch}
+        value={isEmailEnabled}/>
+        </View>
+
+        <View className="my-1.5"></View>
+
+        <View className="w-full flex-row ml-[16%]">
+          <MaterialCommunityIcons name="reminder" size={35} color="#FFF"/>
+          <View className="mr-5"></View>
+          <View className="flex-column w-[40%]">
+            <Text className="text-lg font-bold text-white">Reminders</Text>
+            <Text className="text-xs text-white font-light">Caption...</Text>
+          </View>
+          <Switch trackColor={{false: '#767577', true: '#0ae0a0'}}
+        thumbColor={isReminderEnabled ? '#008000' : '#f4f3f4'}
+        ios_backgroundColor="#3e3e3e"
+        onValueChange={toggleReminderSwitch}
+        value={isReminderEnabled}/>
+        </View>
+
+        <View className="my-1.5"></View>
+
+        <View className="w-full flex-row ml-[16%]">
+          <MaterialCommunityIcons name="navigation" size={35} color="#FFF"/>
+          <View className="mr-5"></View>
+          <View className="flex-column w-[40%]">
+            <Text className="text-lg font-bold text-white">Share Location</Text>
+            <Text className="text-xs text-white font-light">Caption...</Text>
+          </View>
+          <Switch trackColor={{false: '#767577', true: '#0ae0a0'}}
+        thumbColor={isLocationEnabled ? '#008000' : '#f4f3f4'}
+        ios_backgroundColor="#3e3e3e"
+        onValueChange={toggleLocationSwitch}
+        value={isLocationEnabled}/>
+        </View>
+      </View>
+
+      <TouchableOpacity className="w-[90%] ml-[5%] mr-[5%] py-2 rounded-lg bg-[#008000] mt-[20%] items-center justify-center">
+        <Text className="text-black text-xl font-bold">Back to Home</Text>
+      </TouchableOpacity>
+
+    </View>
+  )
+}
+
 const PostScanScreen_Re = () => {
   return (
     <View>
@@ -442,7 +532,9 @@ const PostScanScreen_Re = () => {
 const App = () => {
   console.log(Date() + " - Compiled");
 
+
   return AboutUs_Re()
+
 };
 
 export default App;

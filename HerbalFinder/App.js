@@ -7,14 +7,16 @@ import LoginScreen from './page_designs/Login' //Login
 import SignUpScreen from './page_designs/SignUp';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator} from '@react-navigation/native-stack';
-import { Switch, StyleSheet, View, Image, ImageBackground, Text, TouchableOpacity, Button, Touchable, TextInput, Pressable } from 'react-native';
+import { Switch, StyleSheet, View, Image, ImageBackground, Text, TouchableOpacity, Button, Touchable, TextInput, Pressable, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 //import { TransitionSpecs, CardStyleInterpolators } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { LinearGradient } from 'expo-linear-gradient'
+import { LinearGradient } from 'expo-linear-gradient';
 import MainScreen from './page_designs/MainScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaskedView from '@react-native-masked-view/masked-view';
+
 
 
 
@@ -59,7 +61,7 @@ const MainScreenNavigator = () => {
 
 const HomeScreen_Re = () => {
   return (
-    <View className="bg-[#090E05] w-full h-full">
+    <>
       <View className="absolute bg-green-800 w-full h-2/5 rounded-3xl" >
 
       </View>
@@ -121,44 +123,16 @@ const HomeScreen_Re = () => {
         </View>
       </View>
 
-      <TouchableOpacity className="z-10 absolute w-48 h-48 bg-[#1E1D1D] left-1/2 -ml-24 -bottom-4 rounded-full">
-        <View className="bg-transparent w-full items-center h-full mt-3">
-          <MaterialCommunityIcons name="image" size={25} color="#FFF"/>
-        </View>        
-      </TouchableOpacity>
-
-      <View className="z-30 absolute w-24 h-24 bg-[#090E05] left-1/2 bottom-8 -ml-12 rounded-full">
-      </View>
-
-      <TouchableOpacity className="z-40 absolute w-20 h-20 bg-emerald-400 left-1/2 bottom-10 -ml-10 rounded-full items-center justify-center">
-        <MaterialCommunityIcons name="camera" size={25} color="#000"/>
-      </TouchableOpacity>
-
-      <View className="z-20 absolute bottom-0 left-0 right-0 bg-[#2F2F2F] w-full h-20 rounded-full flex-row">
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialCommunityIcons name="home-variant" size={30} color="#FFF"/>
-        </TouchableOpacity>
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialCommunityIcons name="magnify" size={30} color="#FFF"/>
-        </TouchableOpacity>
-        <View className="w-1/5 bg-transparent">
-
-        </View>
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialCommunityIcons name="line-scan" size={30} color="#FFF"/>
-        </TouchableOpacity>
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialIcons name="person" size={30} color="#FFF"/>
-        </TouchableOpacity>
-      </View>
-      <StatusBar style='auto'/>
-    </View>
+      
+      
+      
+    </>
   )
 }
 
 const SearchScreen_Re = () => {
   return (
-    <View className="bg-[#090E05] w-full h-full">
+    <>
       <View className="absolute w-80 h-12 top-12 left-1/2 -ml-40">   
         <View className="absolute h-full items-center justify-center ml-2">
           <MaterialCommunityIcons  name="magnify" size={30} color="#FFF"/>
@@ -211,79 +185,26 @@ const SearchScreen_Re = () => {
           </View>
         </View>
       </View>
-
-
-
-      <View className="z-30 absolute w-24 h-24 bg-[#090E05] left-1/2 bottom-8 -ml-12 rounded-full">
-      </View>
-      
-      <TouchableOpacity className="z-40 absolute w-20 h-20 bg-emerald-400 left-1/2 bottom-10 -ml-10 rounded-full items-center justify-center">
-        <MaterialCommunityIcons name="image" size={25} color="#000"/>
-      </TouchableOpacity>
-
-      <View className="z-20 absolute bottom-0 left-0 right-0 bg-[#2F2F2F] w-full h-20 rounded-full flex-row">
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialCommunityIcons name="home-variant" size={30} color="#FFF"/>
-        </TouchableOpacity>
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialCommunityIcons name="magnify" size={30} color="#FFF"/>
-        </TouchableOpacity>
-        <View className="w-1/5 bg-transparent">
-
-        </View>
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialCommunityIcons name="camera" size={30} color="#FFF"/>
-        </TouchableOpacity>
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialIcons name="person" size={30} color="#FFF"/>
-        </TouchableOpacity>
-      </View>
-      <StatusBar style='auto'/>
-    </View>
+    </>
+    
   )
 }
 
 const ScannerScreen_Re = () => {
   return (
-    <View className="bg-[#090E05] w-full h-full">
-      <View className="flex-1 items-center justify-center">
-        <Image source={require("./scan-line.png")}/>
-        <Text className="text-white">Hatdog</Text>
-      </View>
-
-      <View className="z-30 absolute w-24 h-24 bg-[#090E05] left-1/2 bottom-8 -ml-12 rounded-full">
-      </View>
-      
-      <TouchableOpacity className="z-40 absolute w-20 h-20 bg-emerald-400 left-1/2 bottom-10 -ml-10 rounded-full items-center justify-center">
-        <MaterialCommunityIcons name="image" size={25} color="#000"/>
-      </TouchableOpacity>
-
-      <View className="z-20 absolute bottom-0 left-0 right-0 bg-[#2F2F2F] w-full h-20 rounded-full flex-row">
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialCommunityIcons name="home-variant" size={30} color="#FFF"/>
-        </TouchableOpacity>
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialCommunityIcons name="magnify" size={30} color="#FFF"/>
-        </TouchableOpacity>
-        <View className="w-1/5 bg-transparent">
-
+    <>
+        <View className="absolute h-full w-full items-center justify-center">
+          <Image source={require("./scan-line.png")}/>
+          <Text className="text-white">Hatdog</Text>
         </View>
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialCommunityIcons name="camera" size={30} color="#FFF"/>
-        </TouchableOpacity>
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialIcons name="person" size={30} color="#FFF"/>
-        </TouchableOpacity>
-      </View>
-      <StatusBar style='auto'/>
-    </View>
+    </>
   );
 };
 
-
 const AccountScreen_Re = () => {
   return (
-    <View className="w-full h-full bg-black">
+    <>
+    
 
       <View className="h-1/2 bg-green-500 rounded-2xl">
         <View className="items-center pt-14"> 
@@ -343,38 +264,19 @@ const AccountScreen_Re = () => {
         </View>
       </View>
 
-      <TouchableOpacity className="z-40 absolute w-20 h-20 bg-emerald-400 left-1/2 bottom-10 -ml-10 rounded-full items-center justify-center">
-        <MaterialCommunityIcons name="camera" size={25} color="#000"/>
-      </TouchableOpacity>
 
-      <View className="z-20 absolute bottom-0 left-0 right-0 bg-[#2F2F2F] w-full h-20 rounded-full flex-row">
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialCommunityIcons name="home-variant" size={30} color="#FFF"/>
-        </TouchableOpacity>
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialCommunityIcons name="magnify" size={30} color="#FFF"/>
-        </TouchableOpacity>
-        <View className="w-1/5 bg-transparent">
 
-        </View>
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialCommunityIcons name="line-scan" size={30} color="#FFF"/>
-        </TouchableOpacity>
-        <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center">
-          <MaterialIcons name="person" size={30} color="#FFF"/>
-        </TouchableOpacity>
-      </View>
-      <StatusBar style='auto'/>
 
-    </View>
+
+
+      </>
   );
 };
-
 
 const AboutUs_Re = () => {
   return (
     <ImageBackground
-      source={require('C:/Users/radon/Herbal/CPE124_E01_2Q2324_GROUP_1_SERVICE_LEARNING_REPOSITORY/HerbalFinder/pics/PNG_AboutUs.png')}
+      source={require('./pics/PNG_AboutUs.png')}
       style={{ flex: 1, resizeMode: 'cover', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,1.00)' }}
     >
       <View className="items-center justify-center">
@@ -406,8 +308,6 @@ const AboutUs_Re = () => {
     </ImageBackground>
   );
 };
-
-
 
 const SettingScreen_Re = () => {
   const [isNotificationEnabled, notificationIsEnabled] = useState(false);
@@ -529,14 +429,144 @@ const PostScanScreen_Re = () => {
   )
 }
 
+const handleMenuButtonsPressed = (buttonVar, setButtonVar, button, otherSetButtonsVars) => {
+  console.log("Start Function")
+  for (f in otherSetButtonsVars) {
+    console.log(otherSetButtonsVars[f])
+    otherSetButtonsVars[f](false)
+  }
+  console.log("Button pressed is: " + button)
+  console.log(buttonVar)
+  setButtonVar(!buttonVar)
+  console.log(buttonVar)
+}
+
+const handleScreenDisplay = (home, search, scan, account) => {
+  if (home) {
+    return HomeScreen_Re()
+  } else if (search) {
+    return SearchScreen_Re()
+  } else if (scan) {
+    return ScannerScreen_Re()
+  } else if (account) {
+    return (<></>)
+  } else {
+    return (<></>)
+  }
+  
+}
+
+const MaterialCommunityGradientIcon = (iconName, gradientStart, gradientEnd, defaultColor, monitoringVariable) => {
+  return (
+    <MaskedView className="flex-1 flex-row h-full w-full bg-transparent items-center justify-center"
+      maskElement={
+        <View className="w-full h-full items-center justify-center">
+          <MaterialCommunityIcons name={iconName} size={24} color={monitoringVariable ? "#FFF" : "#0F0"}/>
+        </View>            
+      }
+    >
+      <LinearGradient 
+      colors={monitoringVariable ? [gradientStart, gradientEnd] : [defaultColor, defaultColor] } 
+      className="w-full h-full items-center justify-center"
+      start={{x:0.5, y:0}}
+      end = {{x:0.5, y:0.9}}
+      />
+      </MaskedView>
+  )
+}
+
+const MaterialGradientIcon = (iconName, gradientStart, gradientEnd, defaultColor, monitoringVariable) => {
+  return (
+    <MaskedView className="flex-1 flex-row h-full w-full bg-transparent items-center justify-center"
+      maskElement={
+        <View className="w-full h-full items-center justify-center">
+          <MaterialIcons name={iconName} size={24} color={monitoringVariable ? "#FFF" : "#0F0"}/>
+        </View>            
+      }
+    >
+      <LinearGradient 
+      colors={monitoringVariable ? [gradientStart, gradientEnd] : [defaultColor, defaultColor] } 
+      className="w-full h-full items-center justify-center"
+      start={{x:0.5, y:0}}
+      end = {{x:0.5, y:0.9}}
+      />
+      </MaskedView>
+  )
+}
+
+const BigAssCircle = () => {
+  return (
+    <>
+      <TouchableOpacity className="z-10 absolute w-[calc(200/375*100%)] left-[calc(50%-200/375/2*100%)] aspect-square bg-[#1E1D1D] bottom-[-4%] rounded-full">
+        <View className="bg-transparent w-full items-center h-full mt-3">
+          <MaterialCommunityIcons name="image" size={25} color="#FFF"/>
+        </View>        
+      </TouchableOpacity>
+
+      
+    </>
+  )
+}
+
 const App = () => {
   console.log(Date() + " - Compiled");
+  var [homeSelected, setHomeSelected] = useState(true)
+  var [searchSelected, setSearchSelected] = useState(false)
+  var [scannerSelected, setScannerSelected] = useState(false)
+  var [accountSelected, setAccountSelected] = useState(false)
 
   return (
-    <View className="flex-1 bg-slate-700 items-center justify-center">
-      <View className="w-1/2 bg-blue-500 h-[69%]">
-      </View>
+    <View className="flex relative w-full h-full bg-[#090E05]">
+
+          
+    {handleScreenDisplay(homeSelected, searchSelected, scannerSelected, accountSelected)}
+
+    {homeSelected ? BigAssCircle() : <></>}
+
+
+
+    <View className="z-20 fixed w-[calc(90/375*100%)] aspect-square bg-[#090E05] left-[calc(50%-90/375/2*100%)] top-[84.5%] bottom-0 rounded-full">
     </View>
+
+    <View className="z-30 fixed w-[calc(80/375*100%)] aspect-square left-[calc(50%-80/375/2*100%)] top-[72.75%] mt-0 rounded-full">
+      <TouchableOpacity className="w-full h-full">
+        <LinearGradient start={{x:0.25, y:0.25}} end = {{x:0.75, y:0.6}} colors={["#008000", "#2AAA8A"]} className="w-full h-full rounded-full items-center justify-center">
+          <MaterialCommunityIcons name="camera" size={25} color="#000"/>
+        </LinearGradient>        
+      </TouchableOpacity>
+    </View>
+
+    <View className="z-10 fixed left-0 right-0 bg-[#2F2F2F] w-full h-[calc(75/812*100%)] top-[129%] rounded-full flex-row">
+      <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(homeSelected, setHomeSelected, "HOME", [setSearchSelected, setScannerSelected, setAccountSelected])}>
+        <View className="w-full h-full">
+          {MaterialCommunityGradientIcon("home-variant", "#75E00A", "#0AE0A0", "#FFF", homeSelected)}
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(searchSelected, setSearchSelected, "SEARCH", [setHomeSelected, setSearchSelected, setAccountSelected])}>
+        <View className="w-full h-full">
+          {MaterialCommunityGradientIcon("magnify", "#75E00A", "#0AE0A0", "#FFF", searchSelected)}
+        </View>
+      </TouchableOpacity>
+      <View className="w-1/5 bg-transparent">
+      </View>
+      <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(scannerSelected, setScannerSelected, "SCANNER", [setSearchSelected, setHomeSelected, setAccountSelected])}>
+        <View className="w-full h-full">
+          {MaterialCommunityGradientIcon("line-scan", "#75E00A", "#0AE0A0", "#FFF", scannerSelected)}
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(accountSelected, setAccountSelected, "ACCOUNT", [setSearchSelected, setScannerSelected, setHomeSelected])}>
+        <View className="w-full h-full">
+          {MaterialGradientIcon("person", "#75E00A", "#0AE0A0", "#FFF", accountSelected)}
+        </View>
+      </TouchableOpacity>
+    </View>
+
+
+
+    <StatusBar style='auto'/>
+    </View>
+
+    
   )
 };
 

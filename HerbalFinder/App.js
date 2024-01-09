@@ -277,8 +277,9 @@ const ScannerScreen_Re = () => {
       </View>
       <StatusBar style='auto'/>
     </View>
-  )
-}
+  );
+};
+
 
 const AccountScreen_Re = () => {
   return (
@@ -319,12 +320,13 @@ const AccountScreen_Re = () => {
         </View>
       </View>
 
-      <View className="w-full items-center h-20">
-        <View className="mt-4 w-5/6 bg-[#2F2F2F80] rounded-2xl items-center h-full">
-          <Text className="text-white text-lg font-medium h-1/3">Your Favorite Plants</Text>
-          <View className="flex-row w-full h-2/3">
-            <View className="items-center w-1/4 h-full">
-              <TouchableOpacity className="h-3/4 aspect-square bg-red-500 rounded-full"></TouchableOpacity>
+      <View className="items-center pt-4">
+        <View className="h-2/5 w-4/5 bg-[#2F2F2F80] rounded-2xl items-center">
+          <Text className="text-white text-lg font-medium mt-[4%] mb-[5%]">Your Favorite Plants</Text>
+          <View className="flex-row">
+            <View className="flex-column items-center pl-4 pr-4">
+              <TouchableOpacity className="w-12 h-12 bg-red-500 rounded-full"></TouchableOpacity>
+      
               <Text className="text-white text-xs italic">Hatdog</Text>
             </View>
             
@@ -365,8 +367,47 @@ const AccountScreen_Re = () => {
       <StatusBar style='auto'/>
 
     </View>
-  )
-}
+  );
+};
+
+
+const AboutUs_Re = () => {
+  return (
+    <ImageBackground
+      source={require('C:/Users/radon/Herbal/CPE124_E01_2Q2324_GROUP_1_SERVICE_LEARNING_REPOSITORY/HerbalFinder/pics/PNG_AboutUs.png')}
+      style={{ flex: 1, resizeMode: 'cover', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,1.00)' }}
+    >
+      <View className="items-center justify-center">
+        {/* Herbal Finder Logo */}
+        <Image source={require('./pics/HBLogo.png')} style={{ width: 150, height: 120, marginBottom: 20}} />
+
+        <Text className="text-white text-3xl font-bold mb-6">About Us</Text>
+        <View className="w-4/5 bg-[#2F2F2F90] rounded-2xl p-[10%] mb-[20%]">
+          <Text className="text-white text-base mb-4">
+            Welcome to our Herbal Finder App! We are here to provide valuable information
+            and promote the use of herbal plants.
+          </Text>
+          <Text className="text-white text-base mb-4">
+            Our mission is to educate users about various herbal plants, their benefits,
+            and how they can be used for different purposes, especially in natural remedies.
+          </Text>
+          <Text className="text-white text-base mb-4">
+            Do you have any questions or concerns? Feel free to reach out to us at HerbalNgInaMo@gmail.com.
+          </Text>
+        </View>
+      </View>
+
+      {/* "Back to Home" button with darker green color */}
+      <TouchableOpacity
+        className="z-40 absolute w-full h-16 bg-[#008000] bottom-0 items-center justify-center"
+      >
+        <Text className="text-black text-xl font-bold">Back to Home</Text>
+      </TouchableOpacity>
+    </ImageBackground>
+  );
+};
+
+
 
 const SettingScreen_Re = () => {
   const [isNotificationEnabled, notificationIsEnabled] = useState(false);
@@ -491,7 +532,9 @@ const PostScanScreen_Re = () => {
 const App = () => {
   console.log(Date() + " - Compiled");
 
-  return SettingScreen_Re()
+
+  return AboutUs_Re()
+
 };
 
 export default App;

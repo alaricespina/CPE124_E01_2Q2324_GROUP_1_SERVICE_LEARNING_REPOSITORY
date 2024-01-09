@@ -532,9 +532,12 @@ const PostScanScreen_Re = () => {
 const App = () => {
   console.log(Date() + " - Compiled");
 
-
-  return AboutUs_Re()
-
+  return (
+    <View className="flex-1 bg-slate-700 items-center justify-center">
+      <View className="w-1/2 bg-blue-500 h-[69%]">
+      </View>
+    </View>
+  )
 };
 
 export default App;

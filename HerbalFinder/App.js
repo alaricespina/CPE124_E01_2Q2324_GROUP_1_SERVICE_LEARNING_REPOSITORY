@@ -194,6 +194,7 @@ const SearchScreen_Re = () => {
 }
 
 const ScannerScreen_Re = (camera_obj) => {
+  const permission = MediaLibrary.requestPermissionsAsync(true)
   return (
     <>
         <View className="absolute z-10 h-full w-full items-center justify-center">

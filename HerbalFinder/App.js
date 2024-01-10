@@ -1,4 +1,4 @@
-import {React, useState} from 'react';
+import {React, useState, useEffect} from 'react';
 
 //import Login from './page_designs/Login'; // Login
 //import SignUp from './page_designs/SignUp'; // Sign Up
@@ -206,7 +206,7 @@ const AccountScreen_Re = () => {
     <>
     
 
-      <View className="h-1/2 bg-green-500 rounded-2xl">
+      <View className="absolute top-0 h-[calc(410/812*100%)] w-full left-0 right-0 bg-green-500 rounded-2xl">
         <View className="items-center pt-14"> 
           <View className="flex-row pb-3">
             <MaterialIcons name="person" size={30} color="#FFF"/>
@@ -220,45 +220,41 @@ const AccountScreen_Re = () => {
         </View>
       </View>
 
-      <View className="flex-row pt-8 justify-center">
-        <View className="pl-2 pr-2 place-content-center">
-          <TouchableOpacity className="items-center bg-[#2F2F2F80] px-4 py-4 rounded-2xl border-solid border-2 border-transparent">
+      <View className="absolute top-[calc(55%)] h-[calc(90/812*100%)]  w-full items-center">
+        <View className="w-4/5 h-full">
+          <TouchableOpacity className="absolute h-full left-0 aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => console.log("Settings Pressed")}>
             <MaterialIcons name="settings" size={40} color="#FFF"/>
-            <Text className="pt-1 text-white text-xs">Settings</Text>
+            <Text className="text-white text-xs">Settings</Text>
           </TouchableOpacity>
-        </View>
-        <View className="pl-2 pr-2">
-          <TouchableOpacity className="items-center bg-[#2F2F2F80] px-4 py-4 rounded-2xl border-solid border-2 border-transparent">
+          <TouchableOpacity className="absolute h-full left-[35.5%]  aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => console.log("Profile Pressed")}>
             <MaterialIcons name="person" size={40} color="#FFF"/>
-            <Text className="pt-1 text-white text-xs">Profile</Text>
+            <Text className="text-white text-xs">Profile</Text>
           </TouchableOpacity>
-        </View>
-        <View className="pl-2 pr-2">
-          <TouchableOpacity className="items-center bg-[#2F2F2F80] px-4 py-4 rounded-2xl border-solid border-2 border-transparent">
+          <TouchableOpacity className="absolute h-full left-[71%] aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => console.log("Settings Pressed")}>
             <MaterialIcons name="help" size={40} color="#FFF"/>
-            <Text className="pt-1 text-white text-xs">About Us</Text>
+            <Text className="text-white text-xs">About Us</Text>
           </TouchableOpacity>
         </View>
       </View>
-
-      <View className="items-center pt-4">
-        <View className="h-2/5 w-4/5 bg-[#2F2F2F80] rounded-2xl items-center">
-          <Text className="text-white text-lg font-medium mt-[4%] mb-[5%]">Your Favorite Plants</Text>
-          <View className="flex-row">
-            <View className="flex-column items-center pl-4 pr-4">
-              <TouchableOpacity className="w-12 h-12 bg-red-500 rounded-full"></TouchableOpacity>
       
-              <Text className="text-white text-xs italic">Hatdog</Text>
+
+      <View className="absolute top-[calc(68%)] items-center w-full h-[41%]">
+        <View className="h-2/5 w-4/5 bg-[#2F2F2F80] rounded-2xl items-center">
+          <Text className="text-white text-s font-medium">Your Favorite Plants</Text>
+          <View className="w-4/5 h-3/5 mt-2">
+            <View className="absolute left-0 items-center w-1/3 h-full">
+              <TouchableOpacity className="h-3/4 aspect-square bg-red-500 rounded-full"></TouchableOpacity>
+              <Text className="text-white text-xs italic">Text 1</Text>
             </View>
             
-            <View className="items-center w-1/4 h-full">
+            <View className="absolute left-[33.5%] items-center w-1/3 h-full">
               <TouchableOpacity className="h-3/4 aspect-square bg-blue-500 rounded-full"></TouchableOpacity>
-              <Text className="text-white text-xs italic">Longganisa</Text>
+              <Text className="text-white text-xs italic">Text 2</Text>
             </View>
             
-            <View className="items-center w-1/4 h-full">
+            <View className="absolute left-[67%] items-center w-1/3 h-full">
               <TouchableOpacity className="h-3/4 aspect-square bg-green-500 rounded-full"></TouchableOpacity>
-              <Text className="text-white text-xs italic">Longgadog</Text>
+              <Text className="text-white text-xs italic">Text 3</Text>
             </View>
           </View>
         </View>
@@ -442,6 +438,8 @@ const handleMenuButtonsPressed = (buttonVar, setButtonVar, button, otherSetButto
 }
 
 const handleScreenDisplay = (home, search, scan, account) => {
+  console.log("Handle Screen Display")
+  console.log(account, settings)
   if (home) {
     return HomeScreen_Re()
   } else if (search) {
@@ -449,7 +447,8 @@ const handleScreenDisplay = (home, search, scan, account) => {
   } else if (scan) {
     return ScannerScreen_Re()
   } else if (account) {
-    return (<></>)
+    console.log("Displaying Account Screen")
+    return AccountScreen_Re()
   } else {
     return (<></>)
   }
@@ -457,41 +456,61 @@ const handleScreenDisplay = (home, search, scan, account) => {
 }
 
 const MaterialCommunityGradientIcon = (iconName, gradientStart, gradientEnd, defaultColor, monitoringVariable) => {
-  return (
-    <MaskedView className="flex-1 flex-row h-full w-full bg-transparent items-center justify-center"
-      maskElement={
-        <View className="w-full h-full items-center justify-center">
-          <MaterialCommunityIcons name={iconName} size={24} color={monitoringVariable ? "#FFF" : "#0F0"}/>
-        </View>            
-      }
-    >
-      <LinearGradient 
-      colors={monitoringVariable ? [gradientStart, gradientEnd] : [defaultColor, defaultColor] } 
-      className="w-full h-full items-center justify-center"
-      start={{x:0.5, y:0}}
-      end = {{x:0.5, y:0.9}}
-      />
-      </MaskedView>
-  )
+  if (monitoringVariable) {
+    return (
+
+        <MaskedView className="flex-1 flex-row h-full w-full bg-transparent items-center justify-center"
+        maskElement={
+          <View className="w-full h-full items-center justify-center">
+            <MaterialCommunityIcons name={iconName} size={24} color={"#0F0"}/>
+          </View>            
+        }
+      >
+        <LinearGradient 
+        colors={[gradientStart, gradientEnd]} 
+        className="w-full h-full items-center justify-center"
+        start={{x:0.5, y:0}}
+        end = {{x:0.5, y:0.9}}
+        />
+        </MaskedView>
+
+      
+    )
+  } else {
+    return (
+      <View className="w-full h-full items-center justify-center">
+        <MaterialCommunityIcons name={iconName} size={24} color={defaultColor}/>
+      </View>
+    )
+  }
+  
 }
 
 const MaterialGradientIcon = (iconName, gradientStart, gradientEnd, defaultColor, monitoringVariable) => {
-  return (
-    <MaskedView className="flex-1 flex-row h-full w-full bg-transparent items-center justify-center"
-      maskElement={
-        <View className="w-full h-full items-center justify-center">
-          <MaterialIcons name={iconName} size={24} color={monitoringVariable ? "#FFF" : "#0F0"}/>
-        </View>            
-      }
-    >
-      <LinearGradient 
-      colors={monitoringVariable ? [gradientStart, gradientEnd] : [defaultColor, defaultColor] } 
-      className="w-full h-full items-center justify-center"
-      start={{x:0.5, y:0}}
-      end = {{x:0.5, y:0.9}}
-      />
-      </MaskedView>
-  )
+  if (monitoringVariable) {
+    return (
+      <MaskedView className="flex-1 flex-row h-full w-full bg-transparent items-center justify-center"
+        maskElement={
+          <View className="w-full h-full items-center justify-center">
+            <MaterialIcons name={iconName} size={24} color={"#0F0"}/>
+          </View>            
+        }
+      >
+        <LinearGradient 
+        colors={[gradientStart, gradientEnd]} 
+        className="w-full h-full items-center justify-center"
+        start={{x:0.5, y:0}}
+        end = {{x:0.5, y:0.9}}
+        />
+        </MaskedView>
+    )
+  } else {
+    return (
+      <View className="w-full h-full items-center justify-center">
+        <MaterialIcons name={iconName} size={24} color={defaultColor}/>
+      </View>
+    )
+  }
 }
 
 const BigAssCircle = () => {
@@ -510,25 +529,33 @@ const BigAssCircle = () => {
 
 const App = () => {
   console.log(Date() + " - Compiled");
-  var [homeSelected, setHomeSelected] = useState(true)
+  
+  var [homeSelected, setHomeSelected] = useState(false)
   var [searchSelected, setSearchSelected] = useState(false)
   var [scannerSelected, setScannerSelected] = useState(false)
   var [accountSelected, setAccountSelected] = useState(false)
+  var [accountSettingsSelected, setAccountSettingsSelected] = useState(false)
+  var [accountProfileSelected, setAccountProfileSelected] = useState(false)
+  var [accountAboutSelected, setAccountAboutSelected] = useState(false)
+
 
   return (
     <View className="flex relative w-full h-full bg-[#090E05]">
 
-          
-    {handleScreenDisplay(homeSelected, searchSelected, scannerSelected, accountSelected)}
+    {handleScreenDisplay(
+      homeSelected, 
+      searchSelected, 
+      scannerSelected, 
+      accountSelected)}
 
     {homeSelected ? BigAssCircle() : <></>}
 
 
 
-    <View className="z-20 fixed w-[calc(90/375*100%)] aspect-square bg-[#090E05] left-[calc(50%-90/375/2*100%)] top-[84.5%] bottom-0 rounded-full">
+    <View className="z-20 absolute w-[calc(90/375*100%)] aspect-square bg-[#090E05] left-[calc(50%-90/375/2*100%)] bottom-[2.75%] rounded-full">
     </View>
 
-    <View className="z-30 fixed w-[calc(80/375*100%)] aspect-square left-[calc(50%-80/375/2*100%)] top-[72.75%] mt-0 rounded-full">
+    <View className="z-30 absolute w-[calc(80/375*100%)] aspect-square left-[calc(50%-80/375/2*100%)] bottom-[3.5%] mt-0 rounded-full">
       <TouchableOpacity className="w-full h-full">
         <LinearGradient start={{x:0.25, y:0.25}} end = {{x:0.75, y:0.6}} colors={["#008000", "#2AAA8A"]} className="w-full h-full rounded-full items-center justify-center">
           <MaterialCommunityIcons name="camera" size={25} color="#000"/>
@@ -536,7 +563,7 @@ const App = () => {
       </TouchableOpacity>
     </View>
 
-    <View className="z-10 fixed left-0 right-0 bg-[#2F2F2F] w-full h-[calc(75/812*100%)] top-[129%] rounded-full flex-row">
+    <View className="z-10 absolute left-0 right-0 bg-[#2F2F2F] w-full h-[calc(75/812*100%)] bottom-0 rounded-full flex-row">
       <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(homeSelected, setHomeSelected, "HOME", [setSearchSelected, setScannerSelected, setAccountSelected])}>
         <View className="w-full h-full">
           {MaterialCommunityGradientIcon("home-variant", "#75E00A", "#0AE0A0", "#FFF", homeSelected)}
@@ -556,7 +583,9 @@ const App = () => {
       </TouchableOpacity>
       <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(accountSelected, setAccountSelected, "ACCOUNT", [setSearchSelected, setScannerSelected, setHomeSelected])}>
         <View className="w-full h-full">
+          <>
           {MaterialGradientIcon("person", "#75E00A", "#0AE0A0", "#FFF", accountSelected)}
+          </>
         </View>
       </TouchableOpacity>
     </View>

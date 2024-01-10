@@ -283,7 +283,7 @@ const AccountScreen_Re = (_states, _setters, account_var) => {
 };
 
 const AboutUs_Re = (...args) => {
-  var [setAccountSelected, setAccountSettingsSelected] = args[0]
+  var [setAccountSelected, setAccountAboutSelected] = args[0]
   return (
     <ImageBackground
       source={require('./pics/PNG_AboutUs.png')}
@@ -313,7 +313,7 @@ const AboutUs_Re = (...args) => {
       <TouchableOpacity
         className="z-40 absolute w-full h-16 bg-[#008000] bottom-0 items-center justify-center"
         onPress={() => {
-          setAccountSettingsSelected(true)
+          setAccountAboutSelected(false)
           setAccountSelected(true)
         }}
       >
@@ -645,7 +645,7 @@ const App = () => {
       [accountSettingsSelected, accountProfileSelected, accountAboutSelected],
       [setAccountSettingsSelected, setAccountProfileSelected, setAccountAboutSelected],
       [isNotificationEnabled, notificationIsEnabled, isEmailEnabled, emailIsEnabled, isReminderEnabled, reminderIsEnabled, isLocationEnabled, locationIsEnabled, setAccountSelected, setAccountSettingsSelected],
-      [setAccountSelected, setAccountSettingsSelected])}
+      [setAccountSelected, setAccountAboutSelected])}
 
     {homeSelected ? BigAssCircle() : <></>}
     

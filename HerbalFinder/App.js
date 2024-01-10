@@ -16,6 +16,9 @@ import MainScreen from './page_designs/MainScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaskedView from '@react-native-masked-view/masked-view';
+import { Camera, CameraType, FlashMode } from 'expo-camera';
+
+import * as MediaLibrary from 'expo-media-library'
 
 
 
@@ -190,12 +193,26 @@ const SearchScreen_Re = () => {
   )
 }
 
-const ScannerScreen_Re = () => {
+const ScannerScreen_Re = (camera_obj) => {
   return (
     <>
-        <View className="absolute h-full w-full items-center justify-center">
-          <Image source={require("./scan-line.png")}/>
-          <Text className="text-white">Hatdog</Text>
+        <View className="absolute z-10 h-full w-full items-center justify-center">
+          <LinearGradient 
+          className="absolute z-30 w-full h-full"
+          colors={["transparent", "#000"]}
+          start={{x:0.5, y:0.65}}
+          end={{x:0.5, y:1.0}}
+          >
+          </LinearGradient>
+          <Camera 
+          ref={(ref) => camera_obj(ref)}
+          type={CameraType.back}
+          flashMode={FlashMode.auto} 
+          className="absolute z-20 h-full aspect-[3/4] items-center justify-center">
+            <Image source={require("./scan-line.png")}/>
+          </Camera>
+          <Text className="absolute z-30 text-white top-[70%]"> Scanner </Text>
+          
         </View>
     </>
   );
@@ -465,7 +482,7 @@ const handleMenuButtonsPressed = (buttonVar, setButtonVar, button, otherSetButto
   console.log(buttonVar)
 }
 
-const handleScreenDisplay = (home, search, scan, account, _account_states, _account_setters, settings_params, about_params) => {
+const handleScreenDisplay = (home, search, scan, account, _account_states, _account_setters, settings_params, about_params, camera_params) => {
   console.log("Handle Screen Display")
   console.log("Account States: " + _account_states)
   console.log("Settings Params -> " + settings_params)
@@ -474,7 +491,7 @@ const handleScreenDisplay = (home, search, scan, account, _account_states, _acco
   } else if (search) {
     return SearchScreen_Re()
   } else if (scan) {
-    return ScannerScreen_Re()
+    return ScannerScreen_Re(camera_params)
   } else if (account[0]) {
     console.log("Displaying Account Screen")
     return AccountScreen_Re(_account_states, _account_setters, account[1])
@@ -566,10 +583,28 @@ const BigAssCircle = () => {
   )
 }
 
+const take_picture = async (camera) => {
+  if (camera) {
+    const data = await camera.takePictureAsync(null);
+    console.log(data.uri);
+    await MediaLibrary.saveToLibraryAsync(data.uri)
+    console.log("data saved")
+  }
+}
+
+const handleCameraPressed = (buttonVar, setButtonVar, button, otherSetButtonsVars, camera_var) => {
+  if (buttonVar) {
+    console.log("Say Cheese")
+    take_picture(camera_var)
+  } else {
+    handleMenuButtonsPressed(buttonVar, setButtonVar, button, otherSetButtonsVars)
+  }
+}
+
 const NavBar = (...args) => {
   console.log("Navigation Bar Loaded")  
   console.log("Args ->" + args)
-  var [homeSelected, setHomeSelected, searchSelected, setSearchSelected, scannerSelected, setScannerSelected, accountSelected, setAccountSelected, accountSettingsSelected, accountProfileSelected, accountAboutSelected] = args[0]
+  var [homeSelected, setHomeSelected, searchSelected, setSearchSelected, scannerSelected, setScannerSelected, accountSelected, setAccountSelected, accountSettingsSelected, accountProfileSelected, accountAboutSelected, camera] = args[0]
   console.log("Home Selected: " + homeSelected)
   if (!accountSettingsSelected && !accountProfileSelected && !accountAboutSelected) {
     return (
@@ -578,7 +613,7 @@ const NavBar = (...args) => {
         </View>
   
         <View className="z-30 absolute w-[calc(80/375*100%)] aspect-square left-[calc(50%-80/375/2*100%)] bottom-[3.5%] mt-0 rounded-full">
-          <TouchableOpacity className="w-full h-full">
+          <TouchableOpacity className="w-full h-full" onPress={() => handleCameraPressed(scannerSelected, setScannerSelected, "SCANNER", [setSearchSelected, setHomeSelected, setAccountSelected], camera)}>
             <LinearGradient start={{x:0.25, y:0.25}} end = {{x:0.75, y:0.6}} colors={["#008000", "#2AAA8A"]} className="w-full h-full rounded-full items-center justify-center">
               <MaterialCommunityIcons name="camera" size={25} color="#000"/>
             </LinearGradient>        
@@ -591,7 +626,7 @@ const NavBar = (...args) => {
               {MaterialCommunityGradientIcon("home-variant", "#75E00A", "#0AE0A0", "#FFF", homeSelected)}
             </View>
           </TouchableOpacity>
-          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(searchSelected, setSearchSelected, "SEARCH", [setHomeSelected, setSearchSelected, setAccountSelected])}>
+          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(searchSelected, setSearchSelected, "SEARCH", [setHomeSelected, setScannerSelected, setAccountSelected])}>
             <View className="w-full h-full">
               {MaterialCommunityGradientIcon("magnify", "#75E00A", "#0AE0A0", "#FFF", searchSelected)}
             </View>
@@ -625,7 +660,7 @@ const App = () => {
   var [isEmailEnabled, emailIsEnabled] = useState(false);
   var [isReminderEnabled, reminderIsEnabled] = useState(false);
   var [isLocationEnabled, locationIsEnabled] = useState(false);
-
+  
   var [homeSelected, setHomeSelected] = useState(false)
   var [searchSelected, setSearchSelected] = useState(false)
   var [scannerSelected, setScannerSelected] = useState(false)
@@ -633,6 +668,7 @@ const App = () => {
   var [accountSettingsSelected, setAccountSettingsSelected] = useState(false)
   var [accountProfileSelected, setAccountProfileSelected] = useState(false)
   var [accountAboutSelected, setAccountAboutSelected] = useState(false)
+  var [camera, setCamera] = useState(null)
 
   return (
     <View className="flex relative w-full h-full bg-[#090E05]">
@@ -644,12 +680,24 @@ const App = () => {
       [accountSelected, setAccountSelected],
       [accountSettingsSelected, accountProfileSelected, accountAboutSelected],
       [setAccountSettingsSelected, setAccountProfileSelected, setAccountAboutSelected],
-      [isNotificationEnabled, notificationIsEnabled, isEmailEnabled, emailIsEnabled, isReminderEnabled, reminderIsEnabled, isLocationEnabled, locationIsEnabled, setAccountSelected, setAccountSettingsSelected],
-      [setAccountSelected, setAccountAboutSelected])}
+      [
+        isNotificationEnabled, notificationIsEnabled, 
+        isEmailEnabled, emailIsEnabled, 
+        isReminderEnabled, reminderIsEnabled, 
+        isLocationEnabled, locationIsEnabled, 
+        setAccountSelected, setAccountSettingsSelected],
+      [setAccountSelected, setAccountAboutSelected],
+      setCamera)}
 
     {homeSelected ? BigAssCircle() : <></>}
     
-    {NavBar([homeSelected, setHomeSelected, searchSelected, setSearchSelected, scannerSelected, setScannerSelected, accountSelected, setAccountSelected, accountSettingsSelected, accountProfileSelected, accountAboutSelected])}
+    {NavBar([
+      homeSelected, setHomeSelected, 
+      searchSelected, setSearchSelected, 
+      scannerSelected, setScannerSelected, 
+      accountSelected, setAccountSelected, 
+      accountSettingsSelected, accountProfileSelected, accountAboutSelected, 
+      camera])}
 
 
     <StatusBar style='auto'/>

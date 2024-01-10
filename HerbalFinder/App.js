@@ -201,11 +201,24 @@ const ScannerScreen_Re = () => {
   );
 };
 
-const AccountScreen_Re = () => {
+const HandleAccountButtonsPressed = (index, _setters, _ac_set) => {
+  console.log("Account Button Pressed")
+  _ac_set(false)
+  _setters[0](false)
+  _setters[1](false)
+  _setters[2](false)
+  _setters[index](true)
+
+}
+
+const AccountScreen_Re = (_states, _setters, account_var) => {
+  console.log("====== Account Screen ")
+  console.log(_states)
+  console.log(_setters)
+  console.log(account_var)
+  console.log("=====")
   return (
     <>
-    
-
       <View className="absolute top-0 h-[calc(410/812*100%)] w-full left-0 right-0 bg-green-500 rounded-2xl">
         <View className="items-center pt-14"> 
           <View className="flex-row pb-3">
@@ -222,15 +235,15 @@ const AccountScreen_Re = () => {
 
       <View className="absolute top-[calc(55%)] h-[calc(90/812*100%)]  w-full items-center">
         <View className="w-4/5 h-full">
-          <TouchableOpacity className="absolute h-full left-0 aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => console.log("Settings Pressed")}>
+          <TouchableOpacity className="absolute h-full left-0 aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => HandleAccountButtonsPressed(0, _setters, account_var)}>
             <MaterialIcons name="settings" size={40} color="#FFF"/>
             <Text className="text-white text-xs">Settings</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="absolute h-full left-[35.5%]  aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => console.log("Profile Pressed")}>
+          <TouchableOpacity className="absolute h-full left-[35.5%]  aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => HandleAccountButtonsPressed(1, _setters, account_var)}>
             <MaterialIcons name="person" size={40} color="#FFF"/>
             <Text className="text-white text-xs">Profile</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="absolute h-full left-[71%] aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => console.log("Settings Pressed")}>
+          <TouchableOpacity className="absolute h-full left-[71%] aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => HandleAccountButtonsPressed(2, _setters, account_var)}>
             <MaterialIcons name="help" size={40} color="#FFF"/>
             <Text className="text-white text-xs">About Us</Text>
           </TouchableOpacity>
@@ -269,7 +282,8 @@ const AccountScreen_Re = () => {
   );
 };
 
-const AboutUs_Re = () => {
+const AboutUs_Re = (...args) => {
+  var [setAccountSelected, setAccountSettingsSelected] = args[0]
   return (
     <ImageBackground
       source={require('./pics/PNG_AboutUs.png')}
@@ -298,6 +312,10 @@ const AboutUs_Re = () => {
       {/* "Back to Home" button with darker green color */}
       <TouchableOpacity
         className="z-40 absolute w-full h-16 bg-[#008000] bottom-0 items-center justify-center"
+        onPress={() => {
+          setAccountSettingsSelected(true)
+          setAccountSelected(true)
+        }}
       >
         <Text className="text-black text-xl font-bold">Back to Home</Text>
       </TouchableOpacity>
@@ -305,11 +323,17 @@ const AboutUs_Re = () => {
   );
 };
 
-const SettingScreen_Re = () => {
-  const [isNotificationEnabled, notificationIsEnabled] = useState(false);
-  const [isEmailEnabled, emailIsEnabled] = useState(false);
-  const [isReminderEnabled, reminderIsEnabled] = useState(false);
-  const [isLocationEnabled, locationIsEnabled] = useState(false);
+const SettingScreen_Re = (...args) => {
+  console.log("Settings Screen Loaded")
+  console.log("Initial Args:" + args)
+
+  var [
+    isNotificationEnabled, notificationIsEnabled, 
+    isEmailEnabled, emailIsEnabled, 
+    isReminderEnabled, reminderIsEnabled, 
+    isLocationEnabled, locationIsEnabled, 
+    setAccountSelected, setAccountSettingsSelected] = args[0] 
+  
   const toggleNotificationSwitch = () => notificationIsEnabled(previousState => !previousState);
   const toggleEmailSwitch = () => emailIsEnabled(previousState => !previousState);
   const toggleReminderSwitch = () => reminderIsEnabled(previousState => !previousState);
@@ -384,7 +408,11 @@ const SettingScreen_Re = () => {
         </View>
       </View>
 
-      <TouchableOpacity className="w-[90%] ml-[5%] mr-[5%] py-2 rounded-lg bg-[#008000] mt-[20%] items-center justify-center">
+      <TouchableOpacity className="w-[90%] ml-[5%] mr-[5%] py-2 rounded-lg bg-[#008000] mt-[20%] items-center justify-center"
+      onPress={() => {
+        setAccountSettingsSelected(false)
+        setAccountSelected(true)
+      }}>
         <Text className="text-black text-xl font-bold">Back to Home</Text>
       </TouchableOpacity>
 
@@ -437,18 +465,29 @@ const handleMenuButtonsPressed = (buttonVar, setButtonVar, button, otherSetButto
   console.log(buttonVar)
 }
 
-const handleScreenDisplay = (home, search, scan, account) => {
+const handleScreenDisplay = (home, search, scan, account, _account_states, _account_setters, settings_params, about_params) => {
   console.log("Handle Screen Display")
-  console.log(account, settings)
+  console.log("Account States: " + _account_states)
+  console.log("Settings Params -> " + settings_params)
   if (home) {
     return HomeScreen_Re()
   } else if (search) {
     return SearchScreen_Re()
   } else if (scan) {
     return ScannerScreen_Re()
-  } else if (account) {
+  } else if (account[0]) {
     console.log("Displaying Account Screen")
-    return AccountScreen_Re()
+    return AccountScreen_Re(_account_states, _account_setters, account[1])
+  } else if (_account_states[0]){
+    console.log("Displaying Setting Screen")
+    console.log("==========")
+    return SettingScreen_Re(settings_params)
+  } else if (_account_states[1]){
+    return (<></>)
+  } else if (_account_states[2]){
+    console.log("Displaying About Us Screen")
+    console.log("==========")
+    return AboutUs_Re(about_params)
   } else {
     return (<></>)
   }
@@ -527,9 +566,66 @@ const BigAssCircle = () => {
   )
 }
 
-const App = () => {
-  console.log(Date() + " - Compiled");
+const NavBar = (...args) => {
+  console.log("Navigation Bar Loaded")  
+  console.log("Args ->" + args)
+  var [homeSelected, setHomeSelected, searchSelected, setSearchSelected, scannerSelected, setScannerSelected, accountSelected, setAccountSelected, accountSettingsSelected, accountProfileSelected, accountAboutSelected] = args[0]
+  console.log("Home Selected: " + homeSelected)
+  if (!accountSettingsSelected && !accountProfileSelected && !accountAboutSelected) {
+    return (
+      <>
+        <View className="z-20 absolute w-[calc(90/375*100%)] aspect-square bg-[#090E05] left-[calc(50%-90/375/2*100%)] bottom-[2.75%] rounded-full">
+        </View>
   
+        <View className="z-30 absolute w-[calc(80/375*100%)] aspect-square left-[calc(50%-80/375/2*100%)] bottom-[3.5%] mt-0 rounded-full">
+          <TouchableOpacity className="w-full h-full">
+            <LinearGradient start={{x:0.25, y:0.25}} end = {{x:0.75, y:0.6}} colors={["#008000", "#2AAA8A"]} className="w-full h-full rounded-full items-center justify-center">
+              <MaterialCommunityIcons name="camera" size={25} color="#000"/>
+            </LinearGradient>        
+          </TouchableOpacity>
+        </View>
+  
+        <View className="z-10 absolute left-0 right-0 bg-[#2F2F2F] w-full h-[calc(75/812*100%)] bottom-0 rounded-full flex-row">
+          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(homeSelected, setHomeSelected, "HOME", [setSearchSelected, setScannerSelected, setAccountSelected])}>
+            <View className="w-full h-full">
+              {MaterialCommunityGradientIcon("home-variant", "#75E00A", "#0AE0A0", "#FFF", homeSelected)}
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(searchSelected, setSearchSelected, "SEARCH", [setHomeSelected, setSearchSelected, setAccountSelected])}>
+            <View className="w-full h-full">
+              {MaterialCommunityGradientIcon("magnify", "#75E00A", "#0AE0A0", "#FFF", searchSelected)}
+            </View>
+          </TouchableOpacity>
+          <View className="w-1/5 bg-transparent">
+          </View>
+          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(scannerSelected, setScannerSelected, "SCANNER", [setSearchSelected, setHomeSelected, setAccountSelected])}>
+            <View className="w-full h-full">
+              {MaterialCommunityGradientIcon("line-scan", "#75E00A", "#0AE0A0", "#FFF", scannerSelected)}
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(accountSelected, setAccountSelected, "ACCOUNT", [setSearchSelected, setScannerSelected, setHomeSelected])}>
+            <View className="w-full h-full">
+              {MaterialGradientIcon("person", "#75E00A", "#0AE0A0", "#FFF", accountSelected)}
+            </View>
+          </TouchableOpacity>
+        </View>
+      </>
+    )
+  } else {
+    <>
+    </>
+  }
+  
+}
+
+
+const App = () => {
+  console.log("\n" + Date() + " - Compiled");
+  var [isNotificationEnabled, notificationIsEnabled] = useState(false);
+  var [isEmailEnabled, emailIsEnabled] = useState(false);
+  var [isReminderEnabled, reminderIsEnabled] = useState(false);
+  var [isLocationEnabled, locationIsEnabled] = useState(false);
+
   var [homeSelected, setHomeSelected] = useState(false)
   var [searchSelected, setSearchSelected] = useState(false)
   var [scannerSelected, setScannerSelected] = useState(false)
@@ -538,7 +634,6 @@ const App = () => {
   var [accountProfileSelected, setAccountProfileSelected] = useState(false)
   var [accountAboutSelected, setAccountAboutSelected] = useState(false)
 
-
   return (
     <View className="flex relative w-full h-full bg-[#090E05]">
 
@@ -546,50 +641,15 @@ const App = () => {
       homeSelected, 
       searchSelected, 
       scannerSelected, 
-      accountSelected)}
+      [accountSelected, setAccountSelected],
+      [accountSettingsSelected, accountProfileSelected, accountAboutSelected],
+      [setAccountSettingsSelected, setAccountProfileSelected, setAccountAboutSelected],
+      [isNotificationEnabled, notificationIsEnabled, isEmailEnabled, emailIsEnabled, isReminderEnabled, reminderIsEnabled, isLocationEnabled, locationIsEnabled, setAccountSelected, setAccountSettingsSelected],
+      [setAccountSelected, setAccountSettingsSelected])}
 
     {homeSelected ? BigAssCircle() : <></>}
-
-
-
-    <View className="z-20 absolute w-[calc(90/375*100%)] aspect-square bg-[#090E05] left-[calc(50%-90/375/2*100%)] bottom-[2.75%] rounded-full">
-    </View>
-
-    <View className="z-30 absolute w-[calc(80/375*100%)] aspect-square left-[calc(50%-80/375/2*100%)] bottom-[3.5%] mt-0 rounded-full">
-      <TouchableOpacity className="w-full h-full">
-        <LinearGradient start={{x:0.25, y:0.25}} end = {{x:0.75, y:0.6}} colors={["#008000", "#2AAA8A"]} className="w-full h-full rounded-full items-center justify-center">
-          <MaterialCommunityIcons name="camera" size={25} color="#000"/>
-        </LinearGradient>        
-      </TouchableOpacity>
-    </View>
-
-    <View className="z-10 absolute left-0 right-0 bg-[#2F2F2F] w-full h-[calc(75/812*100%)] bottom-0 rounded-full flex-row">
-      <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(homeSelected, setHomeSelected, "HOME", [setSearchSelected, setScannerSelected, setAccountSelected])}>
-        <View className="w-full h-full">
-          {MaterialCommunityGradientIcon("home-variant", "#75E00A", "#0AE0A0", "#FFF", homeSelected)}
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(searchSelected, setSearchSelected, "SEARCH", [setHomeSelected, setSearchSelected, setAccountSelected])}>
-        <View className="w-full h-full">
-          {MaterialCommunityGradientIcon("magnify", "#75E00A", "#0AE0A0", "#FFF", searchSelected)}
-        </View>
-      </TouchableOpacity>
-      <View className="w-1/5 bg-transparent">
-      </View>
-      <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(scannerSelected, setScannerSelected, "SCANNER", [setSearchSelected, setHomeSelected, setAccountSelected])}>
-        <View className="w-full h-full">
-          {MaterialCommunityGradientIcon("line-scan", "#75E00A", "#0AE0A0", "#FFF", scannerSelected)}
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(accountSelected, setAccountSelected, "ACCOUNT", [setSearchSelected, setScannerSelected, setHomeSelected])}>
-        <View className="w-full h-full">
-          <>
-          {MaterialGradientIcon("person", "#75E00A", "#0AE0A0", "#FFF", accountSelected)}
-          </>
-        </View>
-      </TouchableOpacity>
-    </View>
-
+    
+    {NavBar([homeSelected, setHomeSelected, searchSelected, setSearchSelected, scannerSelected, setScannerSelected, accountSelected, setAccountSelected, accountSettingsSelected, accountProfileSelected, accountAboutSelected])}
 
 
     <StatusBar style='auto'/>

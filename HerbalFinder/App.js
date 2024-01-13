@@ -33,6 +33,13 @@ const defaultScreenStates = {
   AccountAbout : false
 }
 
+const defaultSettingStates = {
+  notificationEnabled : false,
+  emailEnabled : false,
+  reminderEnabled : false, 
+  locationEnabled : false
+}
+
 
 const HomeScreen_Re = () => {
   return (
@@ -446,32 +453,54 @@ const PostScanScreen_Re = () => {
 
 
 
-const handleScreenDisplay = (home, search, scan, account, _account_states, _account_setters, settings_params, about_params, camera_params) => {
-  console.log("Handle Screen Display")
-  console.log("Account States: " + _account_states)
-  console.log("Settings Params -> " + settings_params)
-  if (home) {
-    return HomeScreen_Re()
-  } else if (search) {
-    return SearchScreen_Re()
-  } else if (scan) {
-    return ScannerScreen_Re(camera_params)
-  } else if (account[0]) {
-    console.log("Displaying Account Screen")
-    return AccountScreen_Re(_account_states, _account_setters, account[1])
-  } else if (_account_states[0]){
-    console.log("Displaying Setting Screen")
-    console.log("==========")
-    return SettingScreen_Re(settings_params)
-  } else if (_account_states[1]){
-    return (<></>)
-  } else if (_account_states[2]){
-    console.log("Displaying About Us Screen")
-    console.log("==========")
-    return AboutUs_Re(about_params)
-  } else {
-    return (<></>)
+const handleScreenDisplay = (...args) => {
+  
+  var [ActiveScreen, SetActiveScreen, s_SwitchStates, set_s_SwitchStates, DataObjects, SetDataObjects] = args[0]
+  
+  const Screens = {
+    Home : HomeScreen_Re(),
+    Search : SearchScreen_Re(),
+    Scanner : (<></>),
+    AccountBase : (<></>),
+    AccountSettings : (<></>),
+    AccountAbout : (<></>)
   }
+
+  const corresponding_screen = Object.keys(ActiveScreen).filter(key => ActiveScreen[key])
+
+  return Screens[corresponding_screen]
+  
+  // if (ActiveScreen.Home) {
+  //   return HomeScreen_Re()
+  // } else {
+  //   return (<></>)
+  // }
+
+  // console.log("Handle Screen Display")
+  // console.log("Account States: " + _account_states)
+  // console.log("Settings Params -> " + settings_params)
+  // if (home) {
+  //   return HomeScreen_Re()
+  // } else if (search) {
+  //   return SearchScreen_Re()
+  // } else if (scan) {
+  //   return ScannerScreen_Re(camera_params)
+  // } else if (account[0]) {
+  //   console.log("Displaying Account Screen")
+  //   return AccountScreen_Re(_account_states, _account_setters, account[1])
+  // } else if (_account_states[0]){
+  //   console.log("Displaying Setting Screen")
+  //   console.log("==========")
+  //   return SettingScreen_Re(settings_params)
+  // } else if (_account_states[1]){
+  //   return (<></>)
+  // } else if (_account_states[2]){
+  //   console.log("Displaying About Us Screen")
+  //   console.log("==========")
+  //   return AboutUs_Re(about_params)
+  // } else {
+  //   return (<></>)
+  // }
   
 }
 
@@ -558,7 +587,6 @@ const take_picture = async (camera) => {
 
 const handleCameraPressed = (...args) => {
   var [ActiveScreen, SetActiveScreen, targettedAttribute, DataObjects] = args[0]
-  
   if (ActiveScreen.Scanner) {
     console.log("Say Cheese")
     // take_picture(DataObject.CameraObj)
@@ -575,17 +603,7 @@ const handleMenuButtonsPressed = (...args) => {
 }
 
 const NavBar = (...args) => {
-  console.log("Navigation Bar Loaded")  
-  console.log("Args ->" + args)
-  
   var [ActiveScreen, SetActiveScreen, DataObjects, SetDataObjects] = args[0]
-
-  console.log("Full Object Description of Args:")
-  console.log("Active Screen Object:")
-  displayObjectFull(ActiveScreen)
-  console.log("Data Objects:")
-  displayObjectFull(DataObjects)
-
 
   if (!(ActiveScreen.Account == true)) {
     return (
@@ -658,21 +676,12 @@ const displayObjectFull = (targetObject) => {
 const App = () => {
   console.log("\n" + Date() + " - Compiled");
 
-  const defaultSettingStates = {
-    notificationEnabled : false,
-    emailEnabled : false,
-    reminderEnabled : false, 
-    locationEnabled : false
-  }
-
   var [s_SwitchStates, set_s_SwitchStates] = useState({
     ...defaultSettingStates
   })
 
-  
-
-  var dSS = {...defaultScreenStates}
-  dSS.Home = true 
+  // Initial State
+  var dSS = {...defaultScreenStates} 
   var [ActiveScreen, SetActiveScreen] = useState({
     ...dSS
   })
@@ -681,33 +690,17 @@ const App = () => {
     Camera_Obj : null
   })
 
-  console.log("Default: ")
-  displayObjectFull(defaultScreenStates)
-
-  console.log("Active: ")
+  console.log("***********Active Screen***********")
   displayObjectFull(ActiveScreen)
+  console.log("***********************************")
 
   return (
     //LoginScreen()
     <View className="flex relative w-full h-full bg-[#090E05]">
 
-    {/* {handleScreenDisplay(
-      homeSelected, 
-      searchSelected, 
-      scannerSelected, 
-      [accountSelected, setAccountSelected],
-      [accountSettingsSelected, accountProfileSelected, accountAboutSelected],
-      [setAccountSettingsSelected, setAccountProfileSelected, setAccountAboutSelected],
-      [
-        isNotificationEnabled, notificationIsEnabled, 
-        isEmailEnabled, emailIsEnabled, 
-        isReminderEnabled, reminderIsEnabled, 
-        isLocationEnabled, locationIsEnabled, 
-        setAccountSelected, setAccountSettingsSelected],
-      [setAccountSelected, setAccountAboutSelected],
-      setCamera)}
+    {handleScreenDisplay([ActiveScreen, SetActiveScreen, s_SwitchStates, set_s_SwitchStates, DataObjects, SetDataObjects])}
 
-    {homeSelected ? BigAssCircle() : <></>} */}
+    {/* {homeSelected ? BigAssCircle() : <></>} */}
     
     {NavBar([ActiveScreen, SetActiveScreen, DataObjects, SetDataObjects])}
 

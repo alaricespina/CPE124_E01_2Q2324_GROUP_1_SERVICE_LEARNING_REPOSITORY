@@ -20,6 +20,21 @@ import { Camera, CameraType, FlashMode } from 'expo-camera';
 
 import * as MediaLibrary from 'expo-media-library'
 
+const defaultScreenStates = {
+  Welcome : false,
+  Login : false,
+  SignUp : false,
+  Home : false, 
+  Search : false, 
+  Scanner : false, 
+  PostScan : false, 
+  Account : {
+    base : false,
+    settings : false, 
+    about : false,
+  }
+}
+
 
 const HomeScreen_Re = () => {
   return (
@@ -431,17 +446,7 @@ const PostScanScreen_Re = () => {
   )
 }
 
-const handleMenuButtonsPressed = (buttonVar, setButtonVar, button, otherSetButtonsVars) => {
-  console.log("Start Function")
-  for (f in otherSetButtonsVars) {
-    console.log(otherSetButtonsVars[f])
-    otherSetButtonsVars[f](false)
-  }
-  console.log("Button pressed is: " + button)
-  console.log(buttonVar)
-  setButtonVar(!buttonVar)
-  console.log(buttonVar)
-}
+
 
 const handleScreenDisplay = (home, search, scan, account, _account_states, _account_setters, settings_params, about_params, camera_params) => {
   console.log("Handle Screen Display")
@@ -473,7 +478,7 @@ const handleScreenDisplay = (home, search, scan, account, _account_states, _acco
 }
 
 const MaterialCommunityGradientIcon = (iconName, gradientStart, gradientEnd, defaultColor, monitoringVariable) => {
-  if (monitoringVariable) {
+  if (monitoringVariable == true) {
     return (
 
         <MaskedView className="flex-1 flex-row h-full w-full bg-transparent items-center justify-center"
@@ -504,7 +509,7 @@ const MaterialCommunityGradientIcon = (iconName, gradientStart, gradientEnd, def
 }
 
 const MaterialGradientIcon = (iconName, gradientStart, gradientEnd, defaultColor, monitoringVariable) => {
-  if (monitoringVariable) {
+  if (monitoringVariable == true) {
     return (
       <MaskedView className="flex-1 flex-row h-full w-full bg-transparent items-center justify-center"
         maskElement={
@@ -562,26 +567,39 @@ const handleCameraPressed = (buttonVar, setButtonVar, button, otherSetButtonsVar
   }
 }
 
+const handleMenuButtonsPressed = (...args) => {
+  var [ActiveScreen, SetActiveScreen, targettedAttribute] = args[0]
+
+  console.log("Handle Menu Buttons")
+
+  var dSS = {...defaultScreenStates}
+  dSS[targettedAttribute] = true 
+
+  displayObjectFull(dSS)
+
+}
+
 const NavBar = (...args) => {
   console.log("Navigation Bar Loaded")  
   console.log("Args ->" + args)
-  var [homeSelected, setHomeSelected, 
-    searchSelected, setSearchSelected, 
-    scannerSelected, setScannerSelected, 
-    accountSelected, setAccountSelected, 
-    accountSettingsSelected, accountProfileSelected, accountAboutSelected, 
-    camera] = args[0]
-  console.log("Home Selected: " + homeSelected)
+  
+  var [ActiveScreen, SetActiveScreen, DataObjects, SetDataObjects] = args[0]
+
+  console.log("Full Object Description of Args:")
+  console.log("Active Screen Object:")
+  displayObjectFull(ActiveScreen)
+  console.log("Data Objects:")
+  displayObjectFull(DataObjects)
 
 
-  if (!accountSettingsSelected && !accountProfileSelected && !accountAboutSelected) {
+  if (!(ActiveScreen.Account == true)) {
     return (
       <>
         <View className="z-20 absolute w-[calc(90/375*100%)] aspect-square bg-[#090E05] left-[calc(50%-90/375/2*100%)] bottom-[2.75%] rounded-full">
         </View>
   
         <View className="z-30 absolute w-[calc(80/375*100%)] aspect-square left-[calc(50%-80/375/2*100%)] bottom-[3.5%] mt-0 rounded-full">
-          <TouchableOpacity className="w-full h-full" onPress={() => handleCameraPressed(scannerSelected, setScannerSelected, "SCANNER", [setSearchSelected, setHomeSelected, setAccountSelected], camera)}>
+          <TouchableOpacity className="w-full h-full" onPress={() => console.log("Camera Pressed")}>
             <LinearGradient start={{x:0.25, y:0.25}} end = {{x:0.75, y:0.6}} colors={["#008000", "#2AAA8A"]} className="w-full h-full rounded-full items-center justify-center">
               <MaterialCommunityIcons name="camera" size={25} color="#000"/>
             </LinearGradient>        
@@ -589,26 +607,35 @@ const NavBar = (...args) => {
         </View>
   
         <View className="z-10 absolute left-0 right-0 bg-[#2F2F2F] w-full h-[calc(75/812*100%)] bottom-0 rounded-full flex-row">
-          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(homeSelected, setHomeSelected, "HOME", [setSearchSelected, setScannerSelected, setAccountSelected])}>
+          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => {
+            console.log("Home Selected")
+            handleMenuButtonsPressed([ActiveScreen, SetActiveScreen, "Home"])
+            }}>
             <View className="w-full h-full">
-              {MaterialCommunityGradientIcon("home-variant", "#75E00A", "#0AE0A0", "#FFF", homeSelected)}
+              {MaterialCommunityGradientIcon("home-variant", "#75E00A", "#0AE0A0", "#FFF", ActiveScreen.Home)}
             </View>
           </TouchableOpacity>
-          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(searchSelected, setSearchSelected, "SEARCH", [setHomeSelected, setScannerSelected, setAccountSelected])}>
+          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => {
+            console.log("Search Selected")
+            handleMenuButtonsPressed([ActiveScreen, SetActiveScreen, "Search"])
+            }}>
             <View className="w-full h-full">
-              {MaterialCommunityGradientIcon("magnify", "#75E00A", "#0AE0A0", "#FFF", searchSelected)}
+              {MaterialCommunityGradientIcon("magnify", "#75E00A", "#0AE0A0", "#FFF", ActiveScreen.Search)}
             </View>
           </TouchableOpacity>
           <View className="w-1/5 bg-transparent">
           </View>
-          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(scannerSelected, setScannerSelected, "SCANNER", [setSearchSelected, setHomeSelected, setAccountSelected])}>
+          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => {
+            console.log("Scanner Selected")
+            handleMenuButtonsPressed([ActiveScreen, SetActiveScreen, "Scanner"])
+          }}>
             <View className="w-full h-full">
-              {MaterialCommunityGradientIcon("line-scan", "#75E00A", "#0AE0A0", "#FFF", scannerSelected)}
+              {MaterialCommunityGradientIcon("line-scan", "#75E00A", "#0AE0A0", "#FFF", ActiveScreen.Scanner)}
             </View>
           </TouchableOpacity>
-          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => handleMenuButtonsPressed(accountSelected, setAccountSelected, "ACCOUNT", [setSearchSelected, setScannerSelected, setHomeSelected])}>
+          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => console.log("Account Selected")}>
             <View className="w-full h-full">
-              {MaterialGradientIcon("person", "#75E00A", "#0AE0A0", "#FFF", accountSelected)}
+              {MaterialGradientIcon("person", "#75E00A", "#0AE0A0", "#FFF", ActiveScreen.Account.base)}
             </View>
           </TouchableOpacity>
         </View>
@@ -630,35 +657,26 @@ const displayObjectFull = (targetObject) => {
 const App = () => {
   console.log("\n" + Date() + " - Compiled");
 
-  var [s_SwitchStates, set_s_SwitchStates] = useState({
-    notificationEnabled: false,
-    emailEnabled: false,
-    reminderEnabled : false,
-    locationEnabled : false 
-  })
-
-  const defaultScreenStates = {
-    Welcome : false,
-    Login : false,
-    SignUp : false,
-    Home : false, 
-    Search : false, 
-    Scanner : false, 
-    PostScan : false, 
-    Account : {
-      base : false,
-      settings : false, 
-      about : false,
-    }
+  const defaultSettingStates = {
+    notificationEnabled : false,
+    emailEnabled : false,
+    reminderEnabled : false, 
+    locationEnabled : false
   }
 
-  const dSS = {...defaultScreenStates}
+  var [s_SwitchStates, set_s_SwitchStates] = useState({
+    ...defaultSettingStates
+  })
+
+  
+
+  var dSS = {...defaultScreenStates}
   dSS.Home = true 
   var [ActiveScreen, SetActiveScreen] = useState({
     ...dSS
   })
 
-  var [DataObjects, setDataObjects] = useState({
+  var [DataObjects, SetDataObjects] = useState({
     camera : null
   })
 
@@ -668,26 +686,11 @@ const App = () => {
   console.log("Active: ")
   displayObjectFull(ActiveScreen)
 
-  
-  var [isNotificationEnabled, notificationIsEnabled] = useState(false);
-  var [isEmailEnabled, emailIsEnabled] = useState(false);
-  var [isReminderEnabled, reminderIsEnabled] = useState(false);
-  var [isLocationEnabled, locationIsEnabled] = useState(false);
-  
-  var [homeSelected, setHomeSelected] = useState(false)
-  var [searchSelected, setSearchSelected] = useState(false)
-  var [scannerSelected, setScannerSelected] = useState(false)
-  var [accountSelected, setAccountSelected] = useState(false)
-  var [accountSettingsSelected, setAccountSettingsSelected] = useState(false)
-  var [accountProfileSelected, setAccountProfileSelected] = useState(false)
-  var [accountAboutSelected, setAccountAboutSelected] = useState(false)
-  var [camera, setCamera] = useState(null)
-
   return (
     //LoginScreen()
     <View className="flex relative w-full h-full bg-[#090E05]">
 
-    {handleScreenDisplay(
+    {/* {handleScreenDisplay(
       homeSelected, 
       searchSelected, 
       scannerSelected, 
@@ -703,9 +706,9 @@ const App = () => {
       [setAccountSelected, setAccountAboutSelected],
       setCamera)}
 
-    {homeSelected ? BigAssCircle() : <></>}
+    {homeSelected ? BigAssCircle() : <></>} */}
     
-    {NavBar([ActiveScreen, SetActiveScreen])}
+    {NavBar([ActiveScreen, SetActiveScreen, DataObjects, SetDataObjects])}
 
 
     <StatusBar style='auto'/>

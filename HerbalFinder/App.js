@@ -556,26 +556,22 @@ const take_picture = async (camera) => {
   }
 }
 
-const handleCameraPressed = (buttonVar, setButtonVar, button, otherSetButtonsVars, camera_var) => {
-  if (buttonVar) {
+const handleCameraPressed = (...args) => {
+  var [ActiveScreen, SetActiveScreen, targettedAttribute, DataObjects] = args[0]
+  
+  if (ActiveScreen.Scanner) {
     console.log("Say Cheese")
-    take_picture(camera_var)
+    // take_picture(DataObject.CameraObj)
   } else {
-    handleMenuButtonsPressed(buttonVar, setButtonVar, button, otherSetButtonsVars)
+    handleMenuButtonsPressed([ActiveScreen, SetActiveScreen, targettedAttribute])
   }
 }
 
 const handleMenuButtonsPressed = (...args) => {
   var [ActiveScreen, SetActiveScreen, targettedAttribute] = args[0]
-
-  console.log("Handle Menu Buttons")
-
   var dSS = {...defaultScreenStates}
   dSS[targettedAttribute] = true 
   SetActiveScreen({...dSS})
-
-  displayObjectFull(dSS)
-
 }
 
 const NavBar = (...args) => {
@@ -598,7 +594,10 @@ const NavBar = (...args) => {
         </View>
   
         <View className="z-30 absolute w-[calc(80/375*100%)] aspect-square left-[calc(50%-80/375/2*100%)] bottom-[3.5%] mt-0 rounded-full">
-          <TouchableOpacity className="w-full h-full" onPress={() => console.log("Camera Pressed")}>
+          <TouchableOpacity className="w-full h-full" onPress={() => {
+            console.log("Camera Pressed")
+            handleCameraPressed([ActiveScreen, SetActiveScreen, "Scanner", DataObjects])
+            }}>
             <LinearGradient start={{x:0.25, y:0.25}} end = {{x:0.75, y:0.6}} colors={["#008000", "#2AAA8A"]} className="w-full h-full rounded-full items-center justify-center">
               <MaterialCommunityIcons name="camera" size={25} color="#000"/>
             </LinearGradient>        
@@ -679,7 +678,7 @@ const App = () => {
   })
 
   var [DataObjects, SetDataObjects] = useState({
-    camera : null
+    Camera_Obj : null
   })
 
   console.log("Default: ")

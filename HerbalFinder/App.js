@@ -21,47 +21,6 @@ import { Camera, CameraType, FlashMode } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library'
 
 
-
-
-
-const NavStack = createNativeStackNavigator();
-//const Tab = createBottomTabNavigator();
-
-// const App = () => {
-//   return (
-//     <NavigationContainer>
-//       {/* Rest of your app code */}
-//     </NavigationContainer>
-//   );
-// };
-
-const MainScreenNavigator = () => {
-  return (
-    <View className="flex-1 bg-zinc-900">
-      <NavigationContainer>
-        <NavStack.Navigator screenOptions={{headerShown: false}}>
-          <NavStack.Screen
-            name = "WelcomeScreen"
-            component = {WelcomeScreen}        
-          />
-          <NavStack.Screen 
-          name = "LoginScreen"
-          component = {LoginScreen} 
-          />
-          <NavStack.Screen 
-          name = "SignUpScreen"
-          component = {SignUpScreen} 
-          />
-          <NavStack.Screen
-            name = "MainScreen"
-            component = {MainScreen}
-          />
-        </NavStack.Navigator>
-      </NavigationContainer>
-    </View>
-  )
-}
-
 const HomeScreen_Re = () => {
   return (
     <>
@@ -195,6 +154,7 @@ const SearchScreen_Re = () => {
 
 const ScannerScreen_Re = (camera_obj) => {
   const permission = MediaLibrary.requestPermissionsAsync(true)
+
   return (
     <>
         <View className="absolute z-10 h-full w-full items-center justify-center">
@@ -605,8 +565,15 @@ const handleCameraPressed = (buttonVar, setButtonVar, button, otherSetButtonsVar
 const NavBar = (...args) => {
   console.log("Navigation Bar Loaded")  
   console.log("Args ->" + args)
-  var [homeSelected, setHomeSelected, searchSelected, setSearchSelected, scannerSelected, setScannerSelected, accountSelected, setAccountSelected, accountSettingsSelected, accountProfileSelected, accountAboutSelected, camera] = args[0]
+  var [homeSelected, setHomeSelected, 
+    searchSelected, setSearchSelected, 
+    scannerSelected, setScannerSelected, 
+    accountSelected, setAccountSelected, 
+    accountSettingsSelected, accountProfileSelected, accountAboutSelected, 
+    camera] = args[0]
   console.log("Home Selected: " + homeSelected)
+
+
   if (!accountSettingsSelected && !accountProfileSelected && !accountAboutSelected) {
     return (
       <>
@@ -654,9 +621,54 @@ const NavBar = (...args) => {
   
 }
 
+const displayObjectFull = (targetObject) => {
+  for (var x in targetObject) {
+    console.log(x + " : " + targetObject[x])  
+  }
+}
 
 const App = () => {
   console.log("\n" + Date() + " - Compiled");
+
+  var [s_SwitchStates, set_s_SwitchStates] = useState({
+    notificationEnabled: false,
+    emailEnabled: false,
+    reminderEnabled : false,
+    locationEnabled : false 
+  })
+
+  const defaultScreenStates = {
+    Welcome : false,
+    Login : false,
+    SignUp : false,
+    Home : false, 
+    Search : false, 
+    Scanner : false, 
+    PostScan : false, 
+    Account : {
+      base : false,
+      settings : false, 
+      about : false,
+    }
+  }
+
+  const dSS = {...defaultScreenStates}
+  dSS.Home = true 
+  var [ActiveScreen, SetActiveScreen] = useState({
+    ...dSS
+  })
+
+  var [DataObjects, setDataObjects] = useState({
+    camera : null
+  })
+
+  console.log("Default: ")
+  displayObjectFull(defaultScreenStates)
+
+  console.log("Active: ")
+  displayObjectFull(ActiveScreen)
+
+  
   var [isNotificationEnabled, notificationIsEnabled] = useState(false);
   var [isEmailEnabled, emailIsEnabled] = useState(false);
   var [isReminderEnabled, reminderIsEnabled] = useState(false);
@@ -672,38 +684,32 @@ const App = () => {
   var [camera, setCamera] = useState(null)
 
   return (
-    LoginScreen()
-    // <View className="flex relative w-full h-full bg-[#090E05]">
+    //LoginScreen()
+    <View className="flex relative w-full h-full bg-[#090E05]">
 
-    // {handleScreenDisplay(
-    //   homeSelected, 
-    //   searchSelected, 
-    //   scannerSelected, 
-    //   [accountSelected, setAccountSelected],
-    //   [accountSettingsSelected, accountProfileSelected, accountAboutSelected],
-    //   [setAccountSettingsSelected, setAccountProfileSelected, setAccountAboutSelected],
-    //   [
-    //     isNotificationEnabled, notificationIsEnabled, 
-    //     isEmailEnabled, emailIsEnabled, 
-    //     isReminderEnabled, reminderIsEnabled, 
-    //     isLocationEnabled, locationIsEnabled, 
-    //     setAccountSelected, setAccountSettingsSelected],
-    //   [setAccountSelected, setAccountAboutSelected],
-    //   setCamera)}
+    {handleScreenDisplay(
+      homeSelected, 
+      searchSelected, 
+      scannerSelected, 
+      [accountSelected, setAccountSelected],
+      [accountSettingsSelected, accountProfileSelected, accountAboutSelected],
+      [setAccountSettingsSelected, setAccountProfileSelected, setAccountAboutSelected],
+      [
+        isNotificationEnabled, notificationIsEnabled, 
+        isEmailEnabled, emailIsEnabled, 
+        isReminderEnabled, reminderIsEnabled, 
+        isLocationEnabled, locationIsEnabled, 
+        setAccountSelected, setAccountSettingsSelected],
+      [setAccountSelected, setAccountAboutSelected],
+      setCamera)}
 
-    // {homeSelected ? BigAssCircle() : <></>}
+    {homeSelected ? BigAssCircle() : <></>}
     
-    // {NavBar([
-    //   homeSelected, setHomeSelected, 
-    //   searchSelected, setSearchSelected, 
-    //   scannerSelected, setScannerSelected, 
-    //   accountSelected, setAccountSelected, 
-    //   accountSettingsSelected, accountProfileSelected, accountAboutSelected, 
-    //   camera])}
+    {NavBar([ActiveScreen, SetActiveScreen])}
 
 
-    // <StatusBar style='auto'/>
-    // </View>
+    <StatusBar style='auto'/>
+    </View>
 
     
   )

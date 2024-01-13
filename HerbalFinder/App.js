@@ -28,11 +28,9 @@ const defaultScreenStates = {
   Search : false, 
   Scanner : false, 
   PostScan : false, 
-  Account : {
-    base : false,
-    settings : false, 
-    about : false,
-  }
+  AccountBase : false,
+  AccountSettings : false, 
+  AccountAbout : false
 }
 
 
@@ -574,6 +572,7 @@ const handleMenuButtonsPressed = (...args) => {
 
   var dSS = {...defaultScreenStates}
   dSS[targettedAttribute] = true 
+  SetActiveScreen({...dSS})
 
   displayObjectFull(dSS)
 
@@ -633,9 +632,12 @@ const NavBar = (...args) => {
               {MaterialCommunityGradientIcon("line-scan", "#75E00A", "#0AE0A0", "#FFF", ActiveScreen.Scanner)}
             </View>
           </TouchableOpacity>
-          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => console.log("Account Selected")}>
+          <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => {
+            console.log("Account Selected")
+            handleMenuButtonsPressed([ActiveScreen, SetActiveScreen, "AccountBase"])
+            }}>
             <View className="w-full h-full">
-              {MaterialGradientIcon("person", "#75E00A", "#0AE0A0", "#FFF", ActiveScreen.Account.base)}
+              {MaterialGradientIcon("person", "#75E00A", "#0AE0A0", "#FFF", ActiveScreen.AccountBase)}
             </View>
           </TouchableOpacity>
         </View>

@@ -672,37 +672,38 @@ const App = () => {
   var [camera, setCamera] = useState(null)
 
   return (
-    <View className="flex relative w-full h-full bg-[#090E05]">
+    LoginScreen()
+    // <View className="flex relative w-full h-full bg-[#090E05]">
 
-    {handleScreenDisplay(
-      homeSelected, 
-      searchSelected, 
-      scannerSelected, 
-      [accountSelected, setAccountSelected],
-      [accountSettingsSelected, accountProfileSelected, accountAboutSelected],
-      [setAccountSettingsSelected, setAccountProfileSelected, setAccountAboutSelected],
-      [
-        isNotificationEnabled, notificationIsEnabled, 
-        isEmailEnabled, emailIsEnabled, 
-        isReminderEnabled, reminderIsEnabled, 
-        isLocationEnabled, locationIsEnabled, 
-        setAccountSelected, setAccountSettingsSelected],
-      [setAccountSelected, setAccountAboutSelected],
-      setCamera)}
+    // {handleScreenDisplay(
+    //   homeSelected, 
+    //   searchSelected, 
+    //   scannerSelected, 
+    //   [accountSelected, setAccountSelected],
+    //   [accountSettingsSelected, accountProfileSelected, accountAboutSelected],
+    //   [setAccountSettingsSelected, setAccountProfileSelected, setAccountAboutSelected],
+    //   [
+    //     isNotificationEnabled, notificationIsEnabled, 
+    //     isEmailEnabled, emailIsEnabled, 
+    //     isReminderEnabled, reminderIsEnabled, 
+    //     isLocationEnabled, locationIsEnabled, 
+    //     setAccountSelected, setAccountSettingsSelected],
+    //   [setAccountSelected, setAccountAboutSelected],
+    //   setCamera)}
 
-    {homeSelected ? BigAssCircle() : <></>}
+    // {homeSelected ? BigAssCircle() : <></>}
     
-    {NavBar([
-      homeSelected, setHomeSelected, 
-      searchSelected, setSearchSelected, 
-      scannerSelected, setScannerSelected, 
-      accountSelected, setAccountSelected, 
-      accountSettingsSelected, accountProfileSelected, accountAboutSelected, 
-      camera])}
+    // {NavBar([
+    //   homeSelected, setHomeSelected, 
+    //   searchSelected, setSearchSelected, 
+    //   scannerSelected, setScannerSelected, 
+    //   accountSelected, setAccountSelected, 
+    //   accountSettingsSelected, accountProfileSelected, accountAboutSelected, 
+    //   camera])}
 
 
-    <StatusBar style='auto'/>
-    </View>
+    // <StatusBar style='auto'/>
+    // </View>
 
     
   )

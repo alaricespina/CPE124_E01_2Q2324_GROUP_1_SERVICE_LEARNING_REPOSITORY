@@ -29,6 +29,7 @@ const defaultScreenStates = {
   Scanner : false, 
   PostScan : false, 
   AccountBase : false,
+  AccountProfile : false,
   AccountSettings : false, 
   AccountAbout : false
 }
@@ -40,6 +41,9 @@ const defaultSettingStates = {
   locationEnabled : false
 }
 
+const defaultDataObjects = {
+  Camera_Obj : null
+}
 
 const HomeScreen_Re = () => {
   return (
@@ -172,7 +176,7 @@ const SearchScreen_Re = () => {
   )
 }
 
-const ScannerScreen_Re = (camera_obj) => {
+const ScannerScreen_Re = (CameraSetter) => {
   const permission = MediaLibrary.requestPermissionsAsync(true)
 
   return (
@@ -186,7 +190,11 @@ const ScannerScreen_Re = (camera_obj) => {
           >
           </LinearGradient>
           <Camera 
-          ref={(ref) => camera_obj(ref)}
+          ref={(ref) => {
+            var _ = {...defaultDataObjects}
+            _.Camera_Obj = ref
+            CameraSetter(_)
+          }}
           type={CameraType.back}
           flashMode={FlashMode.auto} 
           className="absolute z-20 h-full aspect-[3/4] items-center justify-center">
@@ -209,12 +217,9 @@ const HandleAccountButtonsPressed = (index, _setters, _ac_set) => {
 
 }
 
-const AccountScreen_Re = (_states, _setters, account_var) => {
-  console.log("====== Account Screen ")
-  console.log(_states)
-  console.log(_setters)
-  console.log(account_var)
-  console.log("=====")
+const AccountScreen_Re = (...args) => {
+  var [SetActiveScreen] = args[0]
+
   return (
     <>
       <View className="absolute top-0 h-[calc(410/812*100%)] w-full left-0 right-0 bg-green-500 rounded-2xl">
@@ -233,15 +238,30 @@ const AccountScreen_Re = (_states, _setters, account_var) => {
 
       <View className="absolute top-[calc(55%)] h-[calc(90/812*100%)]  w-full items-center">
         <View className="w-4/5 h-full">
-          <TouchableOpacity className="absolute h-full left-0 aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => HandleAccountButtonsPressed(0, _setters, account_var)}>
+          <TouchableOpacity className="absolute h-full left-0 aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => {
+            console.log("Settings Pressed")
+            const _ = {...defaultScreenStates}
+            _.AccountSettings = true 
+            SetActiveScreen({..._})
+            }}>
             <MaterialIcons name="settings" size={40} color="#FFF"/>
             <Text className="text-white text-xs">Settings</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="absolute h-full left-[35.5%]  aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => HandleAccountButtonsPressed(1, _setters, account_var)}>
+          <TouchableOpacity className="absolute h-full left-[35.5%]  aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => {
+            console.log("Profile Pressed")
+            const _ = {...defaultScreenStates}
+            _.AccountProfile = true 
+            SetActiveScreen({..._})
+            }}>
             <MaterialIcons name="person" size={40} color="#FFF"/>
             <Text className="text-white text-xs">Profile</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="absolute h-full left-[71%] aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => HandleAccountButtonsPressed(2, _setters, account_var)}>
+          <TouchableOpacity className="absolute h-full left-[71%] aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => {
+            console.log("About Us Pressed")
+            const _ = {...defaultScreenStates}
+            _.AccountAbout = true 
+            SetActiveScreen({..._})
+            }}>
             <MaterialIcons name="help" size={40} color="#FFF"/>
             <Text className="text-white text-xs">About Us</Text>
           </TouchableOpacity>
@@ -330,7 +350,7 @@ const SettingScreen_Re = (...args) => {
     isEmailEnabled, emailIsEnabled, 
     isReminderEnabled, reminderIsEnabled, 
     isLocationEnabled, locationIsEnabled, 
-    setAccountSelected, setAccountSettingsSelected] = args[0] 
+    SetActiveScreen] = args[0] 
   
   const toggleNotificationSwitch = () => notificationIsEnabled(previousState => !previousState);
   const toggleEmailSwitch = () => emailIsEnabled(previousState => !previousState);
@@ -452,6 +472,12 @@ const PostScanScreen_Re = () => {
 }
 
 
+const handleMenuButtonsPressed = (...args) => {
+  var [SetActiveScreen, targettedAttribute] = args[0]
+  var dSS = {...defaultScreenStates}
+  dSS[targettedAttribute] = true 
+  SetActiveScreen({...dSS})
+}
 
 const handleScreenDisplay = (...args) => {
   
@@ -460,9 +486,10 @@ const handleScreenDisplay = (...args) => {
   const Screens = {
     Home : HomeScreen_Re(),
     Search : SearchScreen_Re(),
-    Scanner : (<></>),
-    AccountBase : (<></>),
-    AccountSettings : (<></>),
+    Scanner : ScannerScreen_Re(SetDataObjects),
+    AccountBase : AccountScreen_Re([SetActiveScreen]),
+    AccountProfile : (<></>),
+    AccountSettings : SettingScreen_Re([SetActiveScreen, s_SwitchStates, set_s_SwitchStates]),
     AccountAbout : (<></>)
   }
 
@@ -591,16 +618,10 @@ const handleCameraPressed = (...args) => {
     console.log("Say Cheese")
     // take_picture(DataObject.CameraObj)
   } else {
-    handleMenuButtonsPressed([ActiveScreen, SetActiveScreen, targettedAttribute])
+    handleMenuButtonsPressed([SetActiveScreen, targettedAttribute])
   }
 }
 
-const handleMenuButtonsPressed = (...args) => {
-  var [ActiveScreen, SetActiveScreen, targettedAttribute] = args[0]
-  var dSS = {...defaultScreenStates}
-  dSS[targettedAttribute] = true 
-  SetActiveScreen({...dSS})
-}
 
 const NavBar = (...args) => {
   var [ActiveScreen, SetActiveScreen, DataObjects, SetDataObjects] = args[0]
@@ -625,7 +646,7 @@ const NavBar = (...args) => {
         <View className="z-10 absolute left-0 right-0 bg-[#2F2F2F] w-full h-[calc(75/812*100%)] bottom-0 rounded-full flex-row">
           <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => {
             console.log("Home Selected")
-            handleMenuButtonsPressed([ActiveScreen, SetActiveScreen, "Home"])
+            handleMenuButtonsPressed([SetActiveScreen, "Home"])
             }}>
             <View className="w-full h-full">
               {MaterialCommunityGradientIcon("home-variant", "#75E00A", "#0AE0A0", "#FFF", ActiveScreen.Home)}
@@ -633,7 +654,7 @@ const NavBar = (...args) => {
           </TouchableOpacity>
           <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => {
             console.log("Search Selected")
-            handleMenuButtonsPressed([ActiveScreen, SetActiveScreen, "Search"])
+            handleMenuButtonsPressed([SetActiveScreen, "Search"])
             }}>
             <View className="w-full h-full">
               {MaterialCommunityGradientIcon("magnify", "#75E00A", "#0AE0A0", "#FFF", ActiveScreen.Search)}
@@ -643,7 +664,7 @@ const NavBar = (...args) => {
           </View>
           <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => {
             console.log("Scanner Selected")
-            handleMenuButtonsPressed([ActiveScreen, SetActiveScreen, "Scanner"])
+            handleMenuButtonsPressed([SetActiveScreen, "Scanner"])
           }}>
             <View className="w-full h-full">
               {MaterialCommunityGradientIcon("line-scan", "#75E00A", "#0AE0A0", "#FFF", ActiveScreen.Scanner)}
@@ -651,7 +672,7 @@ const NavBar = (...args) => {
           </TouchableOpacity>
           <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => {
             console.log("Account Selected")
-            handleMenuButtonsPressed([ActiveScreen, SetActiveScreen, "AccountBase"])
+            handleMenuButtonsPressed([SetActiveScreen, "AccountBase"])
             }}>
             <View className="w-full h-full">
               {MaterialGradientIcon("person", "#75E00A", "#0AE0A0", "#FFF", ActiveScreen.AccountBase)}
@@ -687,7 +708,7 @@ const App = () => {
   })
 
   var [DataObjects, SetDataObjects] = useState({
-    Camera_Obj : null
+    ...defaultDataObjects
   })
 
   console.log("***********Active Screen***********")

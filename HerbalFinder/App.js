@@ -176,8 +176,10 @@ const SearchScreen_Re = () => {
   )
 }
 
-const ScannerScreen_Re = (CameraSetter) => {
+const ScannerScreen_Re = (...args) => {
+  var [DataObjects, SetDataObjects] = args[0]
   const permission = MediaLibrary.requestPermissionsAsync(true)
+  console.log("Scanner Screen Called")
 
   return (
     <>
@@ -191,9 +193,15 @@ const ScannerScreen_Re = (CameraSetter) => {
           </LinearGradient>
           <Camera 
           ref={(ref) => {
-            var _ = {...defaultDataObjects}
-            _.Camera_Obj = ref
-            CameraSetter(_)
+            if (!DataObjects.Camera_Obj) {
+              var _ = {...defaultDataObjects}
+              _.Camera_Obj = ref
+
+              console.log("Camera Object Local:" + _)
+              
+              console.log("Camera Object Inside:" + DataObjects.Camera_Obj)
+            }
+            
           }}
           type={CameraType.back}
           flashMode={FlashMode.auto} 
@@ -301,7 +309,7 @@ const AccountScreen_Re = (...args) => {
 };
 
 const AboutUs_Re = (...args) => {
-  var [setAccountSelected, setAccountAboutSelected] = args[0]
+  var [SetActiveScreen] = args[0]
   return (
     <ImageBackground
       source={require('./pics/PNG_AboutUs.png')}
@@ -331,8 +339,7 @@ const AboutUs_Re = (...args) => {
       <TouchableOpacity
         className="z-40 absolute w-full h-16 bg-[#008000] bottom-0 items-center justify-center"
         onPress={() => {
-          setAccountAboutSelected(false)
-          setAccountSelected(true)
+          handleMenuButtonsPressed([SetActiveScreen, "AccountBase"])
         }}
       >
         <Text className="text-black text-xl font-bold">Back to Home</Text>
@@ -342,21 +349,11 @@ const AboutUs_Re = (...args) => {
 };
 
 const SettingScreen_Re = (...args) => {
+  var [SetActiveScreen, s_SwitchStates, set_s_SwitchStates] = args[0]
+
   console.log("Settings Screen Loaded")
   console.log("Initial Args:" + args)
 
-  var [
-    isNotificationEnabled, notificationIsEnabled, 
-    isEmailEnabled, emailIsEnabled, 
-    isReminderEnabled, reminderIsEnabled, 
-    isLocationEnabled, locationIsEnabled, 
-    SetActiveScreen] = args[0] 
-  
-  const toggleNotificationSwitch = () => notificationIsEnabled(previousState => !previousState);
-  const toggleEmailSwitch = () => emailIsEnabled(previousState => !previousState);
-  const toggleReminderSwitch = () => reminderIsEnabled(previousState => !previousState);
-  const toggleLocationSwitch = () => locationIsEnabled(previousState => !previousState);
-  
   return (
     <View className="w-full h-full bg-black">
       <View className="w-full h-1/4 bg-green-600">
@@ -371,10 +368,14 @@ const SettingScreen_Re = (...args) => {
             <Text className="text-xs text-white font-light">Caption...</Text>
           </View>
         <Switch trackColor={{false: '#767577', true: '#0ae0a0'}}
-      thumbColor={isNotificationEnabled ? '#008000' : '#f4f3f4'}
+      thumbColor={s_SwitchStates.notificationEnabled ? '#008000' : '#f4f3f4'}
       ios_backgroundColor="#3e3e3e"
-      onValueChange={toggleNotificationSwitch}
-      value={isNotificationEnabled}/>
+      onValueChange={() => {
+        var _ = {...s_SwitchStates}
+        _.notificationEnabled = !_.notificationEnabled
+        set_s_SwitchStates({..._})
+      }}
+      value={s_SwitchStates.notificationEnabled}/>
         </View>
 
         <View className="my-1.5"></View>
@@ -387,10 +388,14 @@ const SettingScreen_Re = (...args) => {
             <Text className="text-xs text-white font-light">Caption...</Text>
           </View>
           <Switch trackColor={{false: '#767577', true: '#0ae0a0'}}
-        thumbColor={isEmailEnabled ? '#008000' : '#f4f3f4'}
+        thumbColor={s_SwitchStates.emailEnabled ? '#008000' : '#f4f3f4'}
         ios_backgroundColor="#3e3e3e"
-        onValueChange={toggleEmailSwitch}
-        value={isEmailEnabled}/>
+        onValueChange={() => {
+          var _ = {...s_SwitchStates}
+          _.emailEnabled = !_.emailEnabled
+          set_s_SwitchStates({..._})
+        }}
+        value={s_SwitchStates.emailEnabled}/>
         </View>
 
         <View className="my-1.5"></View>
@@ -403,10 +408,14 @@ const SettingScreen_Re = (...args) => {
             <Text className="text-xs text-white font-light">Caption...</Text>
           </View>
           <Switch trackColor={{false: '#767577', true: '#0ae0a0'}}
-        thumbColor={isReminderEnabled ? '#008000' : '#f4f3f4'}
+        thumbColor={s_SwitchStates.reminderEnabled ? '#008000' : '#f4f3f4'}
         ios_backgroundColor="#3e3e3e"
-        onValueChange={toggleReminderSwitch}
-        value={isReminderEnabled}/>
+        onValueChange={() => {
+          var _ = {...s_SwitchStates}
+          _.reminderEnabled = !_.reminderEnabled
+          set_s_SwitchStates({..._})
+        }}
+        value={s_SwitchStates.reminderEnabled}/>
         </View>
 
         <View className="my-1.5"></View>
@@ -419,17 +428,21 @@ const SettingScreen_Re = (...args) => {
             <Text className="text-xs text-white font-light">Caption...</Text>
           </View>
           <Switch trackColor={{false: '#767577', true: '#0ae0a0'}}
-        thumbColor={isLocationEnabled ? '#008000' : '#f4f3f4'}
+        thumbColor={s_SwitchStates.locationEnabled ? '#008000' : '#f4f3f4'}
         ios_backgroundColor="#3e3e3e"
-        onValueChange={toggleLocationSwitch}
-        value={isLocationEnabled}/>
+        onValueChange={() => {
+          var _ = {...s_SwitchStates}
+          _.locationEnabled = !_.locationEnabled
+          set_s_SwitchStates({..._})
+        }}
+        value={s_SwitchStates.locationEnabled}/>
         </View>
       </View>
 
       <TouchableOpacity className="w-[90%] ml-[5%] mr-[5%] py-2 rounded-lg bg-[#008000] mt-[20%] items-center justify-center"
       onPress={() => {
-        setAccountSettingsSelected(false)
-        setAccountSelected(true)
+        console.log("Back to Home is Pressed")
+        handleMenuButtonsPressed([SetActiveScreen, "AccountBase"])
       }}>
         <Text className="text-black text-xl font-bold">Back to Home</Text>
       </TouchableOpacity>
@@ -482,34 +495,35 @@ const handleMenuButtonsPressed = (...args) => {
 const handleScreenDisplay = (...args) => {
   
   var [ActiveScreen, SetActiveScreen, s_SwitchStates, set_s_SwitchStates, DataObjects, SetDataObjects] = args[0]
-  
-  const Screens = {
-    Home : HomeScreen_Re(),
-    Search : SearchScreen_Re(),
-    Scanner : ScannerScreen_Re(SetDataObjects),
-    AccountBase : AccountScreen_Re([SetActiveScreen]),
-    AccountProfile : (<></>),
-    AccountSettings : SettingScreen_Re([SetActiveScreen, s_SwitchStates, set_s_SwitchStates]),
-    AccountAbout : (<></>)
-  }
 
-  const corresponding_screen = Object.keys(ActiveScreen).filter(key => ActiveScreen[key])
-
-  return Screens[corresponding_screen]
-  
-  // if (ActiveScreen.Home) {
-  //   return HomeScreen_Re()
-  // } else {
-  //   return (<></>)
+  // const Screens = {
+  //   Home : HomeScreen_Re(),
+  //   Search : SearchScreen_Re(),
+  //   Scanner : ScannerScreen_Re([DataObjects, SetDataObjects]),
+  //   AccountBase : AccountScreen_Re([SetActiveScreen]),
+  //   AccountProfile : (<></>),
+  //   AccountSettings : SettingScreen_Re([SetActiveScreen, s_SwitchStates, set_s_SwitchStates]),
+  //   AccountAbout : (<></>)
   // }
 
-  // console.log("Handle Screen Display")
-  // console.log("Account States: " + _account_states)
-  // console.log("Settings Params -> " + settings_params)
-  // if (home) {
-  //   return HomeScreen_Re()
-  // } else if (search) {
-  //   return SearchScreen_Re()
+  // const corresponding_screen = Object.keys(ActiveScreen).filter(key => ActiveScreen[key])
+
+  // return Screens[corresponding_screen]
+  
+
+  if (ActiveScreen.Home) {
+    return HomeScreen_Re()
+  } else if (ActiveScreen.Search) {
+    return SearchScreen_Re()
+  } else if (ActiveScreen.Scanner) {
+    return ScannerScreen_Re([DataObjects, SetDataObjects])
+  } else if (ActiveScreen.AccountBase) {
+    return AccountScreen_Re([SetActiveScreen])
+  } else if (ActiveScreen.AccountSettings) {
+    return SettingScreen_Re([SetActiveScreen, s_SwitchStates, set_s_SwitchStates])
+  } else if (ActiveScreen.AccountAbout) {
+    return AboutUs_Re([SetActiveScreen])
+  
   // } else if (scan) {
   //   return ScannerScreen_Re(camera_params)
   // } else if (account[0]) {
@@ -525,9 +539,9 @@ const handleScreenDisplay = (...args) => {
   //   console.log("Displaying About Us Screen")
   //   console.log("==========")
   //   return AboutUs_Re(about_params)
-  // } else {
-  //   return (<></>)
-  // }
+  } else {
+    return (<></>)
+  }
   
 }
 
@@ -626,7 +640,7 @@ const handleCameraPressed = (...args) => {
 const NavBar = (...args) => {
   var [ActiveScreen, SetActiveScreen, DataObjects, SetDataObjects] = args[0]
 
-  if (!(ActiveScreen.Account == true)) {
+  if (!(ActiveScreen.AccountSettings || ActiveScreen.AccountAbout)) {
     return (
       <>
         <View className="z-20 absolute w-[calc(90/375*100%)] aspect-square bg-[#090E05] left-[calc(50%-90/375/2*100%)] bottom-[2.75%] rounded-full">

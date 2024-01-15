@@ -1,3 +1,6 @@
+import { View, Text } from 'react-native'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
 const AccountBase = (...args) => {
     var [SetActiveScreen] = args[0]
   

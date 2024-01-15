@@ -1,5 +1,5 @@
-import { View, Text } from "react-native";
-import { StatusBar } from "expo-status-bar";
+import { View, Text, TextInput } from "react-native";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const HomeScreen = () => {
     return (

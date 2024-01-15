@@ -1,4 +1,4 @@
-import {ImageBackground, View, Text, Image, TouchableOpacity} from 'react-native'
+import { ImageBackground, View, Text, Image, TouchableOpacity } from 'react-native'
 
 
 const AboutUs = (...args) => {

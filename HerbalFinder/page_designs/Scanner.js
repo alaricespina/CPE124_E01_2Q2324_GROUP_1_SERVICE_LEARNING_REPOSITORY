@@ -1,5 +1,6 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import { StatusBar } from "expo-status-bar";
+import { View, Text } from "react-native";
+import { Camera, CameraType, FlashMode } from 'expo-camera';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const ScannerScreen = (...args) => {
     var [DataObjects, SetDataObjects] = args[0]
@@ -25,6 +26,7 @@ const ScannerScreen = (...args) => {
                 console.log("Camera Object Local:" + _)
                 
                 console.log("Camera Object Inside:" + DataObjects.Camera_Obj)
+
               }
               
             }}

@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Button } from "react-native";
+import { View, Text, TextInput } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
 const SearchScreen = () => {

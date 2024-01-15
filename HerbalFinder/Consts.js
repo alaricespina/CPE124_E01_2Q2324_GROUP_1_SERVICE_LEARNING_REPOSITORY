@@ -22,7 +22,10 @@ const defaultSettingStates = {
 }
 
 const defaultDataObjects = {
-    Camera_Obj : null
+    Camera_Obj : null,
+    username : null,
+    email : null,
+    password : null
 }
 
 export {ngrok_link, defaultScreenStates, defaultSettingStates, defaultDataObjects}

@@ -1,4 +1,5 @@
-const PostScanScreen_Re = () => {
+import { View, Text } from "react-native"
+const PostScanScreen = () => {
     return (
       <View>
         <View>
@@ -31,4 +32,4 @@ const PostScanScreen_Re = () => {
     )
   }
 
-export default PostScanScreen_Re
+export default PostScanScreen

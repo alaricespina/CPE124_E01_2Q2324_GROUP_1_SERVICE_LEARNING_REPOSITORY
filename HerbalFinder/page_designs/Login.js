@@ -1,13 +1,8 @@
-import {React,  useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
-
-import { StatusBar } from 'expo-status-bar';
-import handleLogin from '../page_logic/Login';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const LoginScreen = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+
 
   return (
     <View className="flex-1 bg-zinc-900">
@@ -48,9 +43,7 @@ const LoginScreen = () => {
         </View>
           
 
-      </ImageBackground>
-      <StatusBar style="auto"/>
-        
+      </ImageBackground>        
     </View>
   );
 };

@@ -1,16 +1,6 @@
-import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import HandleSignUp from '../page_logic/SignUp';
-
-
-
-
 
 const SignUpScreen = ({ navigation }) => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
   return (
     <View className="flex-1 bg-zinc-900">
@@ -52,7 +42,6 @@ const SignUpScreen = ({ navigation }) => {
           
 
       </ImageBackground>
-      <StatusBar style="auto"/>
         
     </View>
   );

@@ -20,30 +20,6 @@ import { Camera, CameraType, FlashMode } from 'expo-camera';
 
 import * as MediaLibrary from 'expo-media-library'
 
-const defaultScreenStates = {
-  Welcome : false,
-  Login : false,
-  SignUp : false,
-  Home : false, 
-  Search : false, 
-  Scanner : false, 
-  PostScan : false, 
-  AccountBase : false,
-  AccountProfile : false,
-  AccountSettings : false, 
-  AccountAbout : false
-}
-
-const defaultSettingStates = {
-  notificationEnabled : false,
-  emailEnabled : false,
-  reminderEnabled : false, 
-  locationEnabled : false
-}
-
-const defaultDataObjects = {
-  Camera_Obj : null
-}
 
 const HomeScreen_Re = () => {
   return (

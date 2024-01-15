@@ -30,6 +30,7 @@ const NavStack = createNativeStackNavigator();
 //   );
 // };
 
+//Main Screen
 const MainScreenNavigator = () => {
   return (
     <View className="flex-1 bg-zinc-900">
@@ -57,6 +58,7 @@ const MainScreenNavigator = () => {
   )
 }
 
+//Home Screen
 const HomeScreen_Re = () => {
   return (
     <View className="bg-[#090E05] w-full h-full">

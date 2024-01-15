@@ -324,9 +324,9 @@ const AccountScreen_Re = () => {
         <View className="h-2/5 w-4/5 bg-[#2F2F2F80] rounded-2xl items-center">
           <Text className="text-white text-lg font-medium mt-[4%] mb-[5%]">Your Favorite Plants</Text>
           <View className="flex-row">
+            
             <View className="flex-column items-center pl-4 pr-4">
               <TouchableOpacity className="w-12 h-12 bg-red-500 rounded-full"></TouchableOpacity>
-      
               <Text className="text-white text-xs italic">Hatdog</Text>
             </View>
             
@@ -370,7 +370,7 @@ const AccountScreen_Re = () => {
   );
 };
 
-
+//About Us Page
 const AboutUs_Re = () => {
   return (
     <ImageBackground
@@ -408,7 +408,7 @@ const AboutUs_Re = () => {
 };
 
 
-
+//Setting Page
 const SettingScreen_Re = () => {
   const [isNotificationEnabled, notificationIsEnabled] = useState(false);
   const [isEmailEnabled, emailIsEnabled] = useState(false);

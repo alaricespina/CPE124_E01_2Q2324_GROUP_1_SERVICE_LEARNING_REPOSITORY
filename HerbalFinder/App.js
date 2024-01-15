@@ -3,7 +3,7 @@ import {React, useState, useEffect} from 'react';
 //import Login from './page_designs/Login'; // Login
 //import SignUp from './page_designs/SignUp'; // Sign Up
 import WelcomeScreen from './page_designs/Welcome'; //Welcome
-import LoginScreen from './page_designs/Login' //Login
+import LoginScreen from './page_designs/LoginAndSignUp' //Login
 import SignUpScreen from './page_designs/SignUp';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -19,7 +19,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { Camera, CameraType, FlashMode } from 'expo-camera';
 
 import * as MediaLibrary from 'expo-media-library'
-
+import { defaultScreenStates, defaultSettingStates, defaultDataObjects } from './Consts';
 
 const MaterialCommunityGradientIcon = (iconName, gradientStart, gradientEnd, defaultColor, monitoringVariable) => {
   if (monitoringVariable == true) {

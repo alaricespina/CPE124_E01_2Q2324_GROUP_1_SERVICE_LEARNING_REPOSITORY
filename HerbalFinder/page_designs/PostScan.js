@@ -30,3 +30,5 @@ const PostScanScreen_Re = () => {
       </View>
     )
   }
+
+export default PostScanScreen_Re

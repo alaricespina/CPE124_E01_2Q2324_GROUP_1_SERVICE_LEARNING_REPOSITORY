@@ -1,4 +1,4 @@
-const AboutUs_Re = (...args) => {
+const AboutUs = (...args) => {
     var [SetActiveScreen] = args[0]
     return (
       <ImageBackground
@@ -37,4 +37,6 @@ const AboutUs_Re = (...args) => {
       </ImageBackground>
     );
   };
+
+export default AboutUs
   

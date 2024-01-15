@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
-const ScannerScreen_Re = (...args) => {
+const ScannerScreen = (...args) => {
     var [DataObjects, SetDataObjects] = args[0]
     const permission = MediaLibrary.requestPermissionsAsync(true)
     console.log("Scanner Screen Called")
@@ -40,4 +40,4 @@ const ScannerScreen_Re = (...args) => {
     );
   };
   
-export default CameraScreen;
+export default ScannerScreen

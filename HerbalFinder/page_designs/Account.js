@@ -1,4 +1,4 @@
-const AccountScreen_Re = (...args) => {
+const AccountBase = (...args) => {
     var [SetActiveScreen] = args[0]
   
     return (
@@ -80,4 +80,5 @@ const AccountScreen_Re = (...args) => {
         </>
     );
   };
-  
+
+export default AccountBase

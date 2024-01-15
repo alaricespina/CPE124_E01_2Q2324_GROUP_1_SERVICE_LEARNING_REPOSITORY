@@ -1,4 +1,8 @@
+import {ImageBackground, View, Text, Image, TouchableOpacity} from 'react-native'
+
+
 const AboutUs = (...args) => {
+
     var [SetActiveScreen] = args[0]
     return (
       <ImageBackground

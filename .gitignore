@@ -34,4 +34,9 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Training Checkpoints
 Training Checkpoints/*
+
+# Dataset Images
+Plant Classification Models/Segmented Herbal Leaf Images/*
+Segmented Herbal Leaf Images/*

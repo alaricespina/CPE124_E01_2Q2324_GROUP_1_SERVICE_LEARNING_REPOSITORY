@@ -5,6 +5,8 @@ import ScannerScreen from "./page_designs/Scanner"
 import AccountBase from "./page_designs/AccountBase"
 import SettingScreen from "./page_designs/AccountSettings"
 import AboutUs from "./page_designs/AccountAboutUs"
+import Profile from "./page_designs/AccountProfile"
+
 import { handleMenuButtonsPressed } from "./Utility"
 
 const displayObjectFull = (targetObject) => {
@@ -71,6 +73,9 @@ const handleScreenDisplay = (...args) => {
     return SettingScreen([SetActiveScreen, s_SwitchStates, set_s_SwitchStates])
   } else if (ActiveScreen.AccountAbout) {
     return AboutUs([SetActiveScreen])
+  } else if (ActiveScreen.AccountProfile) {
+    return Profile([DataObjects, SetDataObjects, SetActiveScreen])
+  
   
   // } else if (scan) {
   //   return ScannerScreen_Re(camera_params)

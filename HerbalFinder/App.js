@@ -11,7 +11,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { Camera, CameraType, FlashMode } from 'expo-camera';
 
 
-// App Logic
+// App Logic --------
 import { displayObjectFull, handleCameraPressed, handleScreenDisplay } from './App_logic';
 import { handleMenuButtonsPressed } from './Utility';
 
@@ -76,16 +76,18 @@ const MaterialGradientIcon = (iconName, gradientStart, gradientEnd, defaultColor
   }
 }
 
-const MenuBarGalleryCircle = () => {
+const MenuBarGalleryCircle = (...args) => {
+  var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
+
   return (
     <>
-      <TouchableOpacity className="z-10 absolute w-[calc(200/375*100%)] left-[calc(50%-200/375/2*100%)] aspect-square bg-[#1E1D1D] bottom-[-4%] rounded-full">
+      <TouchableOpacity className="z-10 absolute w-[calc(200/375*100%)] left-[calc(50%-200/375/2*100%)] aspect-square bg-[#1E1D1D] bottom-[-4%] rounded-full"
+      onPress={() => handleMenuButtonsPressed([SetActiveScreen, "PostScan"])}
+      >
         <View className="bg-transparent w-full items-center h-full mt-3">
           <MaterialCommunityIcons name="image" size={25} color="#FFF"/>
         </View>        
       </TouchableOpacity>
-
-      
     </>
   )
 }
@@ -93,7 +95,7 @@ const MenuBarGalleryCircle = () => {
 const NavBar = (...args) => {
   var [ActiveScreen, SetActiveScreen, DataObjects, SetDataObjects] = args[0]
 
-  if (!(ActiveScreen.AccountSettings || ActiveScreen.AccountAbout)) {
+  if (!(ActiveScreen.AccountSettings || ActiveScreen.AccountAbout || ActiveScreen.AccountProfile)) {
     return (
       <>
         <View className="z-20 absolute w-[calc(90/375*100%)] aspect-square bg-[#090E05] left-[calc(50%-90/375/2*100%)] bottom-[2.75%] rounded-full">
@@ -182,8 +184,8 @@ const App = () => {
 
     {handleScreenDisplay([ActiveScreen, SetActiveScreen, s_SwitchStates, set_s_SwitchStates, DataObjects, SetDataObjects])}
 
-    {/* {homeSelected ? BigAssCircle() : <></>} */}
-    
+    {ActiveScreen.Home ? MenuBarGalleryCircle([SetActiveScreen, DataObjects, SetDataObjects]) : <></>}
+
     {NavBar([ActiveScreen, SetActiveScreen, DataObjects, SetDataObjects])}
 
 

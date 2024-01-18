@@ -1,18 +1,19 @@
 import { View, Text } from "react-native"
 const PostScanScreen = () => {
     return (
+      <>
       <View>
         <View>
           <Text>Medium Size Halaman Picutre backgrounnd</Text>
-          
+          <Text> Details </Text>
         </View>
-        <View>
-          <Text>Details</Text>
-        </View>
+
+
         <View>
           <Text>Spearmint Leaf</Text>
           <Text>Nerdy ass Scientific Name</Text>
         </View>
+        
         <View>
           <Text> Horizontally Flexed flex-row i think</Text>
           <Text>Pic 1</Text>
@@ -29,6 +30,8 @@ const PostScanScreen = () => {
         </View>
         
       </View>
+      </>
+      
     )
   }
 

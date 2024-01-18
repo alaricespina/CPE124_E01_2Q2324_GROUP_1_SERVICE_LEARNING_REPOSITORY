@@ -1,7 +1,11 @@
-import { defaultScreenStates } from "./Consts"
+import { defaultScreenStates } from "./Utility"
 import HomeScreen from "./page_designs/Home"
 import SearchScreen from "./page_designs/Search"
 import ScannerScreen from "./page_designs/Scanner"
+import AccountBase from "./page_designs/AccountBase"
+import SettingScreen from "./page_designs/AccountSettings"
+import AboutUs from "./page_designs/AccountAboutUs"
+import { handleMenuButtonsPressed } from "./Utility"
 
 const displayObjectFull = (targetObject) => {
     for (var x in targetObject) {
@@ -13,7 +17,11 @@ const handleCameraPressed = (...args) => {
     var [ActiveScreen, SetActiveScreen, targettedAttribute, DataObjects] = args[0]
     if (ActiveScreen.Scanner) {
       console.log("Say Cheese")
-      // take_picture(DataObject.CameraObj)
+      console.log("Current Object:" + DataObjects.Camera_Obj)
+      console.log("Full Definition")
+      displayObjectFull(DataObjects.CameraObj)
+      take_picture(DataObjects.CameraObj)
+      handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
     } else {
       handleMenuButtonsPressed([SetActiveScreen, targettedAttribute])
     }
@@ -25,15 +33,11 @@ const take_picture = async (camera) => {
       console.log(data.uri);
       await MediaLibrary.saveToLibraryAsync(data.uri)
       console.log("data saved")
+    } else {
+      console.log("Current Camera is: " + camera)
     }
   }
   
-const handleMenuButtonsPressed = (...args) => {
-  var [SetActiveScreen, targettedAttribute] = args[0]
-  var dSS = {...defaultScreenStates}
-  dSS[targettedAttribute] = true 
-  SetActiveScreen({...dSS})
-}
 
 const handleScreenDisplay = (...args) => {
   
@@ -59,14 +63,14 @@ const handleScreenDisplay = (...args) => {
   } else if (ActiveScreen.Search) {
     return SearchScreen()
   } else if (ActiveScreen.Scanner) {
-    //return ScannerScreen([DataObjects, SetDataObjects])
-    return ScannerScreen()
+    return ScannerScreen([DataObjects, SetDataObjects])
+    //return ScannerScreen()
   } else if (ActiveScreen.AccountBase) {
-    return AccountScreen_Re([SetActiveScreen])
+    return AccountBase([SetActiveScreen])
   } else if (ActiveScreen.AccountSettings) {
-    return SettingScreen_Re([SetActiveScreen, s_SwitchStates, set_s_SwitchStates])
+    return SettingScreen([SetActiveScreen, s_SwitchStates, set_s_SwitchStates])
   } else if (ActiveScreen.AccountAbout) {
-    return AboutUs_Re([SetActiveScreen])
+    return AboutUs([SetActiveScreen])
   
   // } else if (scan) {
   //   return ScannerScreen_Re(camera_params)
@@ -89,4 +93,4 @@ const handleScreenDisplay = (...args) => {
   
 }
 
-export {displayObjectFull, handleCameraPressed, take_picture, handleMenuButtonsPressed, handleScreenDisplay}
+export {displayObjectFull, handleCameraPressed, take_picture, handleScreenDisplay}

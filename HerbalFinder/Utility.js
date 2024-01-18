@@ -28,4 +28,12 @@ const defaultDataObjects = {
     password : null
 }
 
-export {ngrok_link, defaultScreenStates, defaultSettingStates, defaultDataObjects}
+const handleMenuButtonsPressed = (...args) => {
+    var [SetActiveScreen, targettedAttribute] = args[0]
+    var dSS = {...defaultScreenStates}
+    dSS[targettedAttribute] = true 
+    SetActiveScreen({...dSS})
+}
+
+
+export {ngrok_link, defaultScreenStates, defaultSettingStates, defaultDataObjects, handleMenuButtonsPressed}

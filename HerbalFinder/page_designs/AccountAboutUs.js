@@ -1,17 +1,17 @@
 import { ImageBackground, View, Text, Image, TouchableOpacity } from 'react-native'
-
+import { handleMenuButtonsPressed } from '../Utility';
 
 const AboutUs = (...args) => {
 
     var [SetActiveScreen] = args[0]
     return (
       <ImageBackground
-        source={require('./pics/PNG_AboutUs.png')}
+        source={require('../pics/PNG_AboutUs.png')}
         style={{ flex: 1, resizeMode: 'cover', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,1.00)' }}
       >
         <View className="items-center justify-center">
           {/* Herbal Finder Logo */}
-          <Image source={require('./pics/HBLogo.png')} style={{ width: 150, height: 120, marginBottom: 20}} />
+          <Image source={require('../pics/HBLogo.png')} style={{ width: 150, height: 120, marginBottom: 20}} />
   
           <Text className="text-white text-3xl font-bold mb-6">About Us</Text>
           <View className="w-4/5 bg-[#2F2F2F90] rounded-2xl p-[10%] mb-[20%]">

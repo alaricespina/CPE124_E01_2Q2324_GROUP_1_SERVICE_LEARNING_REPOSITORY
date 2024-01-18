@@ -12,10 +12,11 @@ import { Camera, CameraType, FlashMode } from 'expo-camera';
 
 
 // App Logic
-import { displayObjectFull, handleCameraPressed, take_picture, handleMenuButtonsPressed, handleScreenDisplay } from './App_logic';
+import { displayObjectFull, handleCameraPressed, handleScreenDisplay } from './App_logic';
+import { handleMenuButtonsPressed } from './Utility';
 
 // Const
-import { defaultScreenStates, defaultSettingStates, defaultDataObjects } from './Consts';
+import { defaultScreenStates, defaultSettingStates, defaultDataObjects } from './Utility';
 
 const MaterialCommunityGradientIcon = (iconName, gradientStart, gradientEnd, defaultColor, monitoringVariable) => {
   if (monitoringVariable == true) {

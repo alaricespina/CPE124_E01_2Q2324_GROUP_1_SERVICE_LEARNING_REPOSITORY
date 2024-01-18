@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Switch } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import { handleMenuButtonsPressed } from "../Utility";
 
 const SettingScreen = (...args) => {
     var [SetActiveScreen, s_SwitchStates, set_s_SwitchStates] = args[0]

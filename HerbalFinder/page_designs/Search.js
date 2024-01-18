@@ -1,5 +1,5 @@
 import { View, Text, TextInput } from "react-native";
-import { StatusBar } from "expo-status-bar";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const SearchScreen = () => {
     return (

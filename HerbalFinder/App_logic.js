@@ -8,6 +8,7 @@ import AboutUs from "./page_designs/AccountAboutUs"
 import Profile from "./page_designs/AccountProfile"
 
 import { handleMenuButtonsPressed } from "./Utility"
+import PostScanScreen from "./page_designs/PostScan"
 
 const displayObjectFull = (targetObject) => {
     for (var x in targetObject) {
@@ -75,6 +76,9 @@ const handleScreenDisplay = (...args) => {
     return AboutUs([SetActiveScreen])
   } else if (ActiveScreen.AccountProfile) {
     return Profile([DataObjects, SetDataObjects, SetActiveScreen])
+  } else if (ActiveScreen.PostScan) {
+    return PostScanScreen()
+    
   
   
   // } else if (scan) {

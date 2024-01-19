@@ -40,6 +40,7 @@ const MatchHandler = (response) => {
     }
   }
 }
+
 const HandleSignUp = (username, email, password) => {
   // Add your sign-up logic here
   console.log("Username: " + username + "\nEmail: " + email +"\nPassword: " + password)

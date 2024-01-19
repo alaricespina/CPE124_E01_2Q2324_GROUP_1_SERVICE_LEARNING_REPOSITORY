@@ -1,17 +1,43 @@
 // Main
-import {React, useState, useEffect} from 'react';
+import {React, useState, useEffect, useRef} from 'react';
 
 // Components
-import { Switch, StyleSheet, View, Image, ImageBackground, Text, TouchableOpacity, Button, Touchable, TextInput, Pressable, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { Switch, View, Image, ImageBackground, Text, TouchableOpacity, TextInput, Pressable, Alert} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { Camera, CameraType, FlashMode } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library'
 
 // ================================================================================================================
-// Utiliy Icon Functions
+// Constants
+
+const ngrok_link = "https://fit-krill-apparently.ngrok-free.app"
+
+const defaultScreenStates = {
+  Welcome : false,
+  LoginSignUp : false,
+  Home : false, 
+  Search : false, 
+  Scanner : false, 
+  PostScan : false, 
+  AccountBase : false,
+  AccountProfile : false,
+  AccountSettings : false, 
+  AccountAbout : false
+}
+
+const defaultSettingStates = {
+  notificationEnabled : false,
+  emailEnabled : false,
+  reminderEnabled : false, 
+  locationEnabled : false
+}
+
+// ================================================================================================================
+// Utiliy Functions
 
 const MaterialCommunityGradientIcon = (iconName, gradientStart, gradientEnd, defaultColor, monitoringVariable) => {
   if (monitoringVariable == true) {
@@ -71,37 +97,10 @@ const MaterialGradientIcon = (iconName, gradientStart, gradientEnd, defaultColor
   }
 }
 
-// ================================================================================================================
-// Constants
-
-const ngrok_link = "https://fit-krill-apparently.ngrok-free.app"
-
-const defaultScreenStates = {
-    Welcome : false,
-    Login : false,
-    SignUp : false,
-    Home : false, 
-    Search : false, 
-    Scanner : false, 
-    PostScan : false, 
-    AccountBase : false,
-    AccountProfile : false,
-    AccountSettings : false, 
-    AccountAbout : false
-}
-
-const defaultSettingStates = {
-    notificationEnabled : false,
-    emailEnabled : false,
-    reminderEnabled : false, 
-    locationEnabled : false
-}
-
-const defaultDataObjects = {
-    Camera_Obj : null,
-    username : null,
-    email : null,
-    password : null
+const ShowOKAlertMessage = (title, message) => {
+  Alert.alert(title, message, [
+    {text: 'OK', onPress: () => console.log('OK Pressed')},
+  ]);
 }
 
 // ================================================================================================================
@@ -110,24 +109,97 @@ const defaultDataObjects = {
 // Take picture after camera button has been pressed
 const takeCameraPicture = async (camera) => {
   if (camera) {
-    const data = await camera.takePictureAsync(null);
+    const options = {base64:false}
+    const data = await camera.takePictureAsync(options);
     console.log(data.uri);
     await MediaLibrary.saveToLibraryAsync(data.uri)
     console.log("data saved")
   } else {
-    console.log("Current Camera is: " + camera)
+    console.log("RUNTIME ERROR =======================")
+    console.log("Current Camera is: ")
+    console.log(camera)
+    console.log("=====================================")
   }
 }
 
+// Handle Camera Button pressed on Navigation Bar
+const handleCameraPressed = (...args) => {
+  console.log("Camera Pressed, Args: ")
+  console.log(args)
+  var [ActiveScreen, SetActiveScreen, targettedAttribute, DataObjects] = args[0]
+  if (ActiveScreen.Scanner) {
+    console.log("Say Cheese")
+    console.log("Current Object:" + DataObjects.Camera_Obj)
+    console.log("Full Definition")
+    displayObjectFull(DataObjects.Camera_Obj.current)
+    takeCameraPicture(DataObjects.Camera_Obj.current).then(() => {
+      console.log("Picture Done")
+      handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
+    })
+    // handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
+  } else {
+    handleMenuButtonsPressed([SetActiveScreen, targettedAttribute])
+  }
+}
 
 // Send the Login Request after login has been pressed
-const sendLoginRequest = () => {
-
+const sendLoginRequest = async(username, password) => {
+  console.log("Logging in")
+  console.log(ngrok_link.concat("/login"))
+  const response = await fetch(ngrok_link.concat("/login"), {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning' : true
+    },
+    body: JSON.stringify({
+      'username': username,
+      'password': password
+    })
+  });
+  return await response.json();
 }
 
 // Send the Sign Up Request after Signup has been pressed
-const sendSignUpRequest = () => {
+const sendSignUpRequest = async(username, email, password) => {
+  const response = await fetch(ngrok_link.concat('/signup'), {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning' : true
+    },
+    body: JSON.stringify({
+      'username': username,
+      'email': email,
+      'password': password
+    })
+  });
+  return await response.json();
+}
 
+// Synchronous handling of Login and Signup Request
+const handleLoginSignUpAction = (username, email, password, mode, SetActiveScreen) => {
+  if (mode == "Login") {
+    sendLoginRequest(username, password).then((response) => {
+      console.log("Login Response: ")
+      console.log(response)
+      if (response["match"]) {
+        handleMenuButtonsPressed([SetActiveScreen, "Home"])
+      }
+    })
+  } else if (mode == "SignUp") {
+    sendSignUpRequest(username, email, password).then((response) => {
+      console.log("SignUp Response:")
+      console.log(response)
+      if (response["match"]) {
+        sendLoginRequest(username, password).then((response) => {
+          handleMenuButtonsPressed([SetActiveScreen, "Home"])
+        })
+      }
+    })
+  }
 }
 
 // Update Account Details (Unlock Fields) after button has been pressed
@@ -150,20 +222,6 @@ const handleMenuButtonsPressed = (...args) => {
 const displayObjectFull = (targetObject) => {
   for (var x in targetObject) {
     console.log(x + " : " + targetObject[x])  
-  }
-}
-
-const handleCameraPressed = (...args) => {
-  var [ActiveScreen, SetActiveScreen, targettedAttribute, DataObjects] = args[0]
-  if (ActiveScreen.Scanner) {
-    console.log("Say Cheese")
-    console.log("Current Object:" + DataObjects.Camera_Obj)
-    console.log("Full Definition")
-    displayObjectFull(DataObjects.CameraObj)
-    take_picture(DataObjects.CameraObj)
-    handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
-  } else {
-    handleMenuButtonsPressed([SetActiveScreen, targettedAttribute])
   }
 }
 
@@ -196,13 +254,16 @@ if (ActiveScreen.Home) {
 } else if (ActiveScreen.AccountBase) {
   return AccountBase([SetActiveScreen])
 } else if (ActiveScreen.AccountSettings) {
-  return SettingScreen([SetActiveScreen, s_SwitchStates, set_s_SwitchStates])
+  return AccountSettings([SetActiveScreen, s_SwitchStates, set_s_SwitchStates])
 } else if (ActiveScreen.AccountAbout) {
-  return AboutUs([SetActiveScreen])
+  return AccountAboutUs([SetActiveScreen])
 } else if (ActiveScreen.AccountProfile) {
-  return Profile([DataObjects, SetDataObjects, SetActiveScreen])
+  return AccountProfile([DataObjects, SetDataObjects, SetActiveScreen])
 } else if (ActiveScreen.PostScan) {
   return PostScanScreen()
+} else if (ActiveScreen.LoginSignUp) {
+  return LoginAndSignUpScreen([SetActiveScreen, DataObjects, SetDataObjects])
+
   
 
 
@@ -249,7 +310,7 @@ const MenuBarGalleryCircle = (...args) => {
 const NavBar = (...args) => {
   var [ActiveScreen, SetActiveScreen, DataObjects, SetDataObjects] = args[0]
 
-  if (!(ActiveScreen.AccountSettings || ActiveScreen.AccountAbout || ActiveScreen.AccountProfile)) {
+  if (!(ActiveScreen.AccountSettings || ActiveScreen.AccountAbout || ActiveScreen.AccountProfile || ActiveScreen.LoginSignUp)) {
     return (
       <>
         <View className="z-20 absolute w-[calc(90/375*100%)] aspect-square bg-[#090E05] left-[calc(50%-90/375/2*100%)] bottom-[2.75%] rounded-full">
@@ -314,50 +375,210 @@ const NavBar = (...args) => {
 // ================================================================================================================
 // Screens
 // Login And Signup Screen
-const LoginAndSignUpScreen = () => {
+const LoginAndSignUpScreen = (...args) => {
+  var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
+  console.log("Login And Signup")
+  console.log("Data Objects")
+  console.log(DataObjects)
+
+  const LoginSet = () => {
+    return (
+      <>
+        <View className="absolute w-full h-[10%] top-[20%] items-center">
+          <View className="w-4/5 h-full">
+            <TextInput 
+            placeholder="Enter email or username" 
+            placeholderTextColor="#766F6F" 
+            className="w-full bg-transparent h-full text-white border-b-2"
+            value = {DataObjects.username}
+            onChangeText={(text) => {
+              var curr = {...DataObjects}
+              curr.username = text
+              SetDataObjects(curr)
+            }}
+            />
+          </View>
+        </View>
+
+        <View className="absolute w-full h-[10%] top-[40%] items-center">
+          <View className="w-4/5 h-full">
+            <TextInput 
+            placeholder="Password" 
+            placeholderTextColor="#766F6F" 
+            secureTextEntry 
+            className="w-full bg-transparent h-full text-white border-b-2"
+            value = {DataObjects.password}
+            onChangeText={(text) => {
+              var curr = {...DataObjects}
+              curr.password = text
+              SetDataObjects(curr)
+            }}
+            />
+          </View>
+        </View>
+        
+        <View className="absolute w-full h-[10%] top-[50%] items-center">
+          <View className="w-4/5 h-full items-end">
+            <TouchableOpacity onPress={() => console.log("Forgot your password? You done goofed boy")}>
+              <Text className="text-[#766F6F]">Forgot Password?</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
 
-  return (
-    <View className="flex-1 bg-zinc-900">
-      <ImageBackground source= {require("../pics/PNGtree.png")} className="flex-1 object-cover">
-        <View className="flex-1 bg-transparent items-center justify-center">
-          <Image source={require('../pics/HBLogo.png')} className="w-96 h-52 object-scale-down rounded-xl ml-5"></Image>
-          <Text className="text-white text-2xl mb-6">Login</Text>
-
-          {/*Login and Signup switch, must remove states on top now, will have to put them on app*/}
-          <TextInput 
-          placeholder="Enter email or username" 
-          placeholderTextColor="black" 
-          className="w-2/3 bg-white h-10 mb-6 text-black"
-          value = {username}
-          onChangeText={(text) => setUsername(text)}
-          />
-          <TextInput 
-          placeholder="Password" 
-          placeholderTextColor="black" 
-          secureTextEntry 
-          className="w-2/3 bg-white h-10 mb-6 text-black"
-          value = {password}
-          onChangeText={(text) => setPassword(text)}
-          />
-
-          <LinearGradient colors={["#FFF", "#FFF"]}></LinearGradient>
-          <LinearGradient colors={["#FFF", "#FFF"]}></LinearGradient>
-          <LinearGradient colors={["#FFF", "#FFF"]}></LinearGradient>
-          <LinearGradient colors={["#FFF", "#FFF"]}></LinearGradient>
-          
-
-          <TouchableOpacity onPress= {() => console.log("Login Pressed")} className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center">
+        <View className="absolute w-full h-[10%] top-[70%] items-center">
+          <TouchableOpacity 
+            className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center rounded-full"
+            onPress= {() => {
+              handleLoginSignUpAction(DataObjects.username, "", DataObjects.password, "Login", SetActiveScreen)
+              console.log("Login Pressed")
+            }}>
             <Text className="text-white text-base font-bold">Login</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress= {() => console.log("Forget Password pressed") }className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center">
-            <Text className="text-white text-base font-bold">Forget Password</Text>
+        </View>
+      </>
+      
+    )
+    
+  }
+
+  const SignUpSet = () => {
+    return (
+      <>
+        <View className="absolute w-full h-[10%] top-[20%] items-center">
+          <View className="w-4/5 h-full">
+            <TextInput 
+            placeholder="Enter Username" 
+            placeholderTextColor="#766F6F" 
+            className="w-full bg-transparent h-full text-white border-b-2"
+            value = {DataObjects.username}
+            onChangeText={(text) => {
+              var curr = {...DataObjects}
+              curr.username = text
+              SetDataObjects(curr)
+            }}
+            />
+          </View>
+        </View>
+
+        <View className="absolute w-full h-[10%] top-[40%] items-center">
+          <View className="w-4/5 h-full">
+            <TextInput 
+            placeholder="Enter Email" 
+            placeholderTextColor="#766F6F" 
+            className="w-full bg-transparent h-full text-white border-b-2"
+            value = {DataObjects.email}
+            onChangeText={(text) => {
+              var curr = {...DataObjects}
+              curr.email = text
+              SetDataObjects(curr)
+            }}
+            />
+          </View>
+        </View>
+
+        <View className="absolute w-full h-[10%] top-[60%] items-center">
+          <View className="w-4/5 h-full">
+            <TextInput 
+            placeholder="Enter Password" 
+            placeholderTextColor="#766F6F" 
+            secureTextEntry 
+            className="w-full bg-transparent h-full text-white border-b-2"
+            value = {DataObjects.password}
+            onChangeText={(text) => {
+              var curr = {...DataObjects}
+              curr.password = text
+              SetDataObjects(curr)
+            }}
+            />
+          </View>
+        </View>
+        
+        
+
+
+        <View className="absolute w-full h-[10%] top-[80%] items-center">
+          <TouchableOpacity onPress= {() => {
+            handleLoginSignUpAction(DataObjects.username, DataObjects.email, DataObjects.password, "SignUp", SetActiveScreen)
+            console.log("Signup Pressed")
+            }} className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center rounded-full">
+            <Text className="text-white text-base font-bold">SignUp</Text>
           </TouchableOpacity>
         </View>
+      </>
+      
+    )
+  }
+
+  return (
+    <>
+      <ImageBackground source= {require("./pics/PNG_LoginSignUp.png")} className="absolute z-0 w-full h-full object-cover">
+      </ImageBackground> 
+
+
+      <View className="absolute w-full h-full bg-[#00000090] items-center">
+        <View className="absolute z-10 w-[calc(450/375*100%)] aspect-square top-[calc(-225/812*100%)] left-[calc(-75/375*100%)]">
+        <LinearGradient className="w-full h-full rounded-full" colors={["#00800075", "#00800075"]}></LinearGradient>
+      </View>
+      <View className="absolute z-10 w-[calc(467/375*100%)] h-[calc(450/812*100%)] top-[calc(-286/812*100%)] left-[calc(-179/375*100%)]">
+        <LinearGradient className="w-full h-full rounded-full" colors={["#00800075", "#2AAA8A75"]}></LinearGradient>
+      </View>
+      <View className="absolute z-10 w-[calc(467/375*100%)] aspect-square top-[calc(648/812*100%)] left-[calc(131/375*100%)]">
+        <LinearGradient className="w-full h-full rounded-full" colors={["#00800075", "#2AAA8A75"]}></LinearGradient>
+      </View>
+      <View className="absolute z-30 w-[150%] aspect-square top-[calc(700/812*100%)] left-[-40%]">
+        <LinearGradient className="w-full h-full rounded-full" colors={["#00800075", "#2AAA8A75"]}></LinearGradient>
+      </View>
+
+      
+      <View className="absolute z-20 h-[calc(134/812*100%)] top-[7.5%] w-full items-center">
+        <Image source={require('./pics/HBLogo.png')} className=" h-full aspect-square object-scale-down rounded-xl ml-5"/>
+      </View>
+
+      <View className="absolute z-30 w-[calc(316/375*100%)] bg-[#2F2F2F] h-[calc(434/812*100%)] top-[calc(210/812*100%)] rounded-xl border-2 border-[#766F6F]">
+        <View className="absolute top-[5%] w-full h-[10%] items-center">
+          <View className="w-4/5 h-full">
+            <View className={`absolute z-20 w-[calc(54%)] h-full rounded-full border-2 border-black ${DataObjects.loginSignUpState ? 'bg-[#008000]' : 'bg-[#2AAA8A]'}`}>
+              <Pressable 
+              className="w-full h-full items-center justify-center"
+              onPress={() => {
+                console.log("Login Pressed")
+                console.log(DataObjects.loginSignUpState)
+                var x = {...DataObjects}
+                x.loginSignUpState = true
+                SetDataObjects(x)
+              }}
+              >
+                <Text className="text-white" >Login</Text>
+              </Pressable>
+            </View>
+            <View className={`absolute z-10 w-[calc(60%)] left-[40%] h-full rounded-full border-2 border-black ${DataObjects.loginSignUpState ? 'bg-[#2AAA8A]' : 'bg-[#008000]'}`}>
+              <Pressable 
+              className="w-full h-full items-center justify-center"
+              onPress={() => {
+                console.log("SignUp Pressed")
+                console.log(DataObjects.loginSignUpState)
+                var x = {...DataObjects}
+                x.loginSignUpState = false
+                SetDataObjects(x)
+              }}
+              >
+                <Text className="text-white" >Sign Up</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+
+        {DataObjects.loginSignUpState ? LoginSet() : SignUpSet()}
+        
+        </View>
+                
+      </View>
           
 
-      </ImageBackground>        
-    </View>
+       
+    </>
+
   );
 };
 
@@ -448,19 +669,32 @@ const PostScanScreen = () => {
         <Text className="text-white">Nerdy ass Scientific Name</Text>
       </View>
 
-      <View className="absolute w-full top-[50%]">
-        <Text>Pic 1</Text>
-        <Text>Pic 1</Text>
-        <Text>Pic 1</Text>
-        <Text>Pic 1</Text>
+      <View className="absolute w-full top-[40%] h-[10%] items-center">
+        <View className="w-4/5 flex-row h-full gap-x-[4%] -ml-[19%]">
+          <View className="bg-green-800 h-full aspect-square">
+
+          </View>
+          <View className="bg-green-800 h-full aspect-square">
+
+          </View>
+          <View className="bg-green-800 h-full aspect-square">
+
+          </View>
+          <View className="bg-green-800 h-full aspect-square">
+
+          </View>
+        </View>
+        
       </View>
 
-      <View className="absolute w-full top-[70%]">
-        <Text className="text-white">Spearmint Leaf Report</Text>
-        <Text className="text-white">Benefits</Text>
-        <Text className="text-white">Oh wow may benefits</Text>
-        <Text className="text-white">Usage</Text>
-        <Text className="text-white">To Prepare this halaman, kunin mo muna hindi to magically pupunta sa kamay mo</Text>
+      <View className="absolute w-full top-[52%] items-center">
+        <View className="w-4/5 -ml-[14%]">
+          <Text className="text-white font-bold text-lg">Spearmint Leaf Report</Text>
+          <Text className="text-white font-bold text-lg">Benefits</Text>
+          <Text className="text-white">Oh wow may benefits</Text>
+          <Text className="text-white font-bold text-lg">Usage</Text>
+          <Text className="text-white">To Prepare this halaman, kunin mo muna hindi to magically pupunta sa kamay mo</Text>
+        </View>
       </View>
       
     
@@ -487,23 +721,26 @@ const ScannerScreen = (...args) => {
           end={{x:0.5, y:1.0}}
         />
         <Camera 
-          ref={(r) => {
-            var x = {...DataObjects}
-            console.log("1 - Current Camera Object on Data Object:" + DataObjects.Camera_Obj)
-            x.Camera_Obj = r
-
-            if (!(DataObjects.Camera_Obj)) {
-              console.log("X is")
-              console.log(x)
-              SetDataObjects(x)
-              DataObjects.Camera_Obj = r              
-            }
+          ref={DataObjects.Camera_Obj}
+          // (r) => {
+          //   var x = {...DataObjects}
+          //   console.log("1 - Current Camera Object on Data Object:" + DataObjects.Camera_Obj)
+          //   console.log("2 - X Camera Object (Local): " + x.Camera_Obj)
+          //   x.Camera_Obj = r
+          //   console.log("2 - X Camera Object (Local): " + x.Camera_Obj)
+          //   console.log("2 - X (Local): " + x)
+          //   if (DataObjects.Camera_Obj == null && r != null) {
+          //     SetDataObjects(x)
+              
+          //   }
+          //   console.log("3 - After Setting: " + DataObjects.Camera_Obj)
             
-          }}
+            
+          // }
           type={CameraType.back}
           flashMode={FlashMode.auto} 
           className="absolute z-20 h-full aspect-[3/4] items-center justify-center">
-          <Image source={require("../scan-line.png")}/>
+          <Image source={require("./scan-line.png")}/>
         </Camera>
     
         <Text className="absolute z-30 text-white top-[70%]"> Scanner </Text>
@@ -512,6 +749,7 @@ const ScannerScreen = (...args) => {
     </>
   )
 }
+
 // Search Screen
 const SearchScreen = () => {
   return (
@@ -579,12 +817,12 @@ const AccountAboutUs = (...args) => {
   var [SetActiveScreen] = args[0]
   return (
     <ImageBackground
-      source={require('../pics/PNG_AboutUs.png')}
+      source={require('./pics/PNG_AboutUs.png')}
       style={{ flex: 1, resizeMode: 'cover', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,1.00)' }}
     >
       <View className="items-center justify-center">
         {/* Herbal Finder Logo */}
-        <Image source={require('../pics/HBLogo.png')} style={{ width: 150, height: 120, marginBottom: 20}} />
+        <Image source={require('./pics/HBLogo.png')} style={{ width: 150, height: 120, marginBottom: 20}} />
 
         <Text className="text-white text-3xl font-bold mb-6">About Us</Text>
         <View className="w-4/5 bg-[#2F2F2F90] rounded-2xl p-[10%] mb-[20%]">
@@ -868,6 +1106,15 @@ const AccountSettings = (...args) => {
 // App Function
 
 const App = () => {
+  
+  const defaultDataObjects = {
+      Camera_Obj : useRef(null),
+      username : null,
+      email : null,
+      password : null,
+      loginSignUpState : true
+  }
+
   console.log("\n" + Date() + " - Compiled");
 
   var [s_SwitchStates, set_s_SwitchStates] = useState({
@@ -883,6 +1130,12 @@ const App = () => {
   var [DataObjects, SetDataObjects] = useState({
     ...defaultDataObjects
   })
+
+  var [startUp, setStartUp] = useState(1)
+  if (startUp) {
+    handleMenuButtonsPressed([SetActiveScreen, "LoginSignUp"])
+    setStartUp(0)
+  }
 
   console.log("***********Active Screen***********")
   displayObjectFull(ActiveScreen)

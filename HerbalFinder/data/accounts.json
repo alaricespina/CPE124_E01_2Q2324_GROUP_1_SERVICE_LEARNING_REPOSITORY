@@ -49,6 +49,18 @@
             "id": "7",
             "password": "Xdd123",
             "username": "Remilia"
+        },
+        "8": {
+            "email": "reimuhakurei@gmail.com",
+            "id": "8",
+            "password": "touhou123",
+            "username": "Reimu"
+        },
+        "9": {
+            "email": "mumeinanashi@gmail.com",
+            "id": "9",
+            "password": "hoothoot",
+            "username": "Mumei"
         }
     }
 }

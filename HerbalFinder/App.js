@@ -193,7 +193,7 @@ const handleLoginSignUpAction = (username, email, password, mode, SetActiveScree
     sendSignUpRequest(username, email, password).then((response) => {
       console.log("SignUp Response:")
       console.log(response)
-      if (response["match"]) {
+      if !(response["match"]) {
         sendLoginRequest(username, password).then((response) => {
           handleMenuButtonsPressed([SetActiveScreen, "Home"])
         })

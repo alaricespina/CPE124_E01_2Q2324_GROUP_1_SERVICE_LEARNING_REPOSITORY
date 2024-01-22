@@ -223,7 +223,6 @@ def iou(a, b):
 
 
 # Ground truth anchors generator
-
 def get_anchor_gt(all_img_data, C, img_length_calc_function, mode='train'):
 	""" Yield the ground-truth anchors as Y (labels)
 		
@@ -319,7 +318,6 @@ def rpn_loss_regr(num_anchors):
 
     return rpn_loss_regr_fixed_num
 
-
 def rpn_loss_cls(num_anchors):
     """Loss function for rpn classification
     Args:
@@ -334,7 +332,6 @@ def rpn_loss_cls(num_anchors):
             return lambda_rpn_class * K.sum(y_true[:, :, :, :num_anchors] * K.binary_crossentropy(y_pred[:, :, :, :], y_true[:, :, :, num_anchors:])) / K.sum(epsilon + y_true[:, :, :, :num_anchors])
 
     return rpn_loss_cls_fixed_num
-
 
 def class_loss_regr(num_classes):
     """Loss function for rpn regression
@@ -351,7 +348,6 @@ def class_loss_regr(num_classes):
         x_bool = K.cast(K.less_equal(x_abs, 1.0), 'float32')
         return lambda_cls_regr * K.sum(y_true[:, :, :4*num_classes] * (x_bool * (0.5 * x * x) + (1 - x_bool) * (x_abs - 0.5))) / K.sum(epsilon + y_true[:, :, :4*num_classes])
     return class_loss_regr_fixed_num
-
 
 def class_loss_cls(y_true, y_pred):
     return lambda_cls_class * K.mean(categorical_crossentropy(y_true[0, :, :], y_pred[0, :, :]))
@@ -699,5 +695,3 @@ def rpn_to_roi(rpn_layer, regr_layer, C, dim_ordering, use_regr=True, max_boxes=
 	result = non_max_suppression_fast(all_boxes, all_probs, overlap_thresh=overlap_thresh, max_boxes=max_boxes)[0]
 
 	return result
-
-

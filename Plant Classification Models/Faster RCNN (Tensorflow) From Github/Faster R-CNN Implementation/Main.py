@@ -1,7 +1,6 @@
-
+import os 
 
 base_path = 'D:/5-deep_learning_with_tensorflow/module 7 cnn/7-faster_r-cnn/SAR_faster-rcnn'
-
 train_path =  'D:/5-deep_learning_with_tensorflow/module 7 cnn/7-faster_r-cnn/SAR_faster-rcnn/annotation.txt' # Training data (annotation file)
 
 num_rois = 4 # Number of RoIs to process at once.
@@ -12,11 +11,8 @@ vertical_flips = True   # Augment with vertical flips in training.
 rot_90 = True           # Augment with 90 degree rotations in training. 
 
 output_weight_path = os.path.join(base_path, 'model/model_frcnn_vgg.hdf5')
-
 record_path = os.path.join(base_path, 'model/record.csv') # Record data (used to save the losses, classification accuracy and mean average precision)
-
 base_weight_path = os.path.join(base_path, 'model/vgg16_weights_tf_dim_ordering_tf_kernels.h5')
-
 config_output_filename = os.path.join(base_path, 'model_vgg_config.pickle')
 
 # Create the config

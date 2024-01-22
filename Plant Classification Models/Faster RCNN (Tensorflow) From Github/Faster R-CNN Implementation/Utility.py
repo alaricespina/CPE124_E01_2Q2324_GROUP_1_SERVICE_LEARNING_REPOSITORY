@@ -19,12 +19,8 @@ def get_data(input_path):
 	"""
 	found_bg = False
 	all_imgs = {}
-
 	classes_count = {}
-
 	class_mapping = {}
-
-	visualise = True
 
 	i = 1
 	
@@ -160,7 +156,6 @@ def augment(img_data, config, augment=True):
 	img_data_aug['width'] = img.shape[1]
 	img_data_aug['height'] = img.shape[0]
 	return img_data_aug, img
-
 
 if __name__ == "__main__":
     print("Testing Utility")

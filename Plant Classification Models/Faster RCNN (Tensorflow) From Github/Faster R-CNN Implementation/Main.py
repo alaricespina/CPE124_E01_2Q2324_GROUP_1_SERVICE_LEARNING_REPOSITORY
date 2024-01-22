@@ -1,11 +1,4 @@
 
-lambda_rpn_regr = 1.0
-lambda_rpn_class = 1.0
-
-lambda_cls_regr = 1.0
-lambda_cls_class = 1.0
-
-epsilon = 1e-4
 
 base_path = 'D:/5-deep_learning_with_tensorflow/module 7 cnn/7-faster_r-cnn/SAR_faster-rcnn'
 

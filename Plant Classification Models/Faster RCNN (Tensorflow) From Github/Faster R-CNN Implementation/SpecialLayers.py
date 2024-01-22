@@ -1,6 +1,9 @@
 from keras.layers import Conv2D, Layer, TimeDistributed, Dense, Dropout, Flatten
 from keras import backend as K 
 
+import tensorflow as tf 
+
+
 def rpn_layer(base_layers, num_anchors):
     """Create a rpn layer
         Step1: Pass through the feature map from base layer to a 3x3 512 channels convolutional layer

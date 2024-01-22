@@ -1,5 +1,25 @@
 #Calculate the rpn for all anchors of all images
 import numpy as np 
+import random 
+import cv2 
+from keras import backend as K 
+import tensorflow as tf 
+import copy 
+import math 
+
+from keras.losses import categorical_crossentropy
+
+from Utility import augment , get_new_img_size
+
+
+lambda_rpn_regr = 1.0
+lambda_rpn_class = 1.0
+
+lambda_cls_regr = 1.0
+lambda_cls_class = 1.0
+
+epsilon = 1e-4
+
 
 def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_length_calc_function):
 	

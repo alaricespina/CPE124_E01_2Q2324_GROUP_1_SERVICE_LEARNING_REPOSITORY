@@ -6,50 +6,52 @@ from keras import Model
 
 
 
-def MRV_VGG(CONV_CONSTANT, DENSE_CONSTANT, NUM_CLASSES, input_layer_output, input_layer_object):
+def MRV_VGG(CONV_CONSTANT = 64 , DENSE_CONSTANT = 4096, NUM_CLASSES = 10, Input_Shape = (224, 224, 3)):
 
     # Input Layer Shape Recommended : 224, 224, 3 
 
     # 1st Conv Block
-    x = Conv2D (filters = 64, kernel_size =3, padding ='same', activation='relu')(input_layer_output)
-    x = Conv2D (filters = 64, kernel_size =3, padding ='same', activation='relu')(x)
+    input_layer = Input(shape=Input_Shape)
+    x = Conv2D (filters = CONV_CONSTANT, kernel_size =3, padding ='same', activation='tanh')(input_layer)
+    x = Conv2D (filters = CONV_CONSTANT, kernel_size =3, padding ='same', activation='tanh')(x)
     x = MaxPool2D(pool_size = 2, strides = 2, padding ='same')(x)
 
     # 2nd Conv Block
 
-    x = Conv2D (filters =128, kernel_size =3, padding ='same', activation='relu')(x)
-    x = Conv2D (filters =128, kernel_size =3, padding ='same', activation='relu')(x)
+    x = Conv2D (filters = CONV_CONSTANT * 2, kernel_size =3, padding ='same', activation='tanh')(x)
+    x = Conv2D (filters = CONV_CONSTANT * 2, kernel_size =3, padding ='same', activation='tanh')(x)
     x = MaxPool2D(pool_size =2, strides =2, padding ='same')(x)
 
     # 3rd Conv block  
-    x = Conv2D (filters =256, kernel_size =3, padding ='same', activation='relu')(x) 
-    x = Conv2D (filters =256, kernel_size =3, padding ='same', activation='relu')(x) 
-    x = Conv2D (filters =256, kernel_size =3, padding ='same', activation='relu')(x) 
+    x = Conv2D (filters = CONV_CONSTANT * 4, kernel_size =3, padding ='same', activation='tanh')(x) 
+    x = Conv2D (filters = CONV_CONSTANT * 4, kernel_size =3, padding ='same', activation='tanh')(x) 
+    x = Conv2D (filters = CONV_CONSTANT * 4, kernel_size =3, padding ='same', activation='tanh')(x) 
     x = MaxPool2D(pool_size =2, strides =2, padding ='same')(x)
 
     # 4th Conv block
 
-    x = Conv2D (filters =512, kernel_size =3, padding ='same', activation='relu')(x)
-    x = Conv2D (filters =512, kernel_size =3, padding ='same', activation='relu')(x)
-    x = Conv2D (filters =512, kernel_size =3, padding ='same', activation='relu')(x)
+    x = Conv2D (filters = CONV_CONSTANT * 8, kernel_size =3, padding ='same', activation='tanh')(x)
+    x = Conv2D (filters = CONV_CONSTANT * 8, kernel_size =3, padding ='same', activation='tanh')(x)
+    x = Conv2D (filters = CONV_CONSTANT * 8, kernel_size =3, padding ='same', activation='tanh')(x)
     x = MaxPool2D(pool_size =2, strides =2, padding ='same')(x)
 
     # 5th Conv block
 
-    x = Conv2D (filters =512, kernel_size =3, padding ='same', activation='relu')(x)
-    x = Conv2D (filters =512, kernel_size =3, padding ='same', activation='relu')(x)
-    x = Conv2D (filters =512, kernel_size =3, padding ='same', activation='relu')(x)
+    x = Conv2D (filters = CONV_CONSTANT * 8, kernel_size =3, padding ='same', activation='tanh')(x)
+    x = Conv2D (filters = CONV_CONSTANT * 8, kernel_size =3, padding ='same', activation='tanh')(x)
+    x = Conv2D (filters = CONV_CONSTANT * 8, kernel_size =3, padding ='same', activation='tanh')(x)
     x = MaxPool2D(pool_size =2, strides =2, padding ='same')(x)
 
-
+    # ALL CONV WAS RELU 
+    
     # Fully connected layers  
     x = Flatten()(x) 
-    x = Dense(units = 4096, activation ='relu')(x) 
-    x = Dense(units = 4096, activation ='relu')(x) 
-    output = Dense(units = 1000, activation ='softmax')(x)
+    x = Dense(units = DENSE_CONSTANT, activation ='relu')(x) 
+    x = Dense(units = DENSE_CONSTANT, activation ='relu')(x) 
+    output = Dense(units = NUM_CLASSES, activation ='softmax')(x)
 
     # creating the model
 
-    model = Model (inputs= input_layer_object, outputs =output)
+    model = Model (inputs= input_layer, outputs =output)
 
-    return Model
+    return model

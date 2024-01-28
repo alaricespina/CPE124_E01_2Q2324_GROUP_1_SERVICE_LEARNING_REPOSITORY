@@ -36,7 +36,7 @@ for folder in tqdm(os.listdir(Original_Path)):
 
 
 
-        for x in range(0, 360+1, 22):
+        for x in range(0, 360+1, 36):
             _ref = rotate_image(_ref, x)
 
             for i in [-1, 0, 1]:            
@@ -64,7 +64,7 @@ for folder in tqdm(os.listdir(Original_Path)):
 _X = np.array(x_data)
 _y = np.array(y_data)
 
-np.savez_compressed("Augmented_CV_Dataset_22_5_Steps",
+np.savez_compressed("Augmented_CV_Dataset_36_Steps",
                     raw_X = _X,
                     raw_y = _y)
 

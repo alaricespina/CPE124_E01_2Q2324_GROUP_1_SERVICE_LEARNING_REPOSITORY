@@ -33,15 +33,15 @@ def shuffle_unit(x, groups, channels,strides):
     x = ReLU()(x)
     return x
 
-def Shuffle_Net(nclasses, start_channels ,input_shape = (224,224,3)):
+def MRV_Shuffle_Net(nclasses, start_channels ,input_shape = (224,224,3), rep = [3, 7, 3]):
     groups = 2
-    input = Input (input_shape)
-    x =  Conv2D (24,kernel_size=3,strides = (2,2), padding = 'same', use_bias = True)(input)
+    input_layer = Input (input_shape)
+    x =  Conv2D (24,kernel_size=3,strides = (2,2), padding = 'same', use_bias = True)(input_layer)
     x =  BatchNormalization()(x)
     x =  ReLU()(x)
     x = MaxPooling2D (pool_size=(3,3), strides = 2, padding='same')(x)
-    repetitions = [3,7,3]
-    for i,repetition in enumerate(repetitions):
+    repetitions = rep
+    for i, repetition in enumerate(repetitions):
         channels = start_channels * (2**i)
         x  = shuffle_unit(x, groups, channels,strides = (2,2))
         for i in range(repetition):
@@ -49,5 +49,5 @@ def Shuffle_Net(nclasses, start_channels ,input_shape = (224,224,3)):
             
     x = GlobalAveragePooling2D()(x)
     output = Dense(nclasses,activation='softmax')(x)
-    model = Model(input, output)
+    model = Model(input_layer, output)
     return model

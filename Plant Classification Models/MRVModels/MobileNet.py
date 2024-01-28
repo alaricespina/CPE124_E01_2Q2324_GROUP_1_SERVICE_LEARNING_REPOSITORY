@@ -11,31 +11,44 @@ def mobilnet_block (x, filters, strides):
     x = BatchNormalization()(x)
     x = ReLU()(x)
     
+    
     x = Conv2D(filters = filters, kernel_size = 1, strides = 1)(x)
     x = BatchNormalization()(x)
     x = ReLU()(x)
     
     return x
-#stem of the model
-input = Input(shape = (224,224,3))
-x = Conv2D(filters = 32, kernel_size = 3, strides = 2, padding = 'same')(input)
-x = BatchNormalization()(x)
-x = ReLU()(x)
-# main part of the model
-x = mobilnet_block(x, filters = 64, strides = 1)
-x = mobilnet_block(x, filters = 128, strides = 2)
-x = mobilnet_block(x, filters = 128, strides = 1)
-x = mobilnet_block(x, filters = 256, strides = 2)
-x = mobilnet_block(x, filters = 256, strides = 1)
-x = mobilnet_block(x, filters = 512, strides = 2)
-for _ in range (5):
-     x = mobilnet_block(x, filters = 512, strides = 1)
-x = mobilnet_block(x, filters = 1024, strides = 2)
-x = mobilnet_block(x, filters = 1024, strides = 1)
-x = AvgPool2D (pool_size = 7, strides = 1, data_format='channels_first')(x)
-output = Dense (units = 1000, activation = 'softmax')(x)
-model = Model(inputs=input, outputs=output)
-model.summary()
+
+def MRV_MobileNet(input_size = (224, 224, 3), _C = 64, _D = 512):
+
+    #stem of the model
+    input = Input(shape = input_size)
+    x = Conv2D(filters = 32, kernel_size = 3, strides = 2, padding = 'same')(input)
+    x = BatchNormalization()(x)
+    x = ReLU()(x)
+
+    # main part of the model
+    x = mobilnet_block(x, filters = _C, strides = 1)
+    x = mobilnet_block(x, filters = _C * 2, strides = 2)
+    x = mobilnet_block(x, filters = _C * 2, strides = 1)
+    x = mobilnet_block(x, filters = _C * 4, strides = 2)
+    x = mobilnet_block(x, filters = _C * 4, strides = 1)
+    x = mobilnet_block(x, filters = _C * 8, strides = 1)
+
+    for _ in range (5):
+        x = mobilnet_block(x, filters = _C * 8 , strides = 1)
+
+    x = mobilnet_block(x, filters = _C * 16, strides = 1)
+    x = mobilnet_block(x, filters = _C * 16, strides = 1)
+
+    x = AvgPool2D (pool_size = 7, strides = 1, data_format='channels_first')(x)
+    # x = AvgPool2D (pool_size = 7, strides = 1)(x)
+    x = Flatten()(x)
+
+    x = Dense (units = _D)(x)
+    output = Dense (units = 10, activation="softmax")(x)
+    model = Model(inputs=input, outputs=output)
+    
+    return model
 
 #plot the model
 

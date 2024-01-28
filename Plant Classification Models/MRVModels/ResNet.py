@@ -34,18 +34,18 @@ def convolutional_block(x, filter):
     x = tf.keras.layers.Activation('relu')(x)
     return x
 
-def ResNet34(shape = (32, 32, 3), classes = 10):
+def MRV_ResNet34(shape = (32, 32, 3), classes = 10, CONV_CONSTANT = 64):
     # Step 1 (Setup Input Layer)
     x_input = tf.keras.layers.Input(shape)
     x = tf.keras.layers.ZeroPadding2D((3, 3))(x_input)
     # Step 2 (Initial Conv layer along with maxPool)
-    x = tf.keras.layers.Conv2D(64, kernel_size=7, strides=2, padding='same')(x)
+    x = tf.keras.layers.Conv2D(CONV_CONSTANT, kernel_size=7, strides=2, padding='same')(x)
     x = tf.keras.layers.BatchNormalization()(x)
     x = tf.keras.layers.Activation('relu')(x)
     x = tf.keras.layers.MaxPool2D(pool_size=3, strides=2, padding='same')(x)
     # Define size of sub-blocks and initial filter size
     block_layers = [3, 4, 6, 3]
-    filter_size = 64
+    filter_size = CONV_CONSTANT
     # Step 3 Add the Resnet Blocks
     for i in range(4):
         if i == 0:

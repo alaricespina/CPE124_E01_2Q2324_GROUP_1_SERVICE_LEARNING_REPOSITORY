@@ -23,7 +23,7 @@ def CheckAccount():
     print(jsonify(response))
     return jsonify(response)
 
-#EDIT FOR SIGNUP
+
 @app.route('/signup', methods = ['POST'])
 def SignUpAccount():
     f = open(filename)
@@ -50,6 +50,8 @@ def SignUpAccount():
     response['match'] = flag
     print(jsonify(response))
     return jsonify(response)
+
+#@app.route('/')
 
 # Testing
 @app.route('/test', methods = ['GET'])

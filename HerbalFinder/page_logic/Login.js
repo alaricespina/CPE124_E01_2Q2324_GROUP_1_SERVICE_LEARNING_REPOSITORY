@@ -1,11 +1,7 @@
 import { ngrok_link } from '../Consts'
 import { Alert } from 'react-native';
 
-const ShowAlertMessage = (title, message) => {
-    Alert.alert(title, message, [
-      {text: 'OK', onPress: () => console.log('OK Pressed')},
-    ]);
-  }
+
 
 
 const GetAccountAPI = async (username, password) => {
@@ -25,6 +21,7 @@ const GetAccountAPI = async (username, password) => {
   });
   return await response.json();
 }
+
 const MatchHandler = (response, navigation) => {
   if (response == undefined) {
     return

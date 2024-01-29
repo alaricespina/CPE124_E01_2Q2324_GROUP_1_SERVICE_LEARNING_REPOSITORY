@@ -14,6 +14,18 @@
             "password": "frontend",
             "username": "Hatdog"
         },
+        "10": {
+            "email": "hatsunemiku@gmail.com",
+            "id": "10",
+            "password": "Miku39",
+            "username": "Miku"
+        },
+        "11": {
+            "email": "khyle123@gmail.com",
+            "id": "11",
+            "password": "12345678",
+            "username": "Khyle123"
+        },
         "2": {
             "email": "remiliauruha@gmail.com",
             "id": "2",
@@ -51,10 +63,16 @@
             "username": "Remilia"
         },
         "8": {
-            "email": "mamamia@gmail.com",
+            "email": "reimuhakurei@gmail.com",
             "id": "8",
-            "password": "mumeixdd",
-            "username": "MumeiScarlet"
+            "password": "touhou123",
+            "username": "Reimu"
+        },
+        "9": {
+            "email": "mumeinanashi@gmail.com",
+            "id": "9",
+            "password": "hoothoot",
+            "username": "Mumei"
         }
     }
 }

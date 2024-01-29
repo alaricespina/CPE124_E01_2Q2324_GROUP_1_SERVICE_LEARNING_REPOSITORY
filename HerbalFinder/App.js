@@ -583,7 +583,8 @@ const LoginAndSignUpScreen = (...args) => {
 };
 
 // Home Screen
-const HomeScreen = () => {
+const HomeScreen = (...args) => {
+  var [SearchState, SetSearchState] = args[0]
   return (
     <>
       <View className="absolute bg-green-800 w-full h-2/5 rounded-3xl" >
@@ -607,8 +608,18 @@ const HomeScreen = () => {
         <TextInput
         placeholder='Search'
         placeholderTextColor="white"
+        onChangeText={(value) => this.SetSearchState({searchEntry:value, emptySearch:false})}
+        value={this.SearchState.searchEntry}
         className = "absolute border-2 w-full h-full border-white rounded-lg pl-12 text-white"
         />
+        
+        <TouchableOpacity className={this.SearchState.emptySearch?
+        "absolute ml-[89%] mt-[2%]":"disabled:opacity-0"}
+        disabled={Boolean(this.SearchState.emptySearch)} onPress={() => {
+          console.log("Microphone pressed")
+        }}>
+          <MaterialCommunityIcons name="microphone" size={30} color="#1ac1dd"/>
+        </TouchableOpacity>
       </View>
 
       <View className="absolute w-80 left-1/2 -ml-40 top-52">
@@ -1107,6 +1118,11 @@ const AccountSettings = (...args) => {
 
 const App = () => {
   
+  const defaultSearchState = {
+    searchEntry : '',
+    emptySearch : true
+  }
+
   const defaultDataObjects = {
       Camera_Obj : useRef(null),
       username : null,
@@ -1116,6 +1132,10 @@ const App = () => {
   }
 
   console.log("\n" + Date() + " - Compiled");
+
+  var [SearchState, SetSearchState] = useState({
+    ...defaultSearchState
+  })
 
   var [s_SwitchStates, set_s_SwitchStates] = useState({
     ...defaultSettingStates
@@ -1142,18 +1162,18 @@ const App = () => {
   console.log("***********************************")
 
   return (
-    //LoginScreen()
-    <View className="flex relative w-full h-full bg-[#090E05]">
+    HomeScreen()
+    // <View className="flex relative w-full h-full bg-[#090E05]">
 
-    {handleScreenDisplay([ActiveScreen, SetActiveScreen, s_SwitchStates, set_s_SwitchStates, DataObjects, SetDataObjects])}
+    // {handleScreenDisplay([ActiveScreen, SetActiveScreen, s_SwitchStates, set_s_SwitchStates, DataObjects, SetDataObjects])}
 
-    {ActiveScreen.Home ? MenuBarGalleryCircle([SetActiveScreen, DataObjects, SetDataObjects]) : <></>}
+    // {ActiveScreen.Home ? MenuBarGalleryCircle([SetActiveScreen, DataObjects, SetDataObjects]) : <></>}
 
-    {NavBar([ActiveScreen, SetActiveScreen, DataObjects, SetDataObjects])}
+    // {NavBar([ActiveScreen, SetActiveScreen, DataObjects, SetDataObjects])}
 
 
-    <StatusBar style='auto'/>
-    </View>
+    // <StatusBar style='auto'/>
+    // </View>
 
     
   )

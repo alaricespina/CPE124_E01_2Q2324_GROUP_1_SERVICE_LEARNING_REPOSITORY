@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 import pickle 
 
 from keras.utils import to_categorical
-
+import os 
 import numpy as np 
+import cv2 
 
 from sklearn.model_selection import train_test_split 
 from sklearn.preprocessing import LabelEncoder
@@ -14,12 +15,13 @@ from MRVModels.SqueezeNet import MRV_SqueezeNet
 from MRVModels.VGG import MRV_VGG
 from MRVModels.ResNet import MRV_ResNet34
 
-from tqdm import tqdm 
+from keras.models import load_model
+
 
 # Load Unaugmented Data
 
-def load_dataset(npz_dataset_path = "NPZ DATASET/Augmented_CV_Dataset_36_Steps.npz"):
-    loaded_arr = np.load("Augmented_CV_Dataset_36_Steps.npz")
+def load_dataset(npz_dataset_path = "NPZ DATASET/Augmented_CV_Dataset_22_5_Steps.npz"):
+    loaded_arr = np.load(npz_dataset_path)
     _X = loaded_arr["raw_X"]
     _y = loaded_arr["raw_y"]
 
@@ -30,10 +32,10 @@ def transform_data(input_y_data, categorize_data=True, save=True):
     _y = le.fit_transform(input_y_data)
     
     if categorize_data:
-        _y = to_categorical(y)
+        _y = to_categorical(_y)
 
     if save:
-        with open("LabelEncoderData.pkl", "w") as f:
+        with open("LabelEncoderData.pkl", "wb") as f:
             pickle.dump(le, f)
 
     return _y
@@ -50,8 +52,8 @@ def build_models():
 
     Inception_Model = MRV_Inception((64, 64, 3), CONV_CONSTANT, 10, REDUC_CONSTANT = 4, POOL_CONSTANT = 4)
     ResNet_Model = MRV_ResNet34((64, 64, 3), CONV_CONSTANT, 10)
-    VGG_Model = MRV_VGG((64, 64, 3), CONV_CONSTANT, 10)
-    SqueezeNet_Model = MRV_SqueezeNet((64, 64, 3), CONV_CONSTANT, 10, DENSE_CONSTANT = DENSE_CONSTANT)
+    VGG_Model = MRV_VGG((64, 64, 3), CONV_CONSTANT, 10, DENSE_CONSTANT = DENSE_CONSTANT)
+    SqueezeNet_Model = MRV_SqueezeNet((64, 64, 3), CONV_CONSTANT, 10)
 
     models =  (Inception_Model, ResNet_Model, VGG_Model, SqueezeNet_Model)
 
@@ -75,17 +77,22 @@ def train_single_model(model, X_train, y_train, X_valid, y_valid, epochs = 100):
 
 def plot_historical_data(history_dict):
     plt.figure()
-    for key in history_dict:
-        plt.plot(history_dict[key], label=key)
-    
+    plt.plot(history_dict["accuracy"], label="accuracy")
+    plt.plot(history_dict["val_accuracy"], label="val_accuracy")
     plt.legend()
     plt.show()
 
-def save_model_and_history(model_obj, model_name, history_obj, history_name):
-    model_obj.save(model_name)
+    plt.figure()
+    plt.plot(history_dict["loss"], label="loss")
+    plt.plot(history_dict["val_loss"], label="val_loss")
+    plt.legend()
+    plt.show()
 
-    with open(history_name) as f:
-        pickle.dump(history_obj)
+def save_model_and_history(model_obj, model_name, history_obj, history_name, model_folder = "KERAS MODELS", history_folder = "HISTORY OBJECTS"):
+    model_obj.save(os.path.join(model_folder, model_name + ".keras"))
+
+    with open(os.path.join(history_folder, history_name + ".pkl"), "wb") as f:
+        pickle.dump(history_obj, f)
 
 def evaluate_model(model, X_test, y_test):
     test_acc = model.evaluate(X_test, y_test)
@@ -94,17 +101,88 @@ def evaluate_model(model, X_test, y_test):
 
     test_predictions = model.predict(X_test)
     unique_values = np.argmax(test_predictions, axis=1)
-    print("Unique Values Predicted:", unique_values)
+    print("Unique Values Predicted:", unique_values, len(unique_values))
+
+def perform_tasks(**kwargs):
+    _model_obj = kwargs["model"]
+    _model_name = kwargs["model_name"]
+    _history_name = kwargs["history_name"]
+    X_train, y_train, X_valid, y_valid, X_test, y_test = kwargs["data"]
+
     
+    _history = train_single_model(_model_obj, X_train, y_train, X_valid, y_valid, epochs=50)
+    save_model_and_history(_model_obj, _model_name, _history, _history_name)
+    plot_historical_data(_history)
+    evaluate_model(_model_obj, X_test, y_test)
+
+    del _model_obj, _history
 
 
 if __name__ == "__main__":
+    os.system("cls")
     _X, _y = load_dataset()
     _y = transform_data(_y)
     X_train, X_valid, X_test, y_train, y_valid, y_test = split_data(_X, _y)
-    Inception_Model, ResNet_Model, VGG_Model, SqueezeNet_Model = build_models()
 
-    VGG_Model_History = train_single_model(VGG_Model, X_train, y_train, X_valid, y_valid)
+   
+    model = load_model("KERAS MODELS/MRV_VGG.keras")
+    raw_y = model.predict(np.array([X_test[0]]))
+    pred_y = np.argmax(raw_y, axis=1)
+    # print("X_TEST:", X_test[0])
+    print("Y_TEST:", y_test[0])
+
+    cv2.imshow("hatdog", X_test[0])
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    
+    print("RAW:")
+    print(raw_y)
+
+    print("NUMPY:")
+    print(pred_y)
+
+
+
+
+
+
+
+    
+
+    # with open("HISTORY OBJECTS/MRV_VGG_HISTORY.pkl", "rb") as f:
+    #     _h = pickle.load(f)
+
+    # plot_historical_data(_h)
+
+    evaluate_model(model, X_test, y_test)
+
+    
+    # #bundled_data = split_data(_X, _y)
+    # bundled_data = (X_train, y_train, X_valid, y_valid, X_test, y_test)
+
+    # #Inception_Model, ResNet_Model, VGG_Model, SqueezeNet_Model = build_models()
+    # models = list(build_models())
+    # model_names = ["MRV_Inception", "MRV_ResNet", "MRV_VGG", "MRV_SqueezeNet"]
+    # history_names = ["MRV_Inception_HISTORY", "MRV_ResNet_HISTORY", "MRV_VGG_HISTORY", "MRV_SqueezeNet_HISTORY"]
+    
+    # # Inception done
+    # i = 3
+    # perform_tasks(model = models[i], 
+    #                 model_name = model_names[i],
+    #                 history_name = history_names[i],
+    #                 data = bundled_data)
+
+    # # Release Model Memory
+    # del models[i]
+
+
+
+        
+
+    
+
+
+
 
 
 

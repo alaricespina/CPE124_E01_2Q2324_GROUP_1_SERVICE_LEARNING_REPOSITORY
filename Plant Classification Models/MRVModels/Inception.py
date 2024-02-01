@@ -71,7 +71,11 @@ def inception_module(x,
     
     return output
 
-def MRV_Inception(Input_Shape = (224, 224, 3), CONV_CONSTANT = 64, REDUC_CONSTANT = 16, POOL_CONSTANT = 32):
+def MRV_Inception(Input_Shape = (64, 64, 3), CONV_CONSTANT = 64, NUM_CLASSES = 10, **kwargs):
+    # Input_Shape = (64, 64, 3), CONV_CONSTANT = 64, REDUC_CONSTANT = 16, POOL_CONSTANT = 32
+    REDUC_CONSTANT = kwargs["REDUC_CONSTANT"]
+    POOL_CONSTANT = kwargs["POOL_CONSTANT"]
+
 
     kernel_init = keras.initializers.glorot_uniform()
     bias_init = keras.initializers.Constant(value=0.2)   
@@ -115,12 +119,12 @@ def MRV_Inception(Input_Shape = (224, 224, 3), CONV_CONSTANT = 64, REDUC_CONSTAN
                         name='inception_4a')
 
 
-    x1 = AveragePooling2D((4, 4), strides=3)(x)
-    x1 = Conv2D(128, (1, 1), padding='same', activation='relu')(x1)
-    x1 = Flatten()(x1)
-    x1 = Dense(1024, activation='relu')(x1)
-    x1 = Dropout(0.7)(x1)
-    x1 = Dense(10, activation='softmax', name='auxilliary_output_1')(x1)
+    # x1 = AveragePooling2D((4, 4), strides=3)(x)
+    # x1 = Conv2D(128, (1, 1), padding='same', activation='relu')(x1)
+    # x1 = Flatten()(x1)
+    # x1 = Dense(1024, activation='relu')(x1)
+    # x1 = Dropout(0.7)(x1)
+    # x1 = Dense(10, activation='softmax', name='auxilliary_output_1')(x1)
 
     x = inception_module(x,
                         filters_1x1=CONV_CONSTANT * 5 // 2,
@@ -150,12 +154,12 @@ def MRV_Inception(Input_Shape = (224, 224, 3), CONV_CONSTANT = 64, REDUC_CONSTAN
                         name='inception_4d')
 
 
-    x2 = AveragePooling2D((4, 4), strides=3)(x)
-    x2 = Conv2D(128, (1, 1), padding='same', activation='relu')(x2)
-    x2 = Flatten()(x2)
-    x2 = Dense(1024, activation='relu')(x2)
-    x2 = Dropout(0.7)(x2)
-    x2 = Dense(10, activation='softmax', name='auxilliary_output_2')(x2)
+    # x2 = AveragePooling2D((4, 4), strides=3)(x)
+    # x2 = Conv2D(128, (1, 1), padding='same', activation='relu')(x2)
+    # x2 = Flatten()(x2)
+    # x2 = Dense(1024, activation='relu')(x2)
+    # x2 = Dropout(0.7)(x2)
+    # x2 = Dense(10, activation='softmax', name='auxilliary_output_2')(x2)
 
     x = inception_module(x,
                         filters_1x1=CONV_CONSTANT * 4,
@@ -190,9 +194,9 @@ def MRV_Inception(Input_Shape = (224, 224, 3), CONV_CONSTANT = 64, REDUC_CONSTAN
 
     x = Dropout(0.4)(x)
 
-    x = Dense(10, activation='softmax', name='output')(x)
+    x = Dense(NUM_CLASSES, activation='softmax', name='output')(x)
 
-    model = Model(input_layer, [x, x1, x2], name='inception_v1')
+    model = Model(input_layer, x, name='inception_v1')
 
     return model
 

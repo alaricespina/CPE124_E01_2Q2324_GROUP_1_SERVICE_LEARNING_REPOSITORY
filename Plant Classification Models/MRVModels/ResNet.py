@@ -34,9 +34,9 @@ def convolutional_block(x, filter):
     x = tf.keras.layers.Activation('relu')(x)
     return x
 
-def MRV_ResNet34(shape = (32, 32, 3), classes = 10, CONV_CONSTANT = 64):
+def MRV_ResNet34(Input_Shape = (64, 64, 3), CONV_CONSTANT = 64, NUM_CLASSES = 10):
     # Step 1 (Setup Input Layer)
-    x_input = tf.keras.layers.Input(shape)
+    x_input = tf.keras.layers.Input(Input_Shape)
     x = tf.keras.layers.ZeroPadding2D((3, 3))(x_input)
     # Step 2 (Initial Conv layer along with maxPool)
     x = tf.keras.layers.Conv2D(CONV_CONSTANT, kernel_size=7, strides=2, padding='same')(x)
@@ -63,6 +63,6 @@ def MRV_ResNet34(shape = (32, 32, 3), classes = 10, CONV_CONSTANT = 64):
     x = tf.keras.layers.AveragePooling2D((2,2), padding = 'same')(x)
     x = tf.keras.layers.Flatten()(x)
     x = tf.keras.layers.Dense(512, activation = 'relu')(x)
-    x = tf.keras.layers.Dense(classes, activation = 'softmax')(x)
+    x = tf.keras.layers.Dense(NUM_CLASSES, activation = 'softmax')(x)
     model = tf.keras.models.Model(inputs = x_input, outputs = x, name = "ResNet34")
     return model

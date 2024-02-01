@@ -13,8 +13,8 @@ def fire_module(x,s1,e1,e3):
     x = ReLU()(x)
     return x
 
-def MRV_SqueezeNet(input_shape, nclasses, CONV_CONSTANT = 16):
-    input = Input(input_shape)
+def MRV_SqueezeNet(INPUT_SHAPE = (64, 64, 3), CONV_CONSTANT = 64 , NUM_CLASSES = 10):
+    input = Input(INPUT_SHAPE)
     x = Conv2D(96,kernel_size=(7,7),strides=(2,2),padding='same')(input)
     x = MaxPooling2D(pool_size=(3,3), strides = (2,2))(x)
     x = fire_module(x, s1 = CONV_CONSTANT, e1 = CONV_CONSTANT * 4, e3 = CONV_CONSTANT * 4) #2
@@ -28,7 +28,7 @@ def MRV_SqueezeNet(input_shape, nclasses, CONV_CONSTANT = 16):
     x = MaxPooling2D(pool_size=(3,3), strides = (2,2))(x)
     x = fire_module(x, s1 = CONV_CONSTANT * 4, e1 = CONV_CONSTANT * 16, e3 = CONV_CONSTANT * 16) #9
     x = Dropout(0.5)(x)
-    x = Conv2D(nclasses, activation="softmax", kernel_size = 1)(x)
+    x = Conv2D(NUM_CLASSES, activation="softmax", kernel_size = 1)(x)
     #output = AveragePooling2D(pool_size=(13,13))(x)
     x = AveragePooling2D(pool_size=(3,3))(x)
     output = Flatten()(x)

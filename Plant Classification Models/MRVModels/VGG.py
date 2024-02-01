@@ -6,7 +6,11 @@ from keras import Model
 
 
 
-def MRV_VGG(CONV_CONSTANT = 64 , DENSE_CONSTANT = 4096, NUM_CLASSES = 10, Input_Shape = (224, 224, 3)):
+def MRV_VGG(Input_Shape = (224, 224, 3), CONV_CONSTANT = 64 , NUM_CLASSES = 10, **kwargs):
+    DENSE_CONSTANT = kwargs["DENSE_CONSTANT"]
+    DENSE_CONSTANT = 4096
+    
+
 
     # Input Layer Shape Recommended : 224, 224, 3 
 

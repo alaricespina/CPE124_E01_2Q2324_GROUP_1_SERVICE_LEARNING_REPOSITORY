@@ -1,13 +1,19 @@
+from json import load
+
 from flask import Flask, request, json, jsonify
 import time 
 import base64
 import cv2
 import numpy as np
 
+
 app = Flask(__name__)
 
 #Filename of the JSON database
 filename = 'HerbalFinder/data/accounts.json'
+
+with open("Plant_Data.json", "r", encoding="utf-8") as f:
+    plant_data = load(f)
 
 def readb64(raw_64_string):
     nparr = np.fromstring(base64.b64decode(raw_64_string), np.uint8)
@@ -90,6 +96,7 @@ def predict_given_image():
     input_json = request.json 
 
     input_image = input_json["input_image"]
+    print(len(input_image))
     # img = readb64(input_image)
     # img = image_resize(img, height=500)
     # cv2.imshow("Testing Input", img)
@@ -103,10 +110,19 @@ def predict_given_image():
     #     Class 2 : 2
     #     Class 3 : 1
     # }
-    response = {"predictions" : ["Artocarpus Heterophyllus", "Artocarpus Heterophyllus", "Artocarpus Heterophyllus", "Artocarpus Heterophyllus"]}
+    response = {"predictions" : ["Jackfruit", "Jackfruit", "Jackfruit", "Jackfruit"]}
 
     return jsonify(response)
 
+@app.route("/plant_data", methods=['POST'])
+def get_plant_data():
+    global plant_data
+    requested_plant = request.json["plant_name"]
+    response = {"text": plant_data[requested_plant]}
+
+    return jsonify(response)
+
+    
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=4000)

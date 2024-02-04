@@ -2,7 +2,7 @@
 import {React, useState, useEffect, useRef} from 'react';
 
 // Components
-import { Switch, View, Image, ImageBackground, Text, TouchableOpacity, TextInput, Pressable, Alert} from 'react-native';
+import { Switch, View, Image, ImageBackground, Text, TouchableOpacity, TextInput, Pressable, Alert, ActivityIndicator} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -26,7 +26,8 @@ const defaultScreenStates = {
   AccountBase : false,
   AccountProfile : false,
   AccountSettings : false, 
-  AccountAbout : false
+  AccountAbout : false,
+  CameraConfirmation : false
 }
 
 const defaultSettingStates = {
@@ -109,11 +110,13 @@ const ShowOKAlertMessage = (title, message) => {
 // Take picture after camera button has been pressed
 const takeCameraPicture = async (camera) => {
   if (camera) {
-    const options = {base64:false}
+    const options = {base64:true}
     const data = await camera.takePictureAsync(options);
     console.log(data.uri);
     await MediaLibrary.saveToLibraryAsync(data.uri)
     console.log("data saved")
+
+    return [data.uri, data.base64]
   } else {
     console.log("RUNTIME ERROR =======================")
     console.log("Current Camera is: ")
@@ -126,15 +129,23 @@ const takeCameraPicture = async (camera) => {
 const handleCameraPressed = (...args) => {
   console.log("Camera Pressed, Args: ")
   console.log(args)
-  var [ActiveScreen, SetActiveScreen, targettedAttribute, DataObjects] = args[0]
+  var [ActiveScreen, SetActiveScreen, targettedAttribute, DataObjects, SetDataObjects] = args[0]
   if (ActiveScreen.Scanner) {
     console.log("Say Cheese")
     console.log("Current Object:" + DataObjects.Camera_Obj)
     console.log("Full Definition")
     displayObjectFull(DataObjects.Camera_Obj.current)
-    takeCameraPicture(DataObjects.Camera_Obj.current).then(() => {
+    takeCameraPicture(DataObjects.Camera_Obj.current).then((value) => {
       console.log("Picture Done")
-      handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
+      // handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
+      console.log("URI Received on Then Clause: " + value)
+      var _x = {...DataObjects}
+      _x.ImageURI = value[0] 
+      _x.ImageBase64 = value[1]
+      SetDataObjects({..._x})
+
+      handleMenuButtonsPressed([SetActiveScreen, "CameraConfirmation"])
+      
     })
     // handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
   } else {
@@ -207,6 +218,44 @@ const updateAccountDetails = () => {
 
 }
 
+const ResetCapturedPhoto = (arg) => {
+  var SetActiveScreen = arg
+  handleMenuButtonsPressed([SetActiveScreen, "Scanner"])
+}
+
+const asyncSendImagePredictionRequest = async (Image) => {
+  const response = await fetch(ngrok_link.concat('/predict'), {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning' : true
+    },
+    body: JSON.stringify({
+      'input_image' : Image
+    })
+  })
+
+  return await response.json()
+}
+
+const AttemptPrediction = (...args) => {
+  var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
+
+  var _x = {...DataObjects}
+  _x.Predicting = true 
+  // console.log("Base 64 Representation of Image:", DataObjects.ImageBase64)
+
+  SetDataObjects({..._x})
+
+  console.log("Sending image")
+  asyncSendImagePredictionRequest(DataObjects.ImageBase64).then((val) => {
+    console.log("Image Sent")
+    _x.Predicting = false
+    SetDataObjects({..._x})
+    handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
+  })
+}
 
 
 // ================================================================================================================
@@ -263,6 +312,8 @@ if (ActiveScreen.Home) {
   return PostScanScreen()
 } else if (ActiveScreen.LoginSignUp) {
   return LoginAndSignUpScreen([SetActiveScreen, DataObjects, SetDataObjects])
+} else if (ActiveScreen.CameraConfirmation) {
+  return CameraConfirmationScreen([SetActiveScreen, DataObjects, SetDataObjects])
 
   
 
@@ -288,6 +339,7 @@ if (ActiveScreen.Home) {
 
 }
 
+
 // ================================================================================================================
 // Navigation Bar Components
 
@@ -310,7 +362,11 @@ const MenuBarGalleryCircle = (...args) => {
 const NavBar = (...args) => {
   var [ActiveScreen, SetActiveScreen, DataObjects, SetDataObjects] = args[0]
 
-  if (!(ActiveScreen.AccountSettings || ActiveScreen.AccountAbout || ActiveScreen.AccountProfile || ActiveScreen.LoginSignUp)) {
+  if (!(ActiveScreen.AccountSettings || 
+    ActiveScreen.AccountAbout || 
+    ActiveScreen.AccountProfile || 
+    ActiveScreen.LoginSignUp ||
+    ActiveScreen.CameraConfirmation)) {
     return (
       <>
         <View className="z-20 absolute w-[calc(90/375*100%)] aspect-square bg-[#090E05] left-[calc(50%-90/375/2*100%)] bottom-[2.75%] rounded-full">
@@ -319,7 +375,7 @@ const NavBar = (...args) => {
         <View className="z-30 absolute w-[calc(80/375*100%)] aspect-square left-[calc(50%-80/375/2*100%)] bottom-[3.5%] mt-0 rounded-full">
           <TouchableOpacity className="w-full h-full" onPress={() => {
             console.log("Camera Pressed")
-            handleCameraPressed([ActiveScreen, SetActiveScreen, "Scanner", DataObjects])
+            handleCameraPressed([ActiveScreen, SetActiveScreen, "Scanner", DataObjects, SetDataObjects])
             }}>
             <LinearGradient start={{x:0.25, y:0.25}} end = {{x:0.75, y:0.6}} colors={["#008000", "#2AAA8A"]} className="w-full h-full rounded-full items-center justify-center">
               <MaterialCommunityIcons name="camera" size={25} color="#000"/>
@@ -702,6 +758,51 @@ const PostScanScreen = () => {
     
   )
 }
+
+// Confirmation Screen After Scan
+const CameraConfirmationScreen = (...args) => {
+  var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
+
+  console.log("Received Image URI at Camera Confirmation Screen")
+  console.log(DataObjects.ImageURI)
+
+  const Image_URI_Display = DataObjects.ImageURI
+  const button_sizes = 48
+
+  return (
+    <>
+    {DataObjects.Predicting ? 
+    <>
+      <View className="absolute z-10 w-full h-full bg-[#00000080] items-center justify-center">
+        <View className="bg-[#090E05] w-4/5 h-1/6 flex-row justify-center items-center">
+          <ActivityIndicator className="h-full" size={72} color="#00FF00"/>
+          <Text className="ml-[10%] text-white">Waiting for Predictions</Text>
+        </View>
+      </View>
+    </> : 
+    <></>}
+    <View className="w-full h-full bg-black items-center justify-center">
+      <View className="h-3/5 w-3/5 items-center justify-center object-contain">
+        <Image className="w-full h-full object-contain" source={{uri:DataObjects.ImageURI}}>
+        </Image>
+      </View>
+      <View className="w-3/5 h-1/6 items-center justify-center flex-row">
+        <TouchableOpacity className="w-1/2 h-full items-center justify-center" onPress={() => ResetCapturedPhoto(SetActiveScreen)}>
+          <MaterialCommunityIcons name="delete-circle-outline" size={button_sizes} color="#FFF"/>
+        </TouchableOpacity>
+        <TouchableOpacity className="w-1/2 h-full items-center justify-center" onPress={() => AttemptPrediction([SetActiveScreen, DataObjects, SetDataObjects])}>
+          <MaterialCommunityIcons name="check-circle-outline" size={button_sizes} color="#FFF"/>
+        </TouchableOpacity>
+      </View>
+    </View>
+    
+
+    </>
+  )
+}
+
+// Prediction Stats After Scan
+
 
 // Scanner Screen
 const ScannerScreen = (...args) => {
@@ -1102,6 +1203,10 @@ const AccountSettings = (...args) => {
   )
 }
 
+const CameraCapturePreview = (...args) => {
+
+}
+
 // ================================================================================================================
 // App Function
 
@@ -1112,7 +1217,11 @@ const App = () => {
       username : null,
       email : null,
       password : null,
-      loginSignUpState : true
+      loginSignUpState : true,
+      ImageURI : null,
+      ImageBase64 : null,
+      Predicting : false,
+      Model_Predictions : null
   }
 
   console.log("\n" + Date() + " - Compiled");

@@ -2,7 +2,7 @@
 import {React, useState, useEffect, useRef} from 'react';
 
 // Components
-import { Switch, View, Image, ImageBackground, Text, TouchableOpacity, TextInput, Pressable, Alert, ActivityIndicator} from 'react-native';
+import { Switch, View, Image, ImageBackground, Text, TouchableOpacity, TextInput, Pressable, Alert, ActivityIndicator, ScrollView, FlatList} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -10,6 +10,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { Camera, CameraType, FlashMode } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library'
+
 
 // ================================================================================================================
 // Constants
@@ -36,6 +37,8 @@ const defaultSettingStates = {
   reminderEnabled : false, 
   locationEnabled : false
 }
+
+
 
 // ================================================================================================================
 // Utiliy Functions
@@ -138,7 +141,7 @@ const handleCameraPressed = (...args) => {
     takeCameraPicture(DataObjects.Camera_Obj.current).then((value) => {
       console.log("Picture Done")
       // handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
-      console.log("URI Received on Then Clause: " + value)
+      // console.log("URI Received on Then Clause: " + value)
       var _x = {...DataObjects}
       _x.ImageURI = value[0] 
       _x.ImageBase64 = value[1]
@@ -239,6 +242,22 @@ const asyncSendImagePredictionRequest = async (Image) => {
   return await response.json()
 }
 
+const asyncGetPlantDetails = async (Plant_Name) => {
+  const response = await fetch(ngrok_link.concat('/plant_data'), {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning' : true
+    },
+    body: JSON.stringify({
+      'plant_name' : Plant_Name
+    })
+  })
+
+  return await response.json()
+}
+
 const AttemptPrediction = (...args) => {
   var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
 
@@ -249,11 +268,53 @@ const AttemptPrediction = (...args) => {
   SetDataObjects({..._x})
 
   console.log("Sending image")
-  asyncSendImagePredictionRequest(DataObjects.ImageBase64).then((val) => {
-    console.log("Image Sent")
+  asyncSendImagePredictionRequest(DataObjects.ImageBase64).then((response) => {
+    console.log("Request has been processed, executing then block")
+    console.log("Model Prediction:")
+    m_predictions = response["predictions"]
+    console.log(m_predictions[0])
+  
     _x.Predicting = false
-    SetDataObjects({..._x})
-    handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
+    _x.ImageBase64 = null 
+    _x.Model_Predictions = m_predictions
+
+    var final_plant = m_predictions[0]
+
+
+    _x.Plant_Data = {
+      Name : final_plant,
+      Scientific_Name : "null",
+      Short_Info : "null", 
+      Usage : "null", 
+      Cure : "null",
+      Benefits : "null",
+      Sources : "null"
+    }
+
+    console.log(final_plant)
+
+    asyncGetPlantDetails(_x.Plant_Data.Name).then((response) => {
+      response = response["text"]
+      console.log("Get Plant Request Details:")
+      console.log(response)
+
+      _x.Plant_Data = {
+        Name : final_plant,
+        Scientific_Name : response["Scientific Name"],
+        Short_Info : response["Short Info"], 
+        Usage : response["Usage"], 
+        Cure : response["Cure"],
+        Benefits : response["Benefits"],
+        Sources : response["Sources"]
+      }
+
+      SetDataObjects({..._x})
+      handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
+    })
+
+
+
+    
   })
 }
 
@@ -276,67 +337,108 @@ const displayObjectFull = (targetObject) => {
 
 const handleScreenDisplay = (...args) => {
 
-var [ActiveScreen, SetActiveScreen, s_SwitchStates, set_s_SwitchStates, DataObjects, SetDataObjects] = args[0]
+  var [ActiveScreen, SetActiveScreen, s_SwitchStates, set_s_SwitchStates, DataObjects, SetDataObjects] = args[0]
 
-// const Screens = {
-//   Home : HomeScreen_Re(),
-//   Search : SearchScreen_Re(),
-//   Scanner : ScannerScreen_Re([DataObjects, SetDataObjects]),
-//   AccountBase : AccountScreen_Re([SetActiveScreen]),
-//   AccountProfile : (<></>),
-//   AccountSettings : SettingScreen_Re([SetActiveScreen, s_SwitchStates, set_s_SwitchStates]),
-//   AccountAbout : (<></>)
-// }
+  if (ActiveScreen.Home) {
+    return HomeScreen([SetActiveScreen, DataObjects, SetDataObjects])
+  } else if (ActiveScreen.Search) {
+    return SearchScreen([SetActiveScreen, DataObjects, SetDataObjects])
+  } else if (ActiveScreen.Scanner) {
+    return ScannerScreen([DataObjects, SetDataObjects])
+  } else if (ActiveScreen.AccountBase) {
+    return AccountBase([SetActiveScreen])
+  } else if (ActiveScreen.AccountSettings) {
+    return AccountSettings([SetActiveScreen, s_SwitchStates, set_s_SwitchStates])
+  } else if (ActiveScreen.AccountAbout) {
+    return AccountAboutUs([SetActiveScreen])
+  } else if (ActiveScreen.AccountProfile) {
+    return AccountProfile([DataObjects, SetDataObjects, SetActiveScreen])
+  } else if (ActiveScreen.PostScan) {
+    return PostScanScreen([SetActiveScreen, DataObjects, SetDataObjects])
+  } else if (ActiveScreen.LoginSignUp) {
+    return LoginAndSignUpScreen([SetActiveScreen, DataObjects, SetDataObjects])
+  } else if (ActiveScreen.CameraConfirmation) {
+    return CameraConfirmationScreen([SetActiveScreen, DataObjects, SetDataObjects])
+  } else {
+    return (<></>)
+  }
 
-// const corresponding_screen = Object.keys(ActiveScreen).filter(key => ActiveScreen[key])
-
-// return Screens[corresponding_screen]
-
-
-if (ActiveScreen.Home) {
-  return HomeScreen()
-} else if (ActiveScreen.Search) {
-  return SearchScreen()
-} else if (ActiveScreen.Scanner) {
-  return ScannerScreen([DataObjects, SetDataObjects])
-  //return ScannerScreen()
-} else if (ActiveScreen.AccountBase) {
-  return AccountBase([SetActiveScreen])
-} else if (ActiveScreen.AccountSettings) {
-  return AccountSettings([SetActiveScreen, s_SwitchStates, set_s_SwitchStates])
-} else if (ActiveScreen.AccountAbout) {
-  return AccountAboutUs([SetActiveScreen])
-} else if (ActiveScreen.AccountProfile) {
-  return AccountProfile([DataObjects, SetDataObjects, SetActiveScreen])
-} else if (ActiveScreen.PostScan) {
-  return PostScanScreen()
-} else if (ActiveScreen.LoginSignUp) {
-  return LoginAndSignUpScreen([SetActiveScreen, DataObjects, SetDataObjects])
-} else if (ActiveScreen.CameraConfirmation) {
-  return CameraConfirmationScreen([SetActiveScreen, DataObjects, SetDataObjects])
-
-  
-
-
-// } else if (scan) {
-//   return ScannerScreen_Re(camera_params)
-// } else if (account[0]) {
-//   console.log("Displaying Account Screen")
-//   return AccountScreen_Re(_account_states, _account_setters, account[1])
-// } else if (_account_states[0]){
-//   console.log("Displaying Setting Screen")
-//   console.log("==========")
-//   return SettingScreen_Re(settings_params)
-// } else if (_account_states[1]){
-//   return (<></>)
-// } else if (_account_states[2]){
-//   console.log("Displaying About Us Screen")
-//   console.log("==========")
-//   return AboutUs_Re(about_params)
-} else {
-  return (<></>)
 }
 
+
+const HandleQuickSearch = (...args) => {
+  var [SetActiveScreen, DataObjects, SetDataObjects, PlantTarget] = args[0]
+
+  var _x = {...DataObjects}
+
+  asyncGetPlantDetails(PlantTarget).then((response) => {
+    response = response["text"]
+    console.log("Get Plant Request Details:")
+    console.log(response)
+  
+    _x.Plant_Data = {
+      Name : PlantTarget,
+      Scientific_Name : response["Scientific Name"],
+      Short_Info : response["Short Info"], 
+      Usage : response["Usage"], 
+      Cure : response["Cure"],
+      Benefits : response["Benefits"],
+      Sources : response["Sources"]
+    }
+
+    SetDataObjects({..._x})
+    handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
+  })
+}
+
+const GetDefaultImageSource = (IN) => {
+  var ImageName = IN
+
+  switch (ImageName) {
+    case "Ampalaya":
+      return require("./pics/SampleLeafImages/Ampalaya/1.jpg")
+      break
+
+    case "Guava":
+      return require("./pics/SampleLeafImages/Guava/1.jpg")
+      break
+    
+    case "Jackfruit":
+      return require("./pics/SampleLeafImages/Jackfruit/1.jpg")
+      break
+
+    case "Jasmine":
+      return require("./pics/SampleLeafImages/Jasmine/1.jpg")
+      break
+    
+    case "Lagundi":
+      return require("./pics/SampleLeafImages/Lagundi/1.jpg")
+      break
+
+      
+    case "Lemon":
+      return require("./pics/SampleLeafImages/Lemon/1.jpg")
+      break
+    
+    case "Malunggay":
+      return require("./pics/SampleLeafImages/Malunggay/1.jpg")
+      break
+
+    case "Mango":
+      return require("./pics/SampleLeafImages/Mango/1.jpg")
+      break
+    
+    case "Mint":
+      return require("./pics/SampleLeafImages/Mint/1.jpg")
+      break
+
+    case "Sambong":
+      return require("./pics/SampleLeafImages/Sambong/1.jpg")
+      break
+
+    default:
+      break
+  }
 }
 
 
@@ -639,7 +741,10 @@ const LoginAndSignUpScreen = (...args) => {
 };
 
 // Home Screen
-const HomeScreen = () => {
+const HomeScreen = (...args) => {
+  var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
+
+  const AvailablePlants = ["Jackfruit", "Sambong", "Lemon", "Jasmine", "Mango", "Mint", "Ampalaya", "Malunggay", "Guava", "Lagundi"]
   return (
     <>
       <View className="absolute bg-green-800 w-full h-2/5 rounded-3xl" >
@@ -681,25 +786,25 @@ const HomeScreen = () => {
         <Text className="text-white"> Popular Herbal Plants</Text>
       </View>
 
-      <View className="absolute w-80 h-32 left-1/2 -ml-40 bottom-48 flex-row">
-        <View className="h-full bg-[#2F2F2F] w-36 items-center rounded-lg">
-          <View className="h-3/4 w-full p-2">
-            <View className="w-full h-full bg-green-400 rounded"></View>
-          </View>
-          <Text className="text-white">Sambong</Text>
-        </View>
-        <View className="h-full bg-[#2F2F2F] w-36 items-center rounded-lg ml-4">
-          <View className="h-3/4 w-full p-2">
-            <View className="w-full h-full bg-green-600 rounded"></View>
-          </View>
-          <Text className="text-white">Ampalaya</Text>
-        </View>
-        <View className="h-full bg-[#2F2F2F] w-36 items-center rounded-lg ml-4">
-          <View className="h-3/4 w-full p-2">
-            <View className="w-full h-full bg-green-800 rounded"></View>
-          </View>
-          <Text className="text-white">Ampalaya</Text>
-        </View>
+      
+
+      <View className="absolute w-full h-32 left-1/2 -ml-44 bottom-48">
+        <ScrollView horizontal={true} className="h-full" showsHorizontalScrollIndicator={false}>
+          {
+            AvailablePlants.map((plant, idx) => (
+              <TouchableOpacity key={idx} onPress={() => {HandleQuickSearch([SetActiveScreen, DataObjects, SetDataObjects, plant])}}>
+                <View className="h-full bg-[#2F2F2F] w-36 items-center rounded-lg ml-4">
+                  <View className="h-3/4 w-full p-2">
+                    <Image className="w-full h-full" source={GetDefaultImageSource(plant)}/>
+                  </View>
+                  <Text className="text-white">{plant}</Text>
+                </View>
+              </TouchableOpacity>
+              
+
+            ))
+          }
+        </ScrollView>
       </View>
 
       
@@ -710,46 +815,100 @@ const HomeScreen = () => {
 }
 
 // Post Scan Screen
-const PostScanScreen = () => {
+const PostScanScreen = (...args) => {
+  var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
+
+
+
   return (
     <>
 
-    
       <View className="bg-green-300 w-full h-[calc(236/812*100%)] items-center justify-center">
-        <Text className="text-white">Details</Text>
+        {DataObjects.ImageURI ? 
+        <Image className="w-full h-full" source={{uri:DataObjects.ImageURI}}/> : 
+        <Image className="w-full h-full" source={GetDefaultImageSource(DataObjects.Plant_Data.Name)}/>
+        }
       </View>
 
 
       <View className="absolute w-full top-[30%] items-center justify-center">
-        <Text className="text-white">Spearmint Leaf</Text>
-        <Text className="text-white">Nerdy ass Scientific Name</Text>
+        <Text className="text-white">{DataObjects.Plant_Data.Name}</Text>
+        <Text className="text-white">{DataObjects.Plant_Data.Scientific_Name}</Text>
       </View>
 
       <View className="absolute w-full top-[40%] h-[10%] items-center">
         <View className="w-4/5 flex-row h-full gap-x-[4%] -ml-[19%]">
-          <View className="bg-green-800 h-full aspect-square">
+          <TouchableOpacity className="h-full aspect-square" onPress={() => {
+            var _x = {...DataObjects}
+            _x.PostScanState = "usage"
+            SetDataObjects({..._x})
+          }}>
+            <View className="bg-green-800 h-full aspect-square">
+              <Text>Usage</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity className="h-full aspect-square" onPress={() => {
+            var _x = {...DataObjects}
+            _x.PostScanState = "cure"
+            SetDataObjects({..._x})
+          }}>
+            <View className="bg-green-800 h-full aspect-square">
+              <Text>Cure</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity className="h-full aspect-square" onPress={() => {
+            var _x = {...DataObjects}
+            _x.PostScanState = "benefits"
+            SetDataObjects({..._x})
+          }}>
+            <View className="bg-green-800 h-full aspect-square">
+              <Text>Benefits</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity className="h-full aspect-square" onPress={() => {
+            var _x = {...DataObjects}
+            _x.PostScanState = "sources"
+            SetDataObjects({..._x})
+          }}>
+            <View className="bg-green-800 h-full aspect-square">
+              <Text>Sources</Text>
+            </View>
+          </TouchableOpacity>
+          
 
-          </View>
-          <View className="bg-green-800 h-full aspect-square">
-
-          </View>
-          <View className="bg-green-800 h-full aspect-square">
-
-          </View>
-          <View className="bg-green-800 h-full aspect-square">
-
-          </View>
         </View>
         
       </View>
 
-      <View className="absolute w-full top-[52%] items-center">
-        <View className="w-4/5 -ml-[14%]">
-          <Text className="text-white font-bold text-lg">Spearmint Leaf Report</Text>
-          <Text className="text-white font-bold text-lg">Benefits</Text>
-          <Text className="text-white">Oh wow may benefits</Text>
-          <Text className="text-white font-bold text-lg">Usage</Text>
-          <Text className="text-white">To Prepare this halaman, kunin mo muna hindi to magically pupunta sa kamay mo</Text>
+      <View className="absolute w-full top-[52%] h-[34%]">
+        <View className="w-[93%] ml-[4%]">
+          <ScrollView className="">
+            <Text className="text-white text-justify text-[8px]">{DataObjects.Plant_Data.Short_Info}</Text>
+            {
+              DataObjects.PostScanState == "usage" ? <>
+                <Text className="text-white font-bold text-lg">Usage</Text>
+                <Text className="text-white text-xs text-justify">{DataObjects.Plant_Data.Usage}</Text>
+              </> :
+              DataObjects.PostScanState == "cure" ? <>
+              <Text className="text-white font-bold text-lg">Cure</Text>
+              <Text className="text-white text-xs text-justify">{DataObjects.Plant_Data.Cure}</Text>
+              </> :
+              DataObjects.PostScanState == "benefits" ? <>
+              <Text className="text-white font-bold text-lg">Benefits</Text>
+              <Text className="text-white text-xs text-justify">{DataObjects.Plant_Data.Benefits}</Text>
+              </> :
+              DataObjects.PostScanState == "sources" ? <>
+              <Text className="text-white font-bold text-lg">Sources</Text>
+
+              {DataObjects.Plant_Data.Sources.map((source, idx) => (
+                <Text className="text-white text-xs text-justify" key={idx}>{source}</Text>  
+              ))}
+                
+              </> : <></>
+            }
+          </ScrollView>
+          
+
         </View>
       </View>
       
@@ -801,9 +960,6 @@ const CameraConfirmationScreen = (...args) => {
   )
 }
 
-// Prediction Stats After Scan
-
-
 // Scanner Screen
 const ScannerScreen = (...args) => {
   var [DataObjects, SetDataObjects] = args[0]
@@ -852,7 +1008,23 @@ const ScannerScreen = (...args) => {
 }
 
 // Search Screen
-const SearchScreen = () => {
+const SearchScreen = (...args) => {
+  var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
+  // const AvailablePlants = [
+  //   {id: 0, item:"Jackfruit"},
+  //   {id: 1, item:"Sambong"},
+  //   {id: 2, item:"Lemon"},
+  //   {id: 3, item:"Jasmine"},
+  //   {id: 4, item:"Mango"},
+  //   {id: 5, item:"Mint"},
+  //   {id: 6, item:"Ampalaya"},
+  //   {id: 7, item:"Malunggay"},
+  //   {id: 8, item:"Guava"},
+  //   {id: 9, item:"Lagundi"},
+  // ]
+
+  const AvailablePlants = ["Jackfruit", "Sambong", "Lemon", "Jasmine", "Mango", "Mint", "Ampalaya", "Malunggay", "Guava", "Lagundi"]
+
   return (
     <>
       <View className="absolute w-80 h-12 top-12 left-1/2 -ml-40">   
@@ -866,16 +1038,22 @@ const SearchScreen = () => {
         />
       </View>
       
-      <View className="absolute w-80 h-20 left-1/2 -ml-40 top-32 flex-row">
-        <View className="h-full bg-[#2F2F2F] w-36 items-center justify-center rounded-lg">
-          <Text className="text-white">Sambong</Text>
-        </View>
-        <View className="h-full bg-[#2F2F2F] w-36 items-center justify-center rounded-lg ml-4">
-          <Text className="text-white">Oregano</Text>
-        </View>
-        <View className="h-full bg-[#2F2F2F] w-36 items-center justify-center rounded-lg ml-4">
-          <Text className="text-white">Ampalaya</Text>
-        </View>
+      <View className="absolute w-full h-20 left-1/2 -ml-44 top-32">
+        <ScrollView horizontal={true} className="h-full" showsHorizontalScrollIndicator={false}>
+          {
+            AvailablePlants.map((plant, idx) => (
+              <TouchableOpacity key={idx} onPress={() => {HandleQuickSearch([SetActiveScreen, DataObjects, SetDataObjects, plant])}}>
+                <View key={idx} className="h-full bg-[#2F2F2F] w-36 items-center justify-center rounded-lg ml-4">
+                  <Text key={idx} className="text-white">{plant}</Text>
+                </View>
+              </TouchableOpacity>
+              
+
+            ))
+          }
+        </ScrollView>
+        
+        
       </View>
 
       <View className="absolute w-80 h-44 left-1/2 -ml-40 top-60 flex-row">
@@ -1221,7 +1399,17 @@ const App = () => {
       ImageURI : null,
       ImageBase64 : null,
       Predicting : false,
-      Model_Predictions : null
+      Model_Predictions : null,
+      PostScanState : "usage",
+      Plant_Data : {
+        Name : "null",
+        Scientific_Name : "null",
+        Short_Info : "null", 
+        Usage : "null", 
+        Cure : "null",
+        Benefits : "null",
+        Sources : "null"
+      }
   }
 
   console.log("\n" + Date() + " - Compiled");

@@ -90,11 +90,11 @@ def predict_given_image():
     input_json = request.json 
 
     input_image = input_json["input_image"]
-    img = readb64(input_image)
-    img = image_resize(img, height=500)
-    cv2.imshow("Testing Input", img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # img = readb64(input_image)
+    # img = image_resize(img, height=500)
+    # cv2.imshow("Testing Input", img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
     # print("Input Image Received:", input_image)
     # Return 
@@ -103,7 +103,7 @@ def predict_given_image():
     #     Class 2 : 2
     #     Class 3 : 1
     # }
-    response = {"text" : "Hatdog Prediction"}
+    response = {"predictions" : ["Artocarpus Heterophyllus", "Artocarpus Heterophyllus", "Artocarpus Heterophyllus", "Artocarpus Heterophyllus"]}
     print("Waiting for 2 seconds")
     time.sleep(2)
 

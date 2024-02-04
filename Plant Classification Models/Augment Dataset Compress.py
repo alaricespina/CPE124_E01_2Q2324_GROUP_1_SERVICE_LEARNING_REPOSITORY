@@ -34,7 +34,7 @@ for folder in tqdm(os.listdir(Original_Path)):
       
       # Rotate 45 degrees each 
 
-      for x in range(0, 360+1, 36):
+      for x in range(0, 360+1, 22):
         _ref = rotate_image(_ref, x)
 
         for i in [-1, 0, 1]:            

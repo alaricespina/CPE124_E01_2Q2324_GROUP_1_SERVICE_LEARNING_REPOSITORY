@@ -3,6 +3,7 @@ import torch
 import numpy as np
 
 model_path = "khygopole/NLP_HerbalMultilabelClassification"
+
 model = AutoModelForSequenceClassification.from_pretrained(model_path)
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 

@@ -104,8 +104,6 @@ def predict_given_image():
     #     Class 3 : 1
     # }
     response = {"predictions" : ["Artocarpus Heterophyllus", "Artocarpus Heterophyllus", "Artocarpus Heterophyllus", "Artocarpus Heterophyllus"]}
-    print("Waiting for 2 seconds")
-    time.sleep(2)
 
     return jsonify(response)
 

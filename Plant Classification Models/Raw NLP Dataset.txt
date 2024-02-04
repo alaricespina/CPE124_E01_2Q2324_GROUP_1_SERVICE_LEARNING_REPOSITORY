@@ -25,7 +25,8 @@ Sambong
 Sambong, also known as Blumea balsamifera is a popular herbal plant in the Philippines. 
  
 
-Scientific name:  Blumea balsamifera 
+Scientific name:  
+Blumea balsamifera 
 
 
 
@@ -33,7 +34,6 @@ Scientific name:  Blumea balsamifera
  
 
 Benefits:  
-
 Sambong is a very popular Philippine herbal flowering plant used as medicine. Sambong displays a variety of biological activities such as antitumor, hepatoprotective, antioxidant, antimicrobial, anti-inflammatory, anti-melanogenic, platelet aggregation, wound healing, and anti-obesity properties.  
 
  
@@ -71,12 +71,13 @@ Sources:
  
 
 Lemon 
-
+Lemon, scientifically known as Citrus limon, is a bright yellow citrus fruit. 
  
 
 Scientific name:  
+Citrus limon
 
-Lemon, scientifically known as Citrus limon, is a bright yellow citrus fruit. 
+
 
  
  
@@ -120,12 +121,13 @@ Sources:
  
 
 Jasmine 
-
+Jasmine which is also known as Jasminum is a plant with a flower used in making medicine. 
  
 
 Scientific name:  
+Jasminum
 
-Jasmine which is also known as Jasminum is a plant with a flower used in making medicine. 
+
 
  
  
@@ -163,12 +165,13 @@ Sources:
  
 
 Mango 
-
+Mango, also known as Mangifera indica, is a fruit native to India and Southeast Asia. 
  
 
 Scientific name:  
+Mangifera indica
 
-Mango, also known as Mangifera indica, is a fruit native to India and Southeast Asia. 
+
 
  
  
@@ -199,12 +202,13 @@ Sources:
  
 
 Mint 
-
+Mint, scientifically known as Mentha, is a herb that offers numerous benefits. Mint is a perennial plant that belongs to the Lamiaceae family. It is widely cultivated for its aromatic leaves, which contain essential oils that give mint its distinctive flavor and scent. The scientific name Mentha encompasses various species and hybrids, including peppermint (Mentha x piperita) and spearmint (Mentha spicata). 
  
 
 Scientific name:  
+Mentha
 
-Mint, scientifically known as Mentha, is a herb that offers numerous benefits. Mint is a perennial plant that belongs to the Lamiaceae family. It is widely cultivated for its aromatic leaves, which contain essential oils that give mint its distinctive flavor and scent. The scientific name Mentha encompasses various species and hybrids, including peppermint (Mentha x piperita) and spearmint (Mentha spicata). 
+
 
  
  
@@ -248,12 +252,13 @@ Sources:
  
 
 Ampalaya 
-
+Ampalaya, also known as Bitter Melon or Bitter Gourd, has the scientific name Momordica charantia. 
  
 
 Scientific name:  
+Momordica charantia. 
 
-Ampalaya, also known as Bitter Melon or Bitter Gourd, has the scientific name Momordica charantia. 
+
 
  
  
@@ -299,12 +304,13 @@ Sources:
  
 
 Malunggay 
-
+Malunggay, scientifically called Moringa oleifera, is a plant that is rich in nutrients and known to boost energy levels. 
  
 
 Scientific name:  
+Moringa oleifera
 
-Malunggay, scientifically called Moringa oleifera, is a plant that is rich in nutrients and known to boost energy levels. 
+
 
  
  
@@ -352,12 +358,13 @@ Sources:
  
 
 Guava 
-
+Bayabas, also known as Guava, has the scientific name Psidium guajava. 
  
 
 Scientific name:  
+Psidium guajava
 
-Bayabas, also known as Guava, has the scientific name Psidium guajava. 
+
 
  
  
@@ -401,12 +408,13 @@ Sources:
  
 
 Lagundi 
+Lagundi, scientifically known as Vitex negundo, is a plant that possesses medicinal properties. 
 
  
 
 Scientific name:  
+Vitex negundo
 
-Lagundi, scientifically known as Vitex negundo, is a plant that possesses medicinal properties. 
 
  
  

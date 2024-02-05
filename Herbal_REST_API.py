@@ -7,7 +7,15 @@ import cv2
 import numpy as np
 
 
+
 app = Flask(__name__)
+
+DEPLOY_MODELS = False
+
+MRV_VGG = None
+MRV_Inception = None
+MRV_ResNet = None
+MRV_SqueezeNet = None
 
 #Filename of the JSON database
 filename = 'HerbalFinder/data/accounts.json'
@@ -90,8 +98,8 @@ def test_connection():
     response = {"text" : "Hello World"}
     return jsonify(response)
 
-# Post Image Data
-@app.route('/predict', methods=['POST'])
+# Post Image Data (Test Version)
+@app.route('/test_predict', methods=['POST'])
 def predict_given_image():
     input_json = request.json 
 
@@ -102,6 +110,31 @@ def predict_given_image():
     # cv2.imshow("Testing Input", img)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
+
+    # print("Input Image Received:", input_image)
+    # Return 
+    # {
+    #     Class 1 : 1
+    #     Class 2 : 2
+    #     Class 3 : 1
+    # }
+    response = {"predictions" : ["Jackfruit", "Jackfruit", "Jackfruit", "Jackfruit"]}
+
+    return jsonify(response)
+
+@app.route('/predict', methods=['POST'])
+def predict_given_image():
+    input_json = request.json 
+
+    input_image = input_json["input_image"]
+    print(len(input_image))
+    img = readb64(input_image)
+    img = image_resize(img, height=500)
+
+    if DEPLOY_MODELS:
+        resnet_results
+
+
 
     # print("Input Image Received:", input_image)
     # Return 
@@ -125,4 +158,10 @@ def get_plant_data():
     
 
 if __name__ == '__main__':
+
+    if DEPLOY_MODELS:
+        MRV_Inception = load_model("Plant Classification Models/KERAS MODELS/MRV_Inception.keras")
+        MRV_ResNet = load_model("Plant Classification Models/KERAS MODELS/MRV_ResNet.keras")
+        MRV_VGG = load_model("Plant Classification Models/KERAS MODELS/MRV_VGG.keras")
+        MRV_SqueezeNet = load_model("Plant Classification Models/KERAS MODELS/MRV_SqueezeNet.keras")
     app.run(host="0.0.0.0", port=4000)

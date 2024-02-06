@@ -17,10 +17,17 @@ logits = outputs.logits
 sigmoid = torch.nn.Sigmoid()
 probs = sigmoid(logits.squeeze().cpu())
 predictions = np.zeros(probs.shape)
+raw_predictions = predictions.copy()
 predictions[np.where(probs >= 0.5)] = 1
 
 #Convert Predicted Labels into Actual Names of Herbal
 ans_cols = ["JACKFRUIT", "SAMBONG", "LEMON", "JASMINE", "MANGO", "MINT", "AMPALAYA", "MALUNGGAY", "GUAVA", "LAGUNDI"]
 predicted_labels = [ans_cols[idx] for idx, label in enumerate(predictions) if label == 1.0]
+
+print("Raw Predictions:")
+print(probs)
+print("Predictions:")
+print(predictions)
+print("Predicted Labels:")
 print(predicted_labels)
 

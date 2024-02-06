@@ -6,16 +6,18 @@ import base64
 import cv2
 import numpy as np
 
+from PlantClassificationModels.EnsemblePredictor import EnsemblePredictor 
+from NLPModel.NLPPredictor import NLPPredictor 
+from SpeechToText.SpeechToTextConverter import SpeechToTextConverter
 
 
 app = Flask(__name__)
 
 DEPLOY_MODELS = False
 
-MRV_VGG = None
-MRV_Inception = None
-MRV_ResNet = None
-MRV_SqueezeNet = None
+ENSEMBLE_MODEL = None 
+NLP_MODEL = None 
+SPEECH_TO_TEXT_CONVERTER = None 
 
 #Filename of the JSON database
 filename = 'HerbalFinder/data/accounts.json'
@@ -99,30 +101,33 @@ def test_connection():
     return jsonify(response)
 
 # Post Image Data (Test Version)
-@app.route('/test_predict', methods=['POST'])
+@app.route('/test_predict_image', methods=['POST'])
 def predict_given_image():
     input_json = request.json 
-
     input_image = input_json["input_image"]
     print(len(input_image))
-    # img = readb64(input_image)
-    # img = image_resize(img, height=500)
-    # cv2.imshow("Testing Input", img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
-    # print("Input Image Received:", input_image)
-    # Return 
-    # {
-    #     Class 1 : 1
-    #     Class 2 : 2
-    #     Class 3 : 1
-    # }
     response = {"predictions" : ["Jackfruit", "Jackfruit", "Jackfruit", "Jackfruit"]}
-
     return jsonify(response)
 
-@app.route('/predict', methods=['POST'])
+# Post NLP Data (Test Version)
+@app.route('/test_predict_text', methods=['POST'])
+def predict_given_image():
+    input_json = request.json 
+    input_image = input_json["input_text"]
+    print(len(input_image))
+    response = {"predictions" : ["Jackfruit", "Mango"]}
+    return jsonify(response)
+
+# Post Audio Data (Test Version)
+@app.route('/test_predict_audio', methods=['POST'])
+def predict_given_image():
+    input_json = request.json 
+    input_image = input_json["input_audio"]
+    print(len(input_image))
+    response = {"predictions" : ["HIGH RISK HIGH BLOOD"]}
+    return jsonify(response)
+
+@app.route('/predict_image', methods=['POST'])
 def predict_given_image():
     input_json = request.json 
 
@@ -130,21 +135,30 @@ def predict_given_image():
     print(len(input_image))
     img = readb64(input_image)
     img = image_resize(img, height=500)
+    _img = ENSEMBLE_MODEL.preprocess_image(img)
+    predictions = ENSEMBLE_MODEL.predict_image(_img)
+    response = {"predictions" : predictions}
+    return jsonify(response)
 
-    if DEPLOY_MODELS:
-        resnet_results
+@app.route('/predict_nlp', methods=['POST'])
+def predict_given_text():
+    input_json = request.json 
+    input_text = input_json["input_text"]
 
+    _predictions = NLP_MODEL.predict_given_text(input_text)
+    predictions = NLP_MODEL.transform_predictions_result(_predictions)
 
+    response = {"predictions" : predictions}
+    return jsonify(response)
 
-    # print("Input Image Received:", input_image)
-    # Return 
-    # {
-    #     Class 1 : 1
-    #     Class 2 : 2
-    #     Class 3 : 1
-    # }
-    response = {"predictions" : ["Jackfruit", "Jackfruit", "Jackfruit", "Jackfruit"]}
+@app.route('/convert_audio', methods=['POST'])
+def convert_input_audio():
+    input_json = request.json 
+    input_audio = input_json["input_audio"]
 
+    transcription = SPEECH_TO_TEXT_CONVERTER(input_audio)
+
+    response = {"result" : transcription}
     return jsonify(response)
 
 @app.route("/plant_data", methods=['POST'])
@@ -158,10 +172,10 @@ def get_plant_data():
     
 
 if __name__ == '__main__':
-
     if DEPLOY_MODELS:
-        MRV_Inception = load_model("Plant Classification Models/KERAS MODELS/MRV_Inception.keras")
-        MRV_ResNet = load_model("Plant Classification Models/KERAS MODELS/MRV_ResNet.keras")
-        MRV_VGG = load_model("Plant Classification Models/KERAS MODELS/MRV_VGG.keras")
-        MRV_SqueezeNet = load_model("Plant Classification Models/KERAS MODELS/MRV_SqueezeNet.keras")
+
+        ENSEMBLE_MODEL  = EnsemblePredictor()
+        NLP_MODEL = NLPPredictor()
+        SPEECH_TO_TEXT_CONVERTER = SpeechToTextConverter()
+
     app.run(host="0.0.0.0", port=4000)

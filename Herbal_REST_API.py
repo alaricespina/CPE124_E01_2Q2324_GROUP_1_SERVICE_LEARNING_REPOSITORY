@@ -106,12 +106,12 @@ def predict_given_image():
     input_json = request.json 
     input_image = input_json["input_image"]
     print(len(input_image))
-    response = {"predictions" : ["Jackfruit", "Jackfruit", "Jackfruit", "Jackfruit"]}
+    response = {"predictions" : ["Jackfruit", "Mango", "Jackfruit", "Mango"]}
     return jsonify(response)
 
 # Post NLP Data (Test Version)
 @app.route('/test_predict_text', methods=['POST'])
-def predict_given_image():
+def predict_given_text():
     input_json = request.json 
     input_image = input_json["input_text"]
     print(len(input_image))
@@ -120,7 +120,7 @@ def predict_given_image():
 
 # Post Audio Data (Test Version)
 @app.route('/test_predict_audio', methods=['POST'])
-def predict_given_image():
+def convert_given_audio():
     input_json = request.json 
     input_image = input_json["input_audio"]
     print(len(input_image))
@@ -128,7 +128,7 @@ def predict_given_image():
     return jsonify(response)
 
 @app.route('/predict_image', methods=['POST'])
-def predict_given_image():
+def predict_image():
     input_json = request.json 
 
     input_image = input_json["input_image"]
@@ -141,7 +141,7 @@ def predict_given_image():
     return jsonify(response)
 
 @app.route('/predict_nlp', methods=['POST'])
-def predict_given_text():
+def predict_text():
     input_json = request.json 
     input_text = input_json["input_text"]
 

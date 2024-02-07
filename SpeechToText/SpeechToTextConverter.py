@@ -2,16 +2,13 @@ import whisper
 import speech_recognition as sr
 import base64 
 
-class SpeechToTextConverter():
-    def __init__(self, decodedFileName="input_audio.wav"):
-        self.model = whisper.load_audio("base")
-        self.AudioFileName = decodedFileName
+from pydub import AudioSegment
 
-    def decodeBase64AudioToFile(self, Base64Audio):
-        decode_string = base64.b64decode(Base64Audio)
-        
-        with open(self.AudioFileName, "wb") as wav_file:
-            wav_file.write(decode_string)
+
+class SpeechToTextConverter():
+    def __init__(self):
+        self.model = whisper.load_model("base")
+
 
     def processAudio(self):
         _a = whisper.load_audio(self.AudioFileName)
@@ -25,8 +22,15 @@ class SpeechToTextConverter():
         transcription = _o.text 
         return transcription
     
-    def transform(self, Base64Audio):
-        self.decodeBase64AudioToFile(Base64Audio)
+    def convertFileToWav(self):
+        sound = AudioSegment.from_file(self.AudioFileName, format='m4a')
+        export_name = "Output_Convert.wav"
+        file_handle = sound.export(export_name, format='wav')
+        self.AudioFileName = export_name
+    
+    def transform(self, AudioFileName):
+        self.AudioFileName = AudioFileName
+        self.convertFileToWav()        
         result = self.processAudio()
 
         return result

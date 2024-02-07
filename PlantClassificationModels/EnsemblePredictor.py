@@ -9,16 +9,16 @@ class EnsemblePredictor():
     # Load Models
     def __init__(self, ENABLE_ROI_TRANSFORM = False, NUM_ROI_TRANSFORMATIONS = 16):
         # VGG Model
-        self.MRV_VGG_Model = load_model("KERAS MODELS/MRV_VGG.keras")
+        self.MRV_VGG_Model = load_model("PlantClassificationModels/KERAS MODELS/MRV_VGG.keras")
         
         # MRV_Inception_Model
-        self.MRV_Inception_Model = load_model("KERAS MODELS/MRV_Inception.keras")
+        self.MRV_Inception_Model = load_model("PlantClassificationModels/KERAS MODELS/MRV_Inception.keras")
 
         # MRV_ResNet_Model
-        self.MRV_ResNet_Model = load_model("KERAS MODELS/MRV_ResNet.keras")
+        self.MRV_ResNet_Model = load_model("PlantClassificationModels/KERAS MODELS/MRV_ResNet.keras")
 
         # MRV_SqueezeNet_Model
-        self.MRV_SqueezeNet_Model = load_model("KERAS MODELS/MRV_SqueezeNet.keras")
+        self.MRV_SqueezeNet_Model = load_model("PlantClassificationModels/KERAS MODELS/MRV_SqueezeNet.keras")
 
         os.system("CLS")
         print("INFO: MODELS LOADED")
@@ -33,7 +33,7 @@ class EnsemblePredictor():
         self.IMAGE_SIZE = (64, 64)
 
         # Load Label Encoder
-        with open("LabelEncoderData.pkl", "rb") as f:
+        with open("PlantClassificationModels/LabelEncoderData.pkl", "rb") as f:
             self.le = pickle.load(f)
     
     # Preprocess Image (BGR)

@@ -13,7 +13,7 @@ from SpeechToText.SpeechToTextConverter import SpeechToTextConverter
 
 app = Flask(__name__)
 
-DEPLOY_MODELS = False
+DEPLOY_MODELS = True
 
 ENSEMBLE_MODEL = None 
 NLP_MODEL = None 
@@ -26,9 +26,13 @@ with open("Plant_Data.json", "r", encoding="utf-8") as f:
     plant_data = load(f)
 
 def readb64(raw_64_string):
-    nparr = np.fromstring(base64.b64decode(raw_64_string), np.uint8)
+    image_file_name = "input_img.jpg"
+    s = base64.b64decode(raw_64_string)
+    # nparr = np.fromstring(base64.b64decode(raw_64_string), np.uint8)
+    nparr = np.frombuffer(s, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    return img 
+    cv2.imwrite(image_file_name, img)
+    return img, image_file_name 
 
 def image_resize(image, width = None, height = None):
     dim = None
@@ -103,9 +107,13 @@ def test_connection():
 # Post Image Data (Test Version)
 @app.route('/test_predict_image', methods=['POST'])
 def predict_given_image():
-    input_json = request.json 
+    input_json = request.json
     input_image = input_json["input_image"]
     print(len(input_image))
+    img = readb64(input_image)
+
+    
+    # Change this to only the unique ones
     response = {"predictions" : ["Jackfruit", "Mango", "Jackfruit", "Mango"]}
     return jsonify(response)
 
@@ -113,8 +121,8 @@ def predict_given_image():
 @app.route('/test_predict_text', methods=['POST'])
 def predict_given_text():
     input_json = request.json 
-    input_image = input_json["input_text"]
-    print(len(input_image))
+    input_text = input_json["input_text"]
+    print(len(input_text))
     response = {"predictions" : ["Jackfruit", "Mango"]}
     return jsonify(response)
 
@@ -122,8 +130,8 @@ def predict_given_text():
 @app.route('/test_predict_audio', methods=['POST'])
 def convert_given_audio():
     input_json = request.json 
-    input_image = input_json["input_audio"]
-    print(len(input_image))
+    input_audio = input_json["input_audio"]
+    print(len(input_audio))
     response = {"predictions" : ["HIGH RISK HIGH BLOOD"]}
     return jsonify(response)
 
@@ -133,9 +141,9 @@ def predict_image():
 
     input_image = input_json["input_image"]
     print(len(input_image))
-    img = readb64(input_image)
+    img, img_file_name = readb64(input_image)
     img = image_resize(img, height=500)
-    _img = ENSEMBLE_MODEL.preprocess_image(img)
+    _img = ENSEMBLE_MODEL.preprocess_image(img_file_name)
     predictions = ENSEMBLE_MODEL.predict_image(_img)
     response = {"predictions" : predictions}
     return jsonify(response)
@@ -143,6 +151,7 @@ def predict_image():
 @app.route('/predict_nlp', methods=['POST'])
 def predict_text():
     input_json = request.json 
+    print(input_json)
     input_text = input_json["input_text"]
 
     _predictions = NLP_MODEL.predict_given_text(input_text)
@@ -153,10 +162,12 @@ def predict_text():
 
 @app.route('/convert_audio', methods=['POST'])
 def convert_input_audio():
-    input_json = request.json 
-    input_audio = input_json["input_audio"]
-
-    transcription = SPEECH_TO_TEXT_CONVERTER(input_audio)
+    input_data = request.get_data()
+    recording_filename = "input_recording.m4a"
+    with open(recording_filename,"wb") as file:
+        file.write(input_data)
+    
+    transcription = SPEECH_TO_TEXT_CONVERTER.transform(recording_filename)
 
     response = {"result" : transcription}
     return jsonify(response)
@@ -169,7 +180,6 @@ def get_plant_data():
 
     return jsonify(response)
 
-    
 
 if __name__ == '__main__':
     if DEPLOY_MODELS:

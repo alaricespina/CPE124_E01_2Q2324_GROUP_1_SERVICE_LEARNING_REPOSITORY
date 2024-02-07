@@ -24,6 +24,7 @@ class NLPPredictor():
 
     def transform_predictions_result(self, predictions_arr):
         ans_cols = ["JACKFRUIT", "SAMBONG", "LEMON", "JASMINE", "MANGO", "MINT", "AMPALAYA", "MALUNGGAY", "GUAVA", "LAGUNDI"]
+        ans_cols = [x.capitalize() for x in ans_cols]
         predicted_labels = [ans_cols[idx] for idx, label in enumerate(predictions_arr) if label == 1.0]
 
         return predicted_labels

@@ -62,11 +62,14 @@ def CheckAccount():
     for i in db['users']:
         if ((db['users'][i]['username'] == input['username']) or (db['users'][i]['email'] == input['username'])) and db['users'][i]['password'] == input['password']:
             #Set flag to True if there is an account match and break the loop
+
             flag = True
             break
     f.close()
     response = {}
     response['match'] = flag
+    if flag:
+        response['email'] = db['users'][i]["email"]
     print(jsonify(response))
     return jsonify(response)
 
@@ -135,6 +138,13 @@ def convert_given_audio():
     response = {"predictions" : ["HIGH RISK HIGH BLOOD"]}
     return jsonify(response)
 
+
+def remove_scientific_name(name):
+    _a = name.split("(")[1]
+    _b = _a.split(")")[0]
+
+    return _b
+
 @app.route('/predict_image', methods=['POST'])
 def predict_image():
     input_json = request.json 
@@ -145,6 +155,10 @@ def predict_image():
     img = image_resize(img, height=500)
     _img = ENSEMBLE_MODEL.preprocess_image(img_file_name)
     predictions = ENSEMBLE_MODEL.predict_image(_img)
+    p_ = {key:1 for key in predictions}
+    predictions = list(p_.keys())
+    predictions = list(filter(lambda x: not x == "Z-Background", predictions))
+    predictions = list(map(remove_scientific_name, predictions))
     response = {"predictions" : predictions}
     return jsonify(response)
 
@@ -176,7 +190,13 @@ def convert_input_audio():
 def get_plant_data():
     global plant_data
     requested_plant = request.json["plant_name"]
-    response = {"text": plant_data[requested_plant]}
+    if "(" in requested_plant:
+        actual_name = requested_plant.split("(")[1]
+        actual_name = actual_name.split(")")[0]
+        print("Scientific Name Detected", actual_name)
+        response = {"text": plant_data[actual_name]} 
+    else:
+        response = {"text": plant_data[requested_plant]}
 
     return jsonify(response)
 

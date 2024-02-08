@@ -109,6 +109,9 @@ class EnsemblePredictor():
         ]:
             results.append(self.predict_single_model(model, region_proposals).tolist()[0])
 
+        _p = {k:1 for k in results}
+        results = list(_p.keys())
+
         return results
         
 if __name__ == "__main__":

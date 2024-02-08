@@ -2,14 +2,23 @@
 import {React, useState, useEffect, useRef} from 'react';
 
 // Components
-import { Switch, View, Image, ImageBackground, Text, TouchableOpacity, TextInput, Pressable, Alert, ActivityIndicator, ScrollView, FlatList} from 'react-native';
+import { Switch, View, Image, ImageBackground, Text, TouchableOpacity, TextInput, Pressable, Alert, ActivityIndicator, ScrollView, FlatList, Touchable} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { Camera, CameraType, FlashMode } from 'expo-camera';
+// import { Camera, CameraType, FlashMode } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library'
+import { Audio } from 'expo-av';
+import { uploadAsync } from 'expo-file-system';
+import { requestMediaLibraryPermissionsAsync, launchImageLibraryAsync } from 'expo-image-picker';
+import { requestCameraPermissionsAsync, launchCameraAsync } from 'expo-image-picker';
+
+// import { launchImageLibraryAsync, launchImageLibraryAsync, getCameraPermissionsAsync, getMediaLibraryPermissionsAsync } from 'expo-image-picker';
+
+
 
 
 // ================================================================================================================
@@ -28,7 +37,8 @@ const defaultScreenStates = {
   AccountProfile : false,
   AccountSettings : false, 
   AccountAbout : false,
-  CameraConfirmation : false
+  CameraConfirmation : false,
+  DisplayPredictionResults : false
 }
 
 const defaultSettingStates = {
@@ -111,49 +121,36 @@ const ShowOKAlertMessage = (title, message) => {
 // Special Functions
 
 // Take picture after camera button has been pressed
-const takeCameraPicture = async (camera) => {
-  if (camera) {
-    const options = {base64:true}
-    const data = await camera.takePictureAsync(options);
-    console.log(data.uri);
-    await MediaLibrary.saveToLibraryAsync(data.uri)
-    console.log("data saved")
 
-    return [data.uri, data.base64]
-  } else {
-    console.log("RUNTIME ERROR =======================")
-    console.log("Current Camera is: ")
-    console.log(camera)
-    console.log("=====================================")
-  }
-}
+
+
 
 // Handle Camera Button pressed on Navigation Bar
 const handleCameraPressed = (...args) => {
   console.log("Camera Pressed, Args: ")
   console.log(args)
-  var [ActiveScreen, SetActiveScreen, targettedAttribute, DataObjects, SetDataObjects] = args[0]
-  if (ActiveScreen.Scanner) {
-    console.log("Say Cheese")
-    console.log("Current Object:" + DataObjects.Camera_Obj)
-    console.log("Full Definition")
-    displayObjectFull(DataObjects.Camera_Obj.current)
-    takeCameraPicture(DataObjects.Camera_Obj.current).then((value) => {
-      console.log("Picture Done")
-      // handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
-      // console.log("URI Received on Then Clause: " + value)
-      var _x = {...DataObjects}
-      _x.ImageURI = value[0] 
-      _x.ImageBase64 = value[1]
-      SetDataObjects({..._x})
+  var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
+  
 
-      handleMenuButtonsPressed([SetActiveScreen, "CameraConfirmation"])
-      
-    })
-    // handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
-  } else {
-    handleMenuButtonsPressed([SetActiveScreen, targettedAttribute])
-  }
+  launchCameraAsync({
+    allowsEditing : true,
+    base64 : true
+  }).then((resp) => {
+    if (resp["assets"]) {
+      var _x = {...DataObjects}
+      _x.ImageURI = resp["assets"][0]["uri"]
+      _x.ImageBase64 = resp["assets"][0]["base64"]
+      SetDataObjects({..._x})
+      console.log("Camera Result")
+      console.log(resp["assets"][0]["uri"])
+      console.log(_x.ImageBase64.length)
+      AttemptPrediction([SetActiveScreen, DataObjects, SetDataObjects, _x.ImageBase64, _x.ImageURI])
+    } else {
+      console.log("Cancelled")
+    }
+  }).then(() => {
+    
+  })   
 }
 
 // Send the Login Request after login has been pressed
@@ -194,12 +191,21 @@ const sendSignUpRequest = async(username, email, password) => {
 }
 
 // Synchronous handling of Login and Signup Request
-const handleLoginSignUpAction = (username, email, password, mode, SetActiveScreen) => {
+const handleLoginSignUpAction = (mode, SetActiveScreen, DataObjects, SetDataObjects) => {
+  var username = DataObjects.username 
+  var email = DataObjects.email 
+  var password = DataObjects.password 
+
   if (mode == "Login") {
     sendLoginRequest(username, password).then((response) => {
       console.log("Login Response: ")
       console.log(response)
       if (response["match"]) {
+        var _x = {...DataObjects}
+        _x.username = username 
+        _x.password = password 
+        _x.email = response["email"]
+        SetDataObjects({..._x})
         handleMenuButtonsPressed([SetActiveScreen, "Home"])
       }
     })
@@ -227,7 +233,7 @@ const ResetCapturedPhoto = (arg) => {
 }
 
 const asyncSendImagePredictionRequest = async (Image) => {
-  const response = await fetch(ngrok_link.concat('/predict'), {
+  const response = await fetch(ngrok_link.concat('/predict_image'), {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -241,6 +247,31 @@ const asyncSendImagePredictionRequest = async (Image) => {
 
   return await response.json()
 }
+
+const asyncSendNLPRequest = async (Text_Input) => {
+  const response = await fetch(ngrok_link.concat('/predict_nlp'), {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning' : true
+    },
+    body: JSON.stringify({
+      'input_text' : Text_Input
+    })
+  })
+  
+  return await response.json()
+}
+
+const asyncGetAudioTranscription = async (Audio_URI) => {
+  const response = await uploadAsync(
+    ngrok_link.concat('/convert_audio'),
+    Audio_URI
+    )
+  return await JSON.parse(response.body)
+}
+
 
 const asyncGetPlantDetails = async (Plant_Name) => {
   const response = await fetch(ngrok_link.concat('/plant_data'), {
@@ -259,16 +290,19 @@ const asyncGetPlantDetails = async (Plant_Name) => {
 }
 
 const AttemptPrediction = (...args) => {
-  var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
+  var [SetActiveScreen, DataObjects, SetDataObjects, ib64, iURI] = args[0]
 
   var _x = {...DataObjects}
   _x.Predicting = true 
-  // console.log("Base 64 Representation of Image:", DataObjects.ImageBase64)
-
+  _x.ImageURI = iURI
+  console.log("Updating Image")
+  console.log(DataObjects.ImageURI)
   SetDataObjects({..._x})
 
   console.log("Sending image")
-  asyncSendImagePredictionRequest(DataObjects.ImageBase64).then((response) => {
+  console.log(ib64.length)
+
+  asyncSendImagePredictionRequest(ib64).then((response) => {
     console.log("Request has been processed, executing then block")
     console.log("Model Prediction:")
     m_predictions = response["predictions"]
@@ -278,46 +312,45 @@ const AttemptPrediction = (...args) => {
     _x.ImageBase64 = null 
     _x.Model_Predictions = m_predictions
 
-    var final_plant = m_predictions[0]
+    SetDataObjects({..._x})
 
-
-    _x.Plant_Data = {
-      Name : final_plant,
-      Scientific_Name : "null",
-      Short_Info : "null", 
-      Usage : "null", 
-      Cure : "null",
-      Benefits : "null",
-      Sources : "null"
-    }
-
-    console.log(final_plant)
-
-    asyncGetPlantDetails(_x.Plant_Data.Name).then((response) => {
-      response = response["text"]
-      console.log("Get Plant Request Details:")
-      console.log(response)
-
-      _x.Plant_Data = {
-        Name : final_plant,
-        Scientific_Name : response["Scientific Name"],
-        Short_Info : response["Short Info"], 
-        Usage : response["Usage"], 
-        Cure : response["Cure"],
-        Benefits : response["Benefits"],
-        Sources : response["Sources"]
-      }
-
-      SetDataObjects({..._x})
-      handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
-    })
-
-
-
-    
+    handleMenuButtonsPressed([SetActiveScreen, "DisplayPredictionResults"]) 
   })
 }
 
+// Recording functions
+
+const playCreatedRecording = async (RecordedURI) => {
+  
+  const {sound} = await Audio.Sound.createAsync({
+    uri : RecordedURI
+  })
+  console.log("Loaded Sound, Playing Sound")
+  await sound.playAsync()
+  console.log("Done Playing")
+}
+
+const asyncStartRecording = async (RecordingObject) => {
+  if (RecordingObject) {
+    console.log(RecordingObject)
+    try {
+      await RecordingObject.stopAndUnloadAsync()
+    } catch (error) {
+      console.log("Recording Object has already been unloaded")
+    }
+  }
+  
+
+  console.log("Starting Recording")
+  var {recording} = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY)
+  return recording
+}
+
+const asyncStopRecording = async (RecordingObject) => {
+  console.log("Stopping Recording")
+  await RecordingObject.stopAndUnloadAsync()
+  return RecordingObject.getURI()
+}
 
 // ================================================================================================================
 // Utility Functions
@@ -346,7 +379,7 @@ const handleScreenDisplay = (...args) => {
   } else if (ActiveScreen.Scanner) {
     return ScannerScreen([DataObjects, SetDataObjects])
   } else if (ActiveScreen.AccountBase) {
-    return AccountBase([SetActiveScreen])
+    return AccountBase([SetActiveScreen, DataObjects])
   } else if (ActiveScreen.AccountSettings) {
     return AccountSettings([SetActiveScreen, s_SwitchStates, set_s_SwitchStates])
   } else if (ActiveScreen.AccountAbout) {
@@ -359,12 +392,14 @@ const handleScreenDisplay = (...args) => {
     return LoginAndSignUpScreen([SetActiveScreen, DataObjects, SetDataObjects])
   } else if (ActiveScreen.CameraConfirmation) {
     return CameraConfirmationScreen([SetActiveScreen, DataObjects, SetDataObjects])
+  } else if (ActiveScreen.DisplayPredictionResults) {
+    return DisplayPredictionResultsScreen([SetActiveScreen, DataObjects, SetDataObjects])
+  
   } else {
     return (<></>)
   }
 
 }
-
 
 const HandleQuickSearch = (...args) => {
   var [SetActiveScreen, DataObjects, SetDataObjects, PlantTarget] = args[0]
@@ -375,7 +410,7 @@ const HandleQuickSearch = (...args) => {
     response = response["text"]
     console.log("Get Plant Request Details:")
     console.log(response)
-  
+    _x.ImageURI = null 
     _x.Plant_Data = {
       Name : PlantTarget,
       Scientific_Name : response["Scientific Name"],
@@ -385,7 +420,6 @@ const HandleQuickSearch = (...args) => {
       Benefits : response["Benefits"],
       Sources : response["Sources"]
     }
-
     SetDataObjects({..._x})
     handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
   })
@@ -441,17 +475,51 @@ const GetDefaultImageSource = (IN) => {
   }
 }
 
+const HandleSearchQuery = async (...args) => {
+  var [DataObjects, SetDataObjects] = args[0]
+
+  var text_input = DataObjects.SearchValue
+  console.log("Text To be Searched:" + text_input)
+  response = await asyncSendNLPRequest(text_input)
+  console.log("NLP Result:")
+  console.log(response)
+  var _x = {...DataObjects}
+  _x.Model_Predictions = response["predictions"]
+  SetDataObjects({..._x})
+  
+}
+
+const HandlePreSetSearchQuery = async (...args) => {
+  var [DataObjects, SetDataObjects, text_input] = args[0]
+
+  
+  console.log("Text To be Searched:" + text_input)
+  response = await asyncSendNLPRequest(text_input)
+  console.log("NLP Result:")
+  console.log(response)
+  var _x = {...DataObjects}
+  _x.Model_Predictions = response["predictions"]
+  SetDataObjects({..._x})
+  
+}
+
 
 // ================================================================================================================
 // Navigation Bar Components
 
 const MenuBarGalleryCircle = (...args) => {
   var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
+  
 
   return (
     <>
       <TouchableOpacity className="z-10 absolute w-[calc(200/375*100%)] left-[calc(50%-200/375/2*100%)] aspect-square bg-[#1E1D1D] bottom-[-4%] rounded-full"
-      onPress={() => handleMenuButtonsPressed([SetActiveScreen, "PostScan"])}
+      onPress={() => {
+        if (DataObjects.ImageURI || DataObjects.Model_Predictions){
+          handleMenuButtonsPressed([SetActiveScreen, "PostScan"])
+        }
+      }
+      }
       >
         <View className="bg-transparent w-full items-center h-full mt-3">
           <MaterialCommunityIcons name="image" size={25} color="#FFF"/>
@@ -477,7 +545,7 @@ const NavBar = (...args) => {
         <View className="z-30 absolute w-[calc(80/375*100%)] aspect-square left-[calc(50%-80/375/2*100%)] bottom-[3.5%] mt-0 rounded-full">
           <TouchableOpacity className="w-full h-full" onPress={() => {
             console.log("Camera Pressed")
-            handleCameraPressed([ActiveScreen, SetActiveScreen, "Scanner", DataObjects, SetDataObjects])
+            handleCameraPressed([SetActiveScreen, DataObjects, SetDataObjects])
             }}>
             <LinearGradient start={{x:0.25, y:0.25}} end = {{x:0.75, y:0.6}} colors={["#008000", "#2AAA8A"]} className="w-full h-full rounded-full items-center justify-center">
               <MaterialCommunityIcons name="camera" size={25} color="#000"/>
@@ -506,7 +574,7 @@ const NavBar = (...args) => {
           </View>
           <TouchableOpacity className="w-1/5 bg-transparent items-center justify-center" onPress={() => {
             console.log("Scanner Selected")
-            handleMenuButtonsPressed([SetActiveScreen, "Scanner"])
+            handleCameraPressed([SetActiveScreen, DataObjects, SetDataObjects])
           }}>
             <View className="w-full h-full">
               {MaterialCommunityGradientIcon("line-scan", "#75E00A", "#0AE0A0", "#FFF", ActiveScreen.Scanner)}
@@ -533,6 +601,58 @@ const NavBar = (...args) => {
 // ================================================================================================================
 // Screens
 // Login And Signup Screen
+
+// Mini Screen
+const DisplayPredictionResultsScreen = (...args) => {
+  var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
+
+  return (
+    <>
+    <View className="absolute z-100 w-full h-full bg-[#090E05] items-center">
+      <View className="absolute top-[5%]">
+        <Text className="text-2xl text-white">Prediction Results</Text>
+      </View>
+      <View className="absolute top-[69%] h-[7.5%] w-5/6 items-center justify-center rounded-3xl bg-[#008000]">
+        <TouchableOpacity onPress={() => {
+          handleMenuButtonsPressed([SetActiveScreen, "Home"])
+        }}>
+          <Text className="text-white">Back to Home</Text>
+        </TouchableOpacity>
+      </View>
+      
+
+      <View className="absolute top-[13%] w-5/6 h-[55%] bg-transparent">
+        <ScrollView className="h-full">
+          {DataObjects.Model_Predictions.map((plant, index) => (
+            <View key={index} className="w-full h-24 mt-[2.5%]">
+              <TouchableOpacity onPress={() => {
+                HandleQuickSearch([SetActiveScreen, DataObjects, SetDataObjects, plant])
+              }} className="w-full h-full">
+                <View className="w-full h-full items-center justify-center ">
+                  <View className="w-full h-full absolute z-10">
+                    <Image className="w-full h-full bg-transparent" source={GetDefaultImageSource(plant)}/>
+                  </View>
+                  <View className="w-full h-full bg-[#00000099] z-20">
+
+                  </View>
+                  <Text className="absolute z-30 text-white text-xl">{plant}</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            
+            ))
+          }
+        </ScrollView>
+        
+      </View>
+      
+
+      
+    </View>
+    </>
+  )
+}
+
 const LoginAndSignUpScreen = (...args) => {
   var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
   console.log("Login And Signup")
@@ -575,20 +695,20 @@ const LoginAndSignUpScreen = (...args) => {
           </View>
         </View>
         
-        <View className="absolute w-full h-[10%] top-[50%] items-center">
+        {/* <View className="absolute w-full h-[10%] top-[50%] items-center">
           <View className="w-4/5 h-full items-end">
             <TouchableOpacity onPress={() => console.log("Forgot your password? You done goofed boy")}>
               <Text className="text-[#766F6F]">Forgot Password?</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
 
 
         <View className="absolute w-full h-[10%] top-[70%] items-center">
           <TouchableOpacity 
             className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center rounded-full"
             onPress= {() => {
-              handleLoginSignUpAction(DataObjects.username, "", DataObjects.password, "Login", SetActiveScreen)
+              handleLoginSignUpAction("Login", SetActiveScreen, DataObjects, SetDataObjects)
               console.log("Login Pressed")
             }}>
             <Text className="text-white text-base font-bold">Login</Text>
@@ -657,7 +777,7 @@ const LoginAndSignUpScreen = (...args) => {
 
         <View className="absolute w-full h-[10%] top-[80%] items-center">
           <TouchableOpacity onPress= {() => {
-            handleLoginSignUpAction(DataObjects.username, DataObjects.email, DataObjects.password, "SignUp", SetActiveScreen)
+            handleLoginSignUpAction("SignUp", SetActiveScreen, DataObjects, SetDataObjects)
             console.log("Signup Pressed")
             }} className="bg-green-950 h-10 w-2/3 items-center rounded-md mb-3 ps-4 justify-center rounded-full">
             <Text className="text-white text-base font-bold">SignUp</Text>
@@ -740,36 +860,199 @@ const LoginAndSignUpScreen = (...args) => {
   );
 };
 
+const RecordingBoxComponent = (...args) => {
+  var [setActiveScreen, DataObjects, SetDataObjects] = args[0]
+
+  const CurrentlyRecording = DataObjects.currentlyRecordingState
+
+  return (
+    <View className="absolute z-10 w-full h-full bg-[#00000080] items-center justify-center">
+      <View className="z-20 bg-[#2F2F2F] w-[90%] h-1/5 justify-center items-center rounded-lg">
+        <View className="h-[45%] w-full items-center">
+
+        
+          <View className="h-full w-5/6 flex-row">
+            <TouchableOpacity onPress={() => {
+              console.log("Back to Non Recording")
+              var _x = {...DataObjects}
+              _x.showAudioRecordingState = false
+              _x.RecordingObjectBase64 = null 
+              _x.RecordingObjectURI = null 
+              _x.TranscribedAudioData = null 
+
+              if (_x.currentlyRecordingState) {
+                asyncStopRecording(_x.RecordingObject).then((response) => {})
+                _x.currentlyRecordingState = false 
+              }
+
+              SetDataObjects({..._x})
+            }}>
+              <View className="h-full aspect-square bg-green-800 items-center justify-center rounded-l-lg">
+                <Entypo name="back" size={36} color="#FFF"/>
+                <Text className="text-xs text-white -mt-1">Back</Text>
+              </View>
+            </TouchableOpacity>
+            
+            {
+              CurrentlyRecording ? 
+              <TouchableOpacity onPress={() => {
+                var _x = {...DataObjects}
+                _x.currentlyRecordingState = false
+                asyncStopRecording(_x.RecordingObject).then((response) => {
+                  console.log("Stop Recording has been pressed, Recording URI:")
+                  console.log(response)
+                  _x.RecordedURI = response
+                  SetDataObjects({..._x})
+                })
+              }}>
+                <View className="h-full aspect-square bg-green-800 items-center justify-center">
+                  <Entypo name="controller-stop" size={36} color="#FFF"/>
+                  <Text className="text-xs text-white -mt-1">Stop</Text>
+                </View>
+              </TouchableOpacity> :
+
+              <TouchableOpacity onPress={() => {
+                var _x = {...DataObjects}
+                _x.currentlyRecordingState = true
+                asyncStartRecording(_x.RecordingObject).then((result) => {
+                  console.log("Start Recording has been pressed")
+                  _x.RecordingObject = result
+                  SetDataObjects({..._x})
+                })
+              }}>
+              <View className="h-full aspect-square bg-green-800 items-center justify-center">
+                <MaterialCommunityIcons name="circle" size={36} color="#FFF"/>
+                <Text className="text-xs text-white -mt-1">Start</Text>
+              </View>
+              </TouchableOpacity>
+            }
+            <TouchableOpacity onPress={() =>  {
+              console.log("Attempting to play recording from")
+              console.log(DataObjects.RecordedURI)
+              if (DataObjects.RecordedURI) {
+                playCreatedRecording(DataObjects.RecordedURI).then(() => {})
+                console.log("Done Playing Recording")
+              }
+            }}>
+              <View className="h-full aspect-square bg-green-800 items-center justify-center">
+                <Entypo name="controller-play" size={42} color="#FFF"/>
+                <Text className="text-xs text-white -mt-2">Play</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => {
+              console.log("Sending to Server")
+              if (DataObjects.RecordedURI) {
+                console.log("Sending Recording Object from Recorded" + DataObjects.RecordedURI)
+                asyncGetAudioTranscription(DataObjects.RecordedURI).then((result) => {
+                  var _x = {...DataObjects}
+                  _x.TranscribedAudioData = result["result"]
+                  console.log("Transcription Results")
+                  console.log(result)
+                  _x.showAudioRecordingState = false 
+                  _x.SearchValue = result["result"]
+                  SetDataObjects({..._x})
+                })
+                
+
+                
+              } else {
+                console.log("No Recorded Objects yet")
+              }
+            }}>
+              <View className="h-full aspect-square bg-green-800 items-center justify-center rounded-r-lg">
+                <Entypo name="upload-to-cloud" size={36} color="#FFF"/>
+                <Text className="text-xs text-white -mt-1">Upload</Text>
+              </View>
+            </TouchableOpacity>
+
+          </View>
+        </View>
+        
+        
+          
+          
+      </View>
+    </View>
+  )
+}
+
 // Home Screen
 const HomeScreen = (...args) => {
   var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
 
+  const ShowRecordingBox = DataObjects.showAudioRecordingState
+  
+
+  const _perm = Audio.requestPermissionsAsync()
+
   const AvailablePlants = ["Jackfruit", "Sambong", "Lemon", "Jasmine", "Mango", "Mint", "Ampalaya", "Malunggay", "Guava", "Lagundi"]
   return (
     <>
-      <View className="absolute bg-green-800 w-full h-2/5 rounded-3xl" >
+      {ShowRecordingBox ? 
+      RecordingBoxComponent([SetActiveScreen, DataObjects, SetDataObjects])
+      : <></>
+      }
+      <View className="absolute w-full h-2/5 rounded-3xl" >
+        <View className="absolute w-full h-full z-20 bg-[#00000080] rounded-3xl"></View>
+        <Image className="absolute w-full h-full z-10 rounded-3xl" source={require("./pics/PNG_AboutUs.png")}></Image>
       </View>
 
       <View className="absolute w-80 top-16 left-1/2 -ml-40 flex-row ">
         <View className="ml-1 mr-6 h-full items-center justify-center">
           <MaterialCommunityIcons name="menu" size={25} color="#FFF"/>
         </View>      
-        <Text className="h-full text-white">Hi Hatdog!</Text>
+        <Text className="h-full text-white">Hi {DataObjects.username}!</Text>
         <View className="absolute h-full right-12 items-center justify-center">
-          <MaterialCommunityIcons name="line-scan" size={25} color="#FFF"/>
+          <TouchableOpacity onPress={() => handleCameraPressed([SetActiveScreen, DataObjects, SetDataObjects])}>
+            <MaterialCommunityIcons name="line-scan" size={25} color="#FFF"/>
+          </TouchableOpacity>
         </View>
         
       </View>
 
-      <View className="absolute w-80 h-12 top-32 left-1/2 -ml-40">   
-        <View className="absolute h-full items-center justify-center ml-2">
-          <MaterialCommunityIcons  name="magnify" size={30} color="#FFF"/>
+      <View className="absolute w-80 h-12 top-32 left-1/2 -ml-40"> 
+        
+        <View className="absolute z-20 h-full items-center justify-center left-[3.5%]">
+          <TouchableOpacity onPress={() => {
+            console.log("Search Pressed")
+            HandleSearchQuery([DataObjects, SetDataObjects]).then(() => {
+              handleMenuButtonsPressed([SetActiveScreen, "DisplayPredictionResults"])
+            })
+          }}>
+            <MaterialCommunityIcons  name="magnify" size={30} color="#FFF"/>
+          </TouchableOpacity>  
         </View>
         <TextInput
         placeholder='Search'
         placeholderTextColor="white"
-        className = "absolute border-2 w-full h-full border-white rounded-lg pl-12 text-white"
+        value={DataObjects.SearchValue}
+        onChangeText={(text) => {
+          var x = {...DataObjects}
+          x.SearchValue = text 
+          SetDataObjects({...x})
+        }}
+        onSubmitEditing={() => {
+          console.log("Search Query: ")
+          console.log(DataObjects.SearchValue)
+          HandleSearchQuery([DataObjects, SetDataObjects]).then(() => {
+            handleMenuButtonsPressed([SetActiveScreen, "DisplayPredictionResults"])
+          })
+          
+        }}
+
+        className = "absolute border-2 w-full h-full border-white rounded-lg pl-12 pr-12 text-white"
         />
+        <View className="absolute h-full items-center justify-center right-[5%]">
+          <TouchableOpacity onPress={() => {
+            console.log("Microphone Touched")
+            var _x = {...DataObjects}
+            _x.showAudioRecordingState = true 
+            SetDataObjects({..._x})
+          }}>
+            <MaterialCommunityIcons  name="microphone" size={30} color="#FFF"/>
+          </TouchableOpacity>          
+        </View>
       </View>
 
       <View className="absolute w-80 left-1/2 -ml-40 top-52">
@@ -777,9 +1060,25 @@ const HomeScreen = (...args) => {
       </View>
 
       <View className="absolute w-80 left-1/2 -ml-40 top-64 h-24 flex-row">
-        <View className="w-24 bg-emerald-500 h-full rounded-lg"></View>
-        <View className="w-24 bg-emerald-600 h-full rounded-lg ml-4"></View>
-        <View className="w-24 bg-emerald-700 h-full rounded-lg ml-4"></View>
+        <View className="w-24 bg-emerald-500 h-full rounded-lg">
+          <TouchableOpacity className="w-full h-full" onPress={() => {HandleQuickSearch([SetActiveScreen, DataObjects, SetDataObjects, "Ampalaya"])}}>
+            <Image source={require("./pics/SampleLeafImages/Ampalaya/1.jpg")} className="w-full h-full bg-blue-100 rounded-lg"
+          />
+          </TouchableOpacity>
+        </View>
+        <View className="w-24 bg-emerald-600 h-full rounded-lg ml-4">
+          <TouchableOpacity className="w-full h-full" onPress={() => {HandleQuickSearch([SetActiveScreen, DataObjects, SetDataObjects, "Sambong"])}}>
+            <Image source={require("./pics/SampleLeafImages/Sambong/1.jpg")} className="w-full h-full bg-blue-100 rounded-lg"
+            />
+          </TouchableOpacity>
+        </View>
+        <View className="w-24 bg-emerald-700 h-full rounded-lg ml-4">
+          <TouchableOpacity className="w-full h-full" onPress={() => {HandleQuickSearch([SetActiveScreen, DataObjects, SetDataObjects, "Jackfruit"])}}>
+            <Image source={require("./pics/SampleLeafImages/Jackfruit/1.jpg")} className="w-full h-full bg-blue-100 rounded-lg"
+          />
+          </TouchableOpacity>
+          
+        </View>
       </View>
 
       <View className="absolute w-80 left-1/2 -ml-40 top-96">
@@ -843,8 +1142,9 @@ const PostScanScreen = (...args) => {
             _x.PostScanState = "usage"
             SetDataObjects({..._x})
           }}>
-            <View className="bg-green-800 h-full aspect-square">
-              <Text>Usage</Text>
+            <View className="bg-green-800 h-full aspect-square items-center justify-center">
+              <Entypo name="hand" size={32} color="#FFF"/>
+              <Text className="text-white text-xs">Usage</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity className="h-full aspect-square" onPress={() => {
@@ -852,8 +1152,9 @@ const PostScanScreen = (...args) => {
             _x.PostScanState = "cure"
             SetDataObjects({..._x})
           }}>
-            <View className="bg-green-800 h-full aspect-square">
-              <Text>Cure</Text>
+            <View className="bg-green-800 h-full aspect-square items-center justify-center">
+              <Entypo name="drop" size={32} color="#FFF"/>
+              <Text className="text-white text-xs">Cure</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity className="h-full aspect-square" onPress={() => {
@@ -861,8 +1162,9 @@ const PostScanScreen = (...args) => {
             _x.PostScanState = "benefits"
             SetDataObjects({..._x})
           }}>
-            <View className="bg-green-800 h-full aspect-square">
-              <Text>Benefits</Text>
+            <View className="bg-green-800 h-full aspect-square items-center justify-center">
+              <Entypo name="price-ribbon" size={32} color="#FFF"/>
+              <Text className="text-white text-xs">Benefits</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity className="h-full aspect-square" onPress={() => {
@@ -870,8 +1172,9 @@ const PostScanScreen = (...args) => {
             _x.PostScanState = "sources"
             SetDataObjects({..._x})
           }}>
-            <View className="bg-green-800 h-full aspect-square">
-              <Text>Sources</Text>
+            <View className="bg-green-800 h-full aspect-square items-center justify-center">
+              <Entypo name="archive" size={32} color="#FFF"/>
+              <Text className="text-white text-xs">Sources</Text>
             </View>
           </TouchableOpacity>
           
@@ -963,8 +1266,11 @@ const CameraConfirmationScreen = (...args) => {
 // Scanner Screen
 const ScannerScreen = (...args) => {
   var [DataObjects, SetDataObjects] = args[0]
-  const permission = MediaLibrary.requestPermissionsAsync(true)
-  const camera_perm = Camera.requestCameraPermissionsAsync()
+  // const permission = MediaLibrary.requestPermissionsAsync(true)
+  // const camera_perm = Camera.requestCameraPermissionsAsync()
+
+  const _perm = requestCameraPermissionsAsync()
+
   console.log("Scanner Screen Called")
   
   return (
@@ -977,28 +1283,15 @@ const ScannerScreen = (...args) => {
           start={{x:0.5, y:0.65}}
           end={{x:0.5, y:1.0}}
         />
-        <Camera 
+        {/* <Camera 
           ref={DataObjects.Camera_Obj}
-          // (r) => {
-          //   var x = {...DataObjects}
-          //   console.log("1 - Current Camera Object on Data Object:" + DataObjects.Camera_Obj)
-          //   console.log("2 - X Camera Object (Local): " + x.Camera_Obj)
-          //   x.Camera_Obj = r
-          //   console.log("2 - X Camera Object (Local): " + x.Camera_Obj)
-          //   console.log("2 - X (Local): " + x)
-          //   if (DataObjects.Camera_Obj == null && r != null) {
-          //     SetDataObjects(x)
-              
-          //   }
-          //   console.log("3 - After Setting: " + DataObjects.Camera_Obj)
-            
-            
-          // }
           type={CameraType.back}
           flashMode={FlashMode.auto} 
           className="absolute z-20 h-full aspect-[3/4] items-center justify-center">
-          <Image source={require("./scan-line.png")}/>
-        </Camera>
+
+          
+        </Camera> */}
+        <Image source={require("./scan-line.png")}/>
     
         <Text className="absolute z-30 text-white top-[70%]"> Scanner </Text>
         
@@ -1010,23 +1303,16 @@ const ScannerScreen = (...args) => {
 // Search Screen
 const SearchScreen = (...args) => {
   var [SetActiveScreen, DataObjects, SetDataObjects] = args[0]
-  // const AvailablePlants = [
-  //   {id: 0, item:"Jackfruit"},
-  //   {id: 1, item:"Sambong"},
-  //   {id: 2, item:"Lemon"},
-  //   {id: 3, item:"Jasmine"},
-  //   {id: 4, item:"Mango"},
-  //   {id: 5, item:"Mint"},
-  //   {id: 6, item:"Ampalaya"},
-  //   {id: 7, item:"Malunggay"},
-  //   {id: 8, item:"Guava"},
-  //   {id: 9, item:"Lagundi"},
-  // ]
-
+  const ShowRecordingBox = DataObjects.showAudioRecordingState
+  
   const AvailablePlants = ["Jackfruit", "Sambong", "Lemon", "Jasmine", "Mango", "Mint", "Ampalaya", "Malunggay", "Guava", "Lagundi"]
 
   return (
     <>
+      {ShowRecordingBox ? 
+        RecordingBoxComponent([SetActiveScreen, DataObjects, SetDataObjects])
+        : <></>
+      }
       <View className="absolute w-80 h-12 top-12 left-1/2 -ml-40">   
         <View className="absolute h-full items-center justify-center ml-2">
           <MaterialCommunityIcons  name="magnify" size={30} color="#FFF"/>
@@ -1036,6 +1322,16 @@ const SearchScreen = (...args) => {
         placeholderTextColor="white"
         className = "absolute border-2 w-full h-full border-white rounded-lg pl-12 text-white"
         />
+        <View className="absolute h-full items-center justify-center right-[5%]">
+          <TouchableOpacity onPress={() => {
+            console.log("Microphone Touched")
+            var _x = {...DataObjects}
+            _x.showAudioRecordingState = true 
+            SetDataObjects({..._x})
+          }}>
+            <MaterialCommunityIcons  name="microphone" size={30} color="#FFF"/>
+          </TouchableOpacity>          
+        </View>
       </View>
       
       <View className="absolute w-full h-20 left-1/2 -ml-44 top-32">
@@ -1057,32 +1353,74 @@ const SearchScreen = (...args) => {
       </View>
 
       <View className="absolute w-80 h-44 left-1/2 -ml-40 top-60 flex-row">
+        
         <View className="h-full bg-[#2F2F2F] w-36 rounded-lg">
-          <View className="h-2/3 w-full bg-green-300 rounded-t-lg"></View>
-          <View className="h-1/3 w-full items-center justify-center">
-            <Text className="text-white">For Cough</Text>
-          </View>
+          <TouchableOpacity className="w-full h-full"
+          onPress={() => {
+            const SearchValue = "Cough"
+            HandlePreSetSearchQuery([DataObjects, SetDataObjects, SearchValue]).then(() => {
+              handleMenuButtonsPressed([SetActiveScreen, "DisplayPredictionResults"])
+            })
+          }}>
+            <View className="h-2/3 w-full bg-green-300 rounded-t-lg">
+              <Image source={require("./pics/SampleLeafImages/Lagundi/1.jpg")} className="w-full h-full bg-blue-100 rounded-lg"/>
+            </View>
+            <View className="h-1/3 w-full items-center justify-center">
+              <Text className="text-white">Cough</Text>
+            </View>
+          </TouchableOpacity>
         </View>
-        <View className="h-full bg-[#2F2F2F] w-36 items-center justify-center rounded-lg ml-8">
-        <View className="h-2/3 w-full bg-green-500 rounded-t-lg"></View>
-          <View className="h-1/3 w-full items-center justify-center">
-            <Text className="text-white">For Colds</Text>
-          </View>
+        <View className="h-full bg-[#2F2F2F] w-36 items-center justify-center rounded-lg ml-8 mt-8">
+          <TouchableOpacity className="w-full h-full"
+          onPress={() => {
+            const SearchValue = "Infections"
+            HandlePreSetSearchQuery([DataObjects, SetDataObjects, SearchValue]).then(() => {
+              handleMenuButtonsPressed([SetActiveScreen, "DisplayPredictionResults"])
+            })
+          }}>
+            <View className="h-2/3 w-full bg-green-500 rounded-t-lg">
+              <Image source={require("./pics/SampleLeafImages/Mango/1.jpg")} className="w-full h-full bg-blue-100 rounded-lg"/>
+            </View>
+            <View className="h-1/3 w-full items-center justify-center">
+              <Text className="text-white">Infections</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
 
       <View className="absolute w-80 h-44 left-1/2 -ml-40 bottom-36 flex-row">
-      <View className="h-full bg-[#2F2F2F] w-36 rounded-lg">
-          <View className="h-2/3 w-full bg-green-700 rounded-t-lg"></View>
-          <View className="h-1/3 w-full items-center justify-center">
-            <Text className="text-white">For Allergies</Text>
-          </View>
+        <View className="h-full bg-[#2F2F2F] w-36 rounded-lg">
+          <TouchableOpacity className="w-full h-full"
+          onPress={() => {
+            const SearchValue = "Hypertension"
+            HandlePreSetSearchQuery([DataObjects, SetDataObjects, SearchValue]).then(() => {
+              handleMenuButtonsPressed([SetActiveScreen, "DisplayPredictionResults"])
+            })
+          }}
+          >
+            <View className="h-2/3 w-full bg-green-700 rounded-t-lg">
+              <Image source={require("./pics/SampleLeafImages/Sambong/1.jpg")} className="w-full h-full bg-blue-100 rounded-lg"/>
+            </View>
+            <View className="h-1/3 w-full items-center justify-center">
+              <Text className="text-white">Hypertension</Text>
+            </View>
+          </TouchableOpacity>
         </View>
-        <View className="h-full bg-[#2F2F2F] w-36 items-center justify-center rounded-lg ml-8">
-        <View className="h-2/3 w-full bg-green-900 rounded-t-lg"></View>
-          <View className="h-1/3 w-full items-center justify-center">
-            <Text className="text-white">For Asthma</Text>
-          </View>
+        <View className="h-full bg-[#2F2F2F] w-36 items-center justify-center rounded-lg ml-8 mt-8">
+          <TouchableOpacity className="w-full h-full"
+          onPress={() => {
+            const SearchValue = "Diabetes"
+            HandlePreSetSearchQuery([DataObjects, SetDataObjects, SearchValue]).then(() => {
+              handleMenuButtonsPressed([SetActiveScreen, "DisplayPredictionResults"])
+            })
+          }}>
+            <View className="h-2/3 w-full bg-green-900 rounded-t-lg">
+              <Image source={require("./pics/SampleLeafImages/Guava/1.jpg")} className="w-full h-full bg-blue-100 rounded-lg"/>
+            </View>
+            <View className="h-1/3 w-full items-center justify-center">
+              <Text className="text-white">Diabetes</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
     </>
@@ -1097,24 +1435,28 @@ const AccountAboutUs = (...args) => {
   return (
     <ImageBackground
       source={require('./pics/PNG_AboutUs.png')}
-      style={{ flex: 1, resizeMode: 'cover', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,1.00)' }}
+      // style={{ flex: 1, resizeMode: 'cover', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,1.00)' }}
+      className ="w-full h-full"
     >
       <View className="items-center justify-center">
         {/* Herbal Finder Logo */}
-        <Image source={require('./pics/HBLogo.png')} style={{ width: 150, height: 120, marginBottom: 20}} />
+        <Image 
+        source={require('./pics/HBLogo.png')} 
+        style={{ width: 150, height: 120, marginBottom: 20}} 
+        />
 
         <Text className="text-white text-3xl font-bold mb-6">About Us</Text>
-        <View className="w-4/5 bg-[#2F2F2F90] rounded-2xl p-[10%] mb-[20%]">
-          <Text className="text-white text-base mb-4">
+        <View className="w-5/6 bg-[#2F2F2F90] rounded-2xl p-[5%] mb-[20%]">
+          <Text className="text-white text-xs mb-4 text-justify">
             Welcome to our Herbal Finder App! We are here to provide valuable information
             and promote the use of herbal plants.
           </Text>
-          <Text className="text-white text-base mb-4">
+          <Text className="text-white text-xs mb-4 text-justify">
             Our mission is to educate users about various herbal plants, their benefits,
             and how they can be used for different purposes, especially in natural remedies.
           </Text>
-          <Text className="text-white text-base mb-4">
-            Do you have any questions or concerns? Feel free to reach out to us at HerbalNgInaMo@gmail.com.
+          <Text className="text-white text-xs mb-4 text-justify">
+            Do you have any questions or concerns? Feel free to reach out to us at HerbalFinder@gmail.com.
           </Text>
         </View>
       </View>
@@ -1134,21 +1476,21 @@ const AccountAboutUs = (...args) => {
 
 // Acount Base Screen
 const AccountBase = (...args) => {
-  var [SetActiveScreen] = args[0]
+  var [SetActiveScreen, DataObjects] = args[0]
 
   return (
     <>
       <View className="absolute top-0 h-[calc(410/812*100%)] w-full left-0 right-0 bg-green-500 rounded-2xl">
         <View className="items-center pt-14"> 
           <View className="flex-row pb-3">
-            <MaterialIcons name="person" size={30} color="#FFF"/>
+            <MaterialIcons name="person" size={42} color="#FFF"/>
             <Text className="text-white text-xl font-bold"> My Account </Text>
           </View>
           <View className="rounded-full bg-green-600 flex items-center justify-center">
             <MaterialIcons name="person" size={180} color="#FFF"/>
           </View>
-          <Text className="font-bold text-xl text-white">User Name</Text>
-          <Text className="font-bold text-xs text-white">juandelacruz@mymail.mapua.edu.ph</Text>
+          <Text className="font-bold text-xl text-white">{DataObjects.username}</Text>
+          <Text className="font-bold text-xs text-white">{DataObjects.email}</Text>
         </View>
       </View>
 
@@ -1156,9 +1498,9 @@ const AccountBase = (...args) => {
         <View className="w-4/5 h-full">
           <TouchableOpacity className="absolute h-full left-0 aspect-square items-center justify-center bg-[#2F2F2F80] rounded-2xl" onPress={() => {
             console.log("Settings Pressed")
-            const _ = {...defaultScreenStates}
-            _.AccountSettings = true 
-            SetActiveScreen({..._})
+            // const _ = {...defaultScreenStates}
+            // _.AccountSettings = true 
+            // SetActiveScreen({..._})
             }}>
             <MaterialIcons name="settings" size={40} color="#FFF"/>
             <Text className="text-white text-xs">Settings</Text>
@@ -1188,7 +1530,7 @@ const AccountBase = (...args) => {
       <View className="absolute top-[calc(68%)] items-center w-full h-[41%]">
         <View className="h-2/5 w-4/5 bg-[#2F2F2F80] rounded-2xl items-center">
           <Text className="text-white text-s font-medium">Your Favorite Plants</Text>
-          <View className="w-4/5 h-3/5 mt-2">
+          {/* <View className="w-4/5 h-3/5 mt-2">
             <View className="absolute left-0 items-center w-1/3 h-full">
               <TouchableOpacity className="h-3/4 aspect-square bg-red-500 rounded-full"></TouchableOpacity>
               <Text className="text-white text-xs italic">Text 1</Text>
@@ -1203,7 +1545,7 @@ const AccountBase = (...args) => {
               <TouchableOpacity className="h-3/4 aspect-square bg-green-500 rounded-full"></TouchableOpacity>
               <Text className="text-white text-xs italic">Text 3</Text>
             </View>
-          </View>
+          </View> */}
         </View>
       </View>
 
@@ -1240,22 +1582,28 @@ const AccountProfile = (...args) => {
               </View>
               <View className="absolute  w-full top-[15%] h-[calc(78/812*100%)]">
                   <Text className="text-white">Name</Text>
-                  <TextInput className="w-full border-[#DBFFB7] border-2 rounded-xl h-[70%]"></TextInput>
+                  <TextInput className="w-full border-[#DBFFB7] border-2 rounded-xl h-[70%] pl-4 text-white"
+                    value={DataObjects.username}>
+
+                  </TextInput>
               </View>
               <View className="absolute  w-full top-[30%] h-[calc(78/812*100%)]">
                   <Text className="text-white">Email</Text>
-                  <TextInput className="w-full border-[#DBFFB7] border-2 rounded-xl h-[70%]"></TextInput>
+                  <TextInput className="w-full border-[#DBFFB7] border-2 rounded-xl h-[70%] pl-4 text-white"
+                    value={DataObjects.email}>
+
+                  </TextInput>
               </View>
               <View className="absolute  w-full top-[45%] h-[calc(78/812*100%)]">
                   <Text className="text-white">Password</Text>
-                  <TextInput className="w-full border-[#DBFFB7] border-2 rounded-xl h-[70%]"></TextInput>
+                  <TextInput className="w-full border-[#DBFFB7] border-2 rounded-xl h-[70%] pl-4 text-white"
+                    value={DataObjects.password}
+                    secureTextEntry
+                    >
+
+                  </TextInput>
               </View>
-              <View className="absolute  w-full top-[57%] h-[calc(78/812*100%)]">
-                  <TouchableOpacity>
-                      <Text className="underline text-white">Edit Profile</Text>
-                  </TouchableOpacity>
-                  
-              </View>
+
               <View className="absolute w-full top-[85%] h-[calc(47/812*100%)] rounded-xl">
                   <TouchableOpacity className="w-full h-full" onPress={() => {
                       console.log("Back to Home Pressed")
@@ -1286,6 +1634,7 @@ const AccountSettings = (...args) => {
 
   return (
     <View className="w-full h-full bg-black">
+      
       <View className="w-full h-1/4 bg-green-600">
         <Text className="mt-12 ml-3 text-white font-bold text-3xl">Settings</Text>
       </View>
@@ -1381,10 +1730,6 @@ const AccountSettings = (...args) => {
   )
 }
 
-const CameraCapturePreview = (...args) => {
-
-}
-
 // ================================================================================================================
 // App Function
 
@@ -1396,6 +1741,11 @@ const App = () => {
       email : null,
       password : null,
       loginSignUpState : true,
+      showAudioRecordingState : false,
+      currentlyRecordingState : false,
+      RecordingObject : null,
+      RecordingObjectURI : null,
+      RecordingObjectBase64 : null,
       ImageURI : null,
       ImageBase64 : null,
       Predicting : false,
@@ -1409,8 +1759,13 @@ const App = () => {
         Cure : "null",
         Benefits : "null",
         Sources : "null"
-      }
+      },
+      TranscribedAudioData : null,
+      SearchValue : null
   }
+
+  const [permissionResponse, requestPermission] = Audio.usePermissions();
+
 
   console.log("\n" + Date() + " - Compiled");
 
@@ -1444,7 +1799,7 @@ const App = () => {
 
     {handleScreenDisplay([ActiveScreen, SetActiveScreen, s_SwitchStates, set_s_SwitchStates, DataObjects, SetDataObjects])}
 
-    {ActiveScreen.Home ? MenuBarGalleryCircle([SetActiveScreen, DataObjects, SetDataObjects]) : <></>}
+    {ActiveScreen.Home || ActiveScreen.DisplayPredictionResults ? MenuBarGalleryCircle([SetActiveScreen, DataObjects, SetDataObjects]) : <></>}
 
     {NavBar([ActiveScreen, SetActiveScreen, DataObjects, SetDataObjects])}
 
